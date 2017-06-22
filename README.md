@@ -1,3 +1,3 @@
 # rprojs
 
-Start of my blogdown() theem and post.
+Start of my blogdown() theme and post.
