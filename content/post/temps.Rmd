@@ -1,7 +1,7 @@
 ---
 title: "How To: Multiple Plots on a Single Panel in R"
 author: "@awhstin"
-date: 2015-07-23T21:13:14-05:00
+date: 2016-10-14T21:13:14-05:00
 categories: ["R"]
 titleimg: "multi-1"
 ---

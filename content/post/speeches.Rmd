@@ -1,7 +1,7 @@
 ---
 title: "Sentiment in Famous Speeches: A Tidy Experience"
 author: "@awhstin"
-date: 2017-07-23T21:13:14-05:00
+date: 2017-04-20T21:13:14-05:00
 categories: ["R"]
 titleimg: "speeches-1"
 ---
@@ -10,7 +10,7 @@ When I first started messing with NLP and sentiment analysis, in R, a lot of the
 
 Awhile ago, say October 28th, Julia Silge posted this tutorial walking users through a package developed by her and David Robinson (both great Twitter follows if you’re into that sort of thing). This post walks us through the magic of the tidytext package, some great things you can do with it, and was the inspiration and starting point for me in tidytext. I didn’t want to just mimic Julia’s great post, I was hoping to add my own little twist to it. Julia decided to look at a corpus of books by Jane Austen, looking at the sentiment arc of some of her novels. Speeches were my answer. Speeches, in my mind, could be some of the most sentiment rich text options around. But where to find some good ones?
 
-**Getting the Speeches
+##Getting the Speeches
 
 Before we start here is a link to the public gist with the full code.
 
@@ -70,7 +70,7 @@ for(i in 1:nrow(data)){
 }
 ```
 
-***Trimming things down
+##Trimming things down
 
 Now that we have a decent collection of speeches I would say we want to compare some of the longer speeches. This isn’t really a necessity but I think it may be easier to see the arc of sentiment in speeches if there is a longer narrative time (length).
 
@@ -95,9 +95,6 @@ speech.sentiment <- tidy.speeches %>%
  spread(sentiment, n, fill = 0) %>% 
  mutate(sentiment = positive - negative)
 ```
-
-Finally we can work with sentiment
-
 ```{r speeches, fig.path='../', message=FALSE, warning=FALSE, dev='svg', include=FALSE}
 #plot a speech
 ggplot(speech.sentiment[1:62,], aes(index, sentiment, color = name)) +

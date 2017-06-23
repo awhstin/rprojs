@@ -1,7 +1,7 @@
 ---
 title: "Sentiment in Famous Speeches: A Tidy Experience"
 author: "@awhstin"
-date: 2017-07-23T21:13:14-05:00
+date: 2017-04-20T21:13:14-05:00
 categories: ["R"]
 titleimg: "speeches-1"
 ---
@@ -10,7 +10,8 @@ titleimg: "speeches-1"
 
 <p>When I first started messing with NLP and sentiment analysis, in R, a lot of the tidying was done manually. First you import your text, from some source, be it a flat text file or grab it from somewhere. Then you could tokenize, strip white-space, transform to lowercase, or whatever else you needed to do to set up your data. Times have changed. There are packages for clean data manipulation, there are even packages specifically for sentiment analysis. The tidyverse is ever expanding.</p>
 <p>Awhile ago, say October 28th, Julia Silge posted this tutorial walking users through a package developed by her and David Robinson (both great Twitter follows if you’re into that sort of thing). This post walks us through the magic of the tidytext package, some great things you can do with it, and was the inspiration and starting point for me in tidytext. I didn’t want to just mimic Julia’s great post, I was hoping to add my own little twist to it. Julia decided to look at a corpus of books by Jane Austen, looking at the sentiment arc of some of her novels. Speeches were my answer. Speeches, in my mind, could be some of the most sentiment rich text options around. But where to find some good ones?</p>
-<p>**Getting the Speeches</p>
+<div id="getting-the-speeches" class="section level2">
+<h2>Getting the Speeches</h2>
 <p>Before we start here is a link to the public gist with the full code.</p>
 <p>I found a website that seems to have a good list of speeches called The History Place. Not exactly a government run, sources cited sort of website, but it will do. Why don’t we start with the rvest package to grab a few of those speeches. First the packages</p>
 <pre class="r"><code>library(rvest)
@@ -52,7 +53,9 @@ for(i in 1:nrow(data)){
  indiv.speeches &lt;-data.frame(word=speechwords,line_number,name,size,stringsAsFactors = FALSE)
  speeches&lt;-rbind(speeches,indiv.speeches)
 }</code></pre>
-<p>***Trimming things down</p>
+</div>
+<div id="trimming-things-down" class="section level2">
+<h2>Trimming things down</h2>
 <p>Now that we have a decent collection of speeches I would say we want to compare some of the longer speeches. This isn’t really a necessity but I think it may be easier to see the arc of sentiment in speeches if there is a longer narrative time (length).</p>
 <pre class="r"><code>#big speeches
 big.speeches&lt;-filter(speeches,size&gt;2000)</code></pre>
@@ -83,7 +86,6 @@ speech.sentiment &lt;- tidy.speeches %&gt;%
  count(name, index = line_number %/% 80, sentiment) %&gt;% 
  spread(sentiment, n, fill = 0) %&gt;% 
  mutate(sentiment = positive - negative)</code></pre>
-<p>Finally we can work with sentiment</p>
 <p>Then plot!</p>
 <pre class="r"><code>ggplot(speech.sentiment, aes(index, sentiment, color = name)) +
  geom_line(stat = &quot;identity&quot;, show.legend = FALSE) +
@@ -98,3 +100,4 @@ speech.sentiment &lt;- tidy.speeches %&gt;%
  theme(axis.ticks.x=element_blank()) +
  theme(axis.text.x=element_blank())</code></pre>
 <p><img src="/post/speeches_files/figure-html/unnamed-chunk-7-1.png" width="720" /></p>
+</div>

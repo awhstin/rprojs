@@ -1,0 +1,70 @@
+---
+title: "Update #2: ACS mapping with tidycensus"
+author: "@awhstin"
+date: 2017-06-15T21:13:14-05:00
+categories: ["R"]
+titleimg: "acs-1"
+---
+
+I guess what turned into one post about ACS data is now an installment series. The <a href="https://twitter.com/search?q=%23rstats&src=typd" target="_blank">#rstats</a> community is so productive with its output that as I finally figure out the extant of one package someone has made a streamlined, optimized, or shiny new one. Kyle Walker's new <a href="https://walkerke.github.io/tidycensus/" target="_blank">tidycensus</a> package is the latest in that long line and before you go any further I encourage you to follow the link to read his brief introductions. 
+
+I have posted a couple times about working with ACS data in R, mainly via the <code class="language-r">acs</code> package. The first time I wrote nearly a novel about <a href="http://www.austinwehrwein.com/tutorials/navigating-mapping-with-the-acs-package/" target="_blank">household income in Nebraska</a> and retrieving that data. The second time was using new found knowledge to get <a href="http://www.austinwehrwein.com/tutorials/update-mapping-acs/" target="_blank">household income over $200k</a> for the U.S. with some updated aesthetic elements. Some of the complications I ran into those first tutorials were with the data pull. The resulting pull from the API creates an acs object which to me are unwieldy at times, which is only one of many places where <code class="language-r">tidycensus</code> excels. 
+<h5>Before you start please get your <a href="http://api.census.gov/data/key_signup.html." target="_blank">API Key</a> for the Census Bureau Data API.</h5>
+
+```{r, message=FALSE, warning=FALSE}
+library(albersusa)
+library(tidycensus)
+library(tidyverse)
+library(ggthemes) #just for theme_map()
+library(viridis)
+```
+```{r eval=TRUE,include=FALSE}
+library(tidycensus)
+census_api_key("f4d05f3d779c7742e0b12dd248183069d04a423f")
+```
+```{r, message=FALSE, warning=FALSE}
+#census_api_key('yourkeyhere')
+income<- get_acs(geography = "county", variables = "B19013_001", geometry = TRUE)
+hc<- get_acs(geography = "county", variables = "B25105_001", geometry = TRUE)
+hc$estimated<-hc$estimate*12
+income$percent<-hc$estimated/income$estimate*100
+```
+Simple at that! The resulting pull is already tidied and in an easy to use dataframe instead of the acs object. This saves loads of time and numerous lines of code. Here is where I deviate a little from Kyle's tutorial and use the Albers projection from Bob Rudis' <code class="language-r">albersusa</code> package available on <a href="https://github.com/hrbrmstr/albersusa" target="_blank">github</a>. (I am sure there is a better way to do this than the merge I did, so if you have thoughts drop me a line!) The last line is where I rename the Albers projection geometry to 'geometry' (from geometry.x) because the 'geom_sf' looks for it.
+```{r, message=FALSE, warning=FALSE}
+#merge
+cty_sf <- counties_sf("aeqd")
+cty_sf$NAME<-paste0(cty_sf$name,' ',cty_sf$lsad,', ',cty_sf$state)
+cty_income<-left_join(cty_sf,income,by=c('NAME'))
+names(cty_income)[9]<-'geometry'
+```
+Finally we plot it using the 'inferno' or 'B' color palette from <code class="language-r">viridis</code> to get the image below. 
+```{r, message=FALSE, warning=FALSE}
+#plot
+cty_income%>%
+  ggplot(aes(fill = estimate, color = estimate)) + 
+  geom_sf() + 
+  scale_fill_viridis(option = "inferno") + 
+  scale_color_viridis(option = "inferno")+
+  theme_map(base_size = 11,base_family = 'Roboto Condensed')+labs(title='Household Income by County',subtitle='Median household income from the 2011-2015 ACS')
+```
+
+Interesting. It seems like some of the darkest areas correspond with big metropolitan areas. I think it would be more interesting though if we could compare that median household income to something else. Luckily all we have to do is make another pull, this time for table 'B25105_001', which corresponds to the median monthly housing costs. Then we just calculate the percent and plot it replacing just the 'fill' and 'color' elements.
+```{r acs, dev='svg', message=FALSE, warning=FALSE, highlight=T,fig.path='../',include=FALSE}
+#add data
+cty_income%>%
+  ggplot(aes(fill = percent, color = percent)) + 
+  geom_sf() + 
+  scale_fill_viridis(option = "inferno") + 
+  scale_color_viridis(option = "inferno")+
+  theme_map(base_size = 11)+labs(title='Percent of Household Income Toward Housing Costs',subtitle='Median housing costs divided by median household income\nby county from the 2011-2015 ACS')
+```
+```{r, message=FALSE, warning=FALSE}
+cty_income%>%
+  ggplot(aes(fill = percent, color = percent)) + 
+  geom_sf() + 
+  scale_fill_viridis(option = "inferno") + 
+  scale_color_viridis(option = "inferno")+
+  theme_map(base_size = 11)+labs(title='Percent of Household Income Toward Housing Costs',subtitle='Median housing costs divided by median household income\nby county from the 2011-2015 ACS')
+```
+
+With both of these datasets we can start to get a better picture of how income is spread. Though this is an attempt at a very raw cost of living calculation I think it paints a more interesting picture. It seems that there is a pretty distinct band straight through the middle of the country, I guess you have to pay to live on the coast.
