@@ -1,0 +1,134 @@
+---
+title: "Sentiment in Famous Speeches: A Tidy Experience"
+author: "@awhstin"
+date: 2017-07-23T21:13:14-05:00
+categories: ["R"]
+titleimg: "speeches-1"
+---
+
+When I first started messing with NLP and sentiment analysis, in R, a lot of the tidying was done manually. First you import your text, from some source, be it a flat text file or grab it from somewhere. Then you could tokenize, strip white-space, transform to lowercase, or whatever else you needed to do to set up your data. Times have changed. There are packages for clean data manipulation, there are even packages specifically for sentiment analysis. The tidyverse is ever expanding.
+
+Awhile ago, say October 28th, Julia Silge posted this tutorial walking users through a package developed by her and David Robinson (both great Twitter follows if you’re into that sort of thing). This post walks us through the magic of the tidytext package, some great things you can do with it, and was the inspiration and starting point for me in tidytext. I didn’t want to just mimic Julia’s great post, I was hoping to add my own little twist to it. Julia decided to look at a corpus of books by Jane Austen, looking at the sentiment arc of some of her novels. Speeches were my answer. Speeches, in my mind, could be some of the most sentiment rich text options around. But where to find some good ones?
+
+**Getting the Speeches
+
+Before we start here is a link to the public gist with the full code.
+
+I found a website that seems to have a good list of speeches called The History Place. Not exactly a government run, sources cited sort of website, but it will do. Why don’t we start with the rvest package to grab a few of those speeches. First the packages
+
+```{r}
+library(rvest)
+library(tidytext)
+library(dplyr)
+library(stringr)
+library(tidyr)
+library(ggplot2)
+library(viridis)
+library(ggthemes)
+```
+
+Now the speeches. We will feed the main list page url into rvest to grab the href elements of the links on the page.
+
+```{r}
+url<-read_html('http://www.historyplace.com/speeches/previous.htm')
+
+urls <- url %>% 
+ html_nodes("a")%>%
+ html_attr('href')
+
+name <- url %>% 
+ html_nodes("font a")%>%
+ html_text()%>%
+ str_replace_all( "[\n]" , "")
+``` 
+
+Now we have two variables, one with the page URl, and one with the name from the link. We don’t really want all of them so let’s grab some arbitrary number, like 40. Then create our data frame that has all the information we need to get the individual speeches, including the link rvest will follow, by pasting the URL to the specific speech URL.
+
+```{r}
+rurls<-head(urls,40)%>%unlist()
+rname<-head(name,40)
+data<-data.frame(urls=rurls,name=rname,stringsAsFactors = F)
+data$link<-paste0('http://www.historyplace.com/speeches/',data$urls)
+```
+
+Finally we can use a loop to follow the links in the data frame we created and grab all our speeches!
+
+```{r}
+#get the speeches
+speeches<-NULL
+for(i in 1:nrow(data)){
+ speech <- data$link[i] %>% 
+ read_html() %>% 
+ html_nodes("p")%>%
+ html_text()
+ speechwords<-unlist(strsplit(speech," "))
+ line_number<-1:length(speechwords)
+ size<-length(speechwords)
+ name<-data$name[i]
+ indiv.speeches <-data.frame(word=speechwords,line_number,name,size,stringsAsFactors = FALSE)
+ speeches<-rbind(speeches,indiv.speeches)
+}
+```
+
+***Trimming things down
+
+Now that we have a decent collection of speeches I would say we want to compare some of the longer speeches. This isn’t really a necessity but I think it may be easier to see the arc of sentiment in speeches if there is a longer narrative time (length).
+
+```{r}
+#big speeches
+big.speeches<-filter(speeches,size>2000)
+```
+
+Now we can tidy! As I mentioned before Julia’s post was extremely helpful in learning how to properly leverage the tidytext package to easily tidy up the text. So we first will use the “unnest_tokens” function which helps us isolate the word tokens. Then using the magical properties of the pipe %>% we remove the stop words compiled in the tidytext package.
+
+```{r}
+tidy.speeches<-big.speeches %>% unnest_tokens(word,word)
+data("stop_words")
+tidy.speeches <- tidy.speeches %>% anti_join(stop_words)
+tidy.speeches %>% count(word, sort = TRUE)
+tidy.speeches$name<- gsub("\\s+"," ",tidy.speeches$name)
+#make last df
+bing<-get_sentiments(lexicon = c("bing"))
+speech.sentiment <- tidy.speeches %>%
+ inner_join(bing) %>% 
+ count(name, index = line_number %/% 80, sentiment) %>% 
+ spread(sentiment, n, fill = 0) %>% 
+ mutate(sentiment = positive - negative)
+```
+
+Finally we can work with sentiment
+
+```{r speeches, fig.path='../', dev='svg',include=FALSE}
+#plot a speech
+ggplot(speech.sentiment[1:62,], aes(index, sentiment, color = name)) +
+ geom_line(stat = "identity", show.legend = FALSE) +
+ theme_minimal(base_size = 13) +
+ labs(title = speech.sentiment[1:62,]$name, y = "Sentiment") +
+ scale_color_viridis(end = 0.75, discrete=TRUE, direction = -1,option = 'C') +
+ scale_x_discrete(expand=c(0.02,0)) +
+ theme(strip.text=element_text(hjust=0)) +
+ theme(strip.text = element_text(face = "italic")) +
+ theme(axis.title.x=element_blank()) +
+ theme(axis.ticks.x=element_blank()) +
+ theme(axis.text.x=element_blank())
+```
+
+Then plot!
+
+```{r fig.width=7.5, fig.height=10}
+ggplot(speech.sentiment, aes(index, sentiment, color = name)) +
+ geom_line(stat = "identity", show.legend = FALSE) +
+ facet_wrap(~name, ncol = 2, scales = "free_x") +
+ theme_minimal(base_size = 13) +
+ labs(title = "Sentiment in Famous Speeches", y = "Sentiment") +
+ scale_color_viridis(end = 0.75, discrete=TRUE, direction = -1,option = 'C') +
+ scale_x_discrete(expand=c(0.02,0)) +
+ theme(strip.text=element_text(hjust=0)) +
+ theme(strip.text = element_text(face = "italic")) +
+ theme(axis.title.x=element_blank()) +
+ theme(axis.ticks.x=element_blank()) +
+ theme(axis.text.x=element_blank())
+
+```
+
+

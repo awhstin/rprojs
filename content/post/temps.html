@@ -1,0 +1,41 @@
+---
+title: "How To: Multiple Plots on a Single Panel in R"
+author: "@awhstin"
+date: 2015-07-23T21:13:14-05:00
+categories: ["R"]
+titleimg: "multi-1"
+---
+
+
+
+UPDATE: I had mentioned that I did not believe ggplot2 was the right route for the four panel style presentation but see the <a href="http://www.r-bloggers.com/world-map-panel-plots-with-ggplot2-2-0-ggalt/">R-Bloggers post</a> on how to achieve it with ggplot2 and ggalt.
+</blockquote>
+<p>It has been awhile since I have posted a tutorial, or anything for that matter, on my website so I decided to revisit some data from my old post, <a href="http://www.austinwehrwein.com/academic-2/1700s-shipping-logs/">Shipping Data</a>.</p>
+If you recall in that quick little visualization I just wanted to plot this great new data set. It was just a snapshot of the area with the most action but I really didn’t dive too deeply into the data. There was a time crunch I was dealing with that really limited my interest into the post which is why it was such a brief and fairly simple post.
+<blockquote>
+This new post is two-fold. I want to revisit and give a little more of the sample code and data I used, as well as a useful little addition for the business users who read this.
+</blockquote>
+<p>One of the most useful things I have found in business applications of R is the ability to plot multiple graphs on a single panel. Which I will detail in this post after we get some data to work with.</p>
+<p>First you will need the CLIWOC data I have messed with, <a href="http://www.austinwehrwein.com/wp-content/uploads/2015/12/CLIWOC15.csv">CLIWOC15</a>.</p>
+<p>Then you will want the shapefile I used to create the minimalist plot which can be downloaded from <a href="http://www.naturalearthdata.com/downloads/10m-cultural-vectors/roads/">these blue letters</a>. The reason I wanted to use these shapefiles instead of leveraging the google street maps and other really easy R mapping tools is because of design preferences. Too many times have I seen what could have been a decent chance at a touch of character and design in data presentation fall by the wayside to ease and quick production. I really like the simple contrast and colors against the minimalist maps.</p>
+<p>Great let’s start:</p>
+<p><em>You may download the full R code from my <a href="https://github.com/awhstin/Rdataviz.git" target="_blank">Github</a> called MultiMap.</em></p>
+<p>First you will need to download or select the<strong> Maptools</strong> Package and instantiate the CSV you have downloaded.</p>
+<pre class="r"><code>spain&lt;-fm[fm$Nation==&quot;Spain&quot;,]
+france&lt;-fm[fm$Nation==&quot;France&quot;,]
+nether&lt;-fm[fm$Nation==&quot;Nederland&quot;,]
+uk&lt;-fm[fm$Nation==&quot;United Kingdom&quot;,]</code></pre>
+<p>Great! We now have points for our plots. Now we will use a function from our package we called in to read our shapefile we downloaded.</p>
+<p>But since the object of this post is to arm the reader with the ability to plot multiple graphs on a single panel first we will use the par() function (layout can also be used) to create our panel dimensions. As you can see you can set the dimensions with the “2,2” values, say you wanted 3,3 or even 2,3. Now we will start with the plotting on our panel. The order is specifically important as you need to plot the points after each plot instance to match them with the right chart.</p>
+<pre class="r"><code>old.par &lt;- par(mfrow=c(2, 2))
+plot(shape,lwd=.3, main=&quot;Spain&quot;)
+points(spain$Lon3,spain$Lat3,cex=.01, pch=19, col=&quot;red4&quot;)
+plot(shape,lwd=.3, main=&quot;France&quot;)
+points(france$Lon3,france$Lat3,cex=.01, pch=19, col=&quot;royalblue4&quot;)
+plot(shape,lwd=.3, main=&quot;Nederland&quot;)
+points(nether$Lon3,nether$Lat3,cex=.01, pch=19, col=&quot;sienna1&quot;)
+plot(shape,lwd=.3, main=&quot;United Kingdom&quot;)
+points(uk$Lon3,uk$Lat3,cex=.01, pch=19, col=&quot;gray78&quot;)</code></pre>
+<p><img src="/post/temps_files/figure-html/unnamed-chunk-3-1.png" width="768" /></p>
+<p>This resulting panel gives a little more information about where certain Nations were shipping to and from in the 1750’s to 1855. This data will be a lot more fun once I start delving into the full dataset but I thought it deserved another project.</p>
+<p>The practical uses of multiple R plots has been illustrated by <a href="http://www.r-bloggers.com/">R-Bloggers</a>. I have used it many times in my job to present a snapshot of data in a dashboard style format which is very popular now in the corporate world. This image below was an example of this with multiple charts types, found on the aforementioned R-Bloggers website.</p>

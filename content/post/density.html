@@ -1,0 +1,59 @@
+---
+title: "Creating a Density Map in R with ZIP codes"
+author: "@awhstin"
+date: 2015-07-23T21:13:14-05:00
+categories: ["R"]
+titleimg: "pie-1"
+---
+
+
+
+<div id="r-markdown" class="section level3">
+<h3>R Markdown</h3>
+<p>Below is a tutorial that helps take ZIP code data and, with R, get rough latitude and longitude data from them as well as County. Then using ggplot2 we can create a nice visual of the data plotted at the county level. The first section was written as part of a larger project and I like to keep it around as it was one of the first tutorials on this website. The latter part though is being continually updated because my ability and the availability of new packages in R are always changing.</p>
+<p>First we will need a file with some ZIP code data. Let’s visit the USDA Local Food Directories page via the link below and get some Farmer’s Market Data.</p>
+<p>U.S. Farmer’s Markets.</p>
+<p>Directly below the table there is an ‘Export to Excel’ button. Which we can download and load directly into R using read.csv which gets us something looking like this. (With many more columns)</p>
+<p>Now that we have that loaded we can start exploring some of the data. This post, because it was written so long ago, stopped at just plotting the csv points to a map, we are going to do a little more now. But we still want to get the latitude and longitude for the ZIP codes. So let’s start with getting a count of markets by ZIP, then merging our ZIP codes data with those counts. Make sure to have the packages at the top installed.</p>
+<pre class="r"><code>library(zipcode)
+library(tidyverse)
+library(maps)
+library(viridis)
+library(ggthemes)
+library(albersusa)#installed via github
+#data
+fm&lt;-Export &lt;- read_csv(&quot;~/Downloads/Export (1).csv&quot;)#the file we just downloaded
+data(zipcode)
+fm$zip&lt;- clean.zipcodes(fm$zip)
+#size by zip
+fm.zip&lt;-aggregate(data.frame(count=fm$FMID),list(zip=fm$zip,county=fm$County),length)
+fm&lt;- merge(fm.zip, zipcode, by=&#39;zip&#39;)</code></pre>
+<p>Great! Now we have a dataframe that contains the ZIP code, a count of the farmer’s markets, the city, state latitude and longitude. So we want to map this, to show all of our farmer’s markets by ZIP, and we will use the viridis package for the color scale. *Update: If you have been here before you will notice the base plot has changed, I wanted to update it to make the whole thing look a bit better.</p>
+<pre class="r"><code>us&lt;-map_data(&#39;state&#39;)
+
+ggplot(fm,aes(longitude,latitude)) +
+  geom_polygon(data=us,aes(x=long,y=lat,group=group),color=&#39;gray&#39;,fill=NA,alpha=.35)+
+  geom_point(aes(color = count),size=.15,alpha=.25) +
+  xlim(-125,-65)+ylim(20,50)</code></pre>
+<p><img src="/post/density_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="expanding-on-this-idea" class="section level1">
+<h1>Expanding on this idea</h1>
+<p>UPDATE: One problem I have is whether or not to revisit old posts. One view I have is that it was the extent of my knowledge at the time and the other is that it is a tutorial and I should improve on them when I can. Cue the recent emails and comments about expanding the graph to include Alaska, Hawaii, as well as less cumbersome code and here we are. Luckily with a couple more lines and an additional package or two we can make an updated and better looking map.</p>
+<pre class="r"><code>fm.counties&lt;-aggregate(fm$count,by=list(fm$county,fm$state),sum)
+names(fm.counties)[1:2]&lt;-c(&#39;county&#39;,&#39;state&#39;)
+cty_sf &lt;- counties_sf(&quot;aeqd&quot;)
+cty_sf$county&lt;-as.character(cty_sf$name)
+cty_sf$state&lt;-as.character(cty_sf$iso_3166_2)
+data.fm&lt;-left_join(cty_sf,fm.counties,by=c(&#39;state&#39;,&#39;county&#39;))
+data.fm$x&lt;-log(data.fm$x)
+data.fm$x[is.na(data.fm$x)]&lt;-0</code></pre>
+<p>Now we plot, and with the data from albersusa we joined to the farmer’s market data we can use the new geom_sf (if you are having trouble try installing the dev version of ggplot2 via github).</p>
+<pre class="r"><code>data.fm %&gt;%
+  ggplot(aes(fill = x, color = x)) + 
+  geom_sf() + 
+  scale_fill_viridis(option = &quot;B&quot;,direction=-1) + 
+  scale_color_viridis(option = &quot;B&quot;,direction=-1) +
+  theme_map(base_size=11)</code></pre>
+<p><img src="/post/density_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
