@@ -1,6 +1,6 @@
 theme = "hugo-theme-blueberry-detox"
 title='Austin Wehrwein'
-baseurl = "http://replace-this-with-your-hugo-site.com/"
+baseurl = "https://awhstin.netlify.com/"
 
 [params]
     # Sets the meta tag description, usually reserved for the main page
