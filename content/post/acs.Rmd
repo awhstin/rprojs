@@ -10,7 +10,7 @@ I guess what turned into one post about ACS data is now an installment series. T
 
 I have posted a couple times about working with ACS data in R, mainly via the <code class="language-r">acs</code> package. The first time I wrote nearly a novel about <a href="http://www.austinwehrwein.com/tutorials/navigating-mapping-with-the-acs-package/" target="_blank">household income in Nebraska</a> and retrieving that data. The second time was using new found knowledge to get <a href="http://www.austinwehrwein.com/tutorials/update-mapping-acs/" target="_blank">household income over $200k</a> for the U.S. with some updated aesthetic elements. Some of the complications I ran into those first tutorials were with the data pull. The resulting pull from the API creates an acs object which to me are unwieldy at times, which is only one of many places where <code class="language-r">tidycensus</code> excels. 
 
-<h5>Before you start please get your <a href="http://api.census.gov/data/key_signup.html." target="_blank">API Key</a> for the Census Bureau Data API.</h5>
+Before you start please get your <a href="http://api.census.gov/data/key_signup.html." target="_blank">API Key</a> for the Census Bureau Data API.
 
 ```{r, message=FALSE, warning=FALSE}
 library(albersusa)
