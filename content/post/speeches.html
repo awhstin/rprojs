@@ -13,24 +13,14 @@ titleimg: "speeches-1"
 <p>**Getting the Speeches</p>
 <p>Before we start here is a link to the public gist with the full code.</p>
 <p>I found a website that seems to have a good list of speeches called The History Place. Not exactly a government run, sources cited sort of website, but it will do. Why don’t we start with the rvest package to grab a few of those speeches. First the packages</p>
-<pre class="r"><code>library(rvest)</code></pre>
-<pre><code>## Loading required package: xml2</code></pre>
-<pre class="r"><code>library(tidytext)
-library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(stringr)
+<pre class="r"><code>library(rvest)
+library(tidytext)
+library(dplyr)
+library(stringr)
 library(tidyr)
 library(ggplot2)
-library(viridis)</code></pre>
-<pre><code>## Loading required package: viridisLite</code></pre>
-<pre class="r"><code>library(ggthemes)</code></pre>
+library(viridis)
+library(ggthemes)</code></pre>
 <p>Now the speeches. We will feed the main list page url into rvest to grab the href elements of the links on the page.</p>
 <pre class="r"><code>url&lt;-read_html(&#39;http://www.historyplace.com/speeches/previous.htm&#39;)
 
@@ -69,9 +59,8 @@ big.speeches&lt;-filter(speeches,size&gt;2000)</code></pre>
 <p>Now we can tidy! As I mentioned before Julia’s post was extremely helpful in learning how to properly leverage the tidytext package to easily tidy up the text. So we first will use the “unnest_tokens” function which helps us isolate the word tokens. Then using the magical properties of the pipe %&gt;% we remove the stop words compiled in the tidytext package.</p>
 <pre class="r"><code>tidy.speeches&lt;-big.speeches %&gt;% unnest_tokens(word,word)
 data(&quot;stop_words&quot;)
-tidy.speeches &lt;- tidy.speeches %&gt;% anti_join(stop_words)</code></pre>
-<pre><code>## Joining, by = &quot;word&quot;</code></pre>
-<pre class="r"><code>tidy.speeches %&gt;% count(word, sort = TRUE)</code></pre>
+tidy.speeches &lt;- tidy.speeches %&gt;% anti_join(stop_words)
+tidy.speeches %&gt;% count(word, sort = TRUE)</code></pre>
 <pre><code>## # A tibble: 5,540 x 2
 ##         word     n
 ##        &lt;chr&gt; &lt;int&gt;
@@ -94,7 +83,6 @@ speech.sentiment &lt;- tidy.speeches %&gt;%
  count(name, index = line_number %/% 80, sentiment) %&gt;% 
  spread(sentiment, n, fill = 0) %&gt;% 
  mutate(sentiment = positive - negative)</code></pre>
-<pre><code>## Joining, by = &quot;word&quot;</code></pre>
 <p>Finally we can work with sentiment</p>
 <p>Then plot!</p>
 <pre class="r"><code>ggplot(speech.sentiment, aes(index, sentiment, color = name)) +

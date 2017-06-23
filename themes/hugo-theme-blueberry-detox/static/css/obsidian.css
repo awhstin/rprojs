@@ -6,10 +6,10 @@
 .hljs {
   display: block;
   overflow-x: auto;
-  padding: 0.5em;
+  padding: 0.25em;
   background-color: #444444;
   font-family: Inconsolata;
-  font-size:12px;
+  font-size:14px!important;
   font-weight:bold;
 }
 

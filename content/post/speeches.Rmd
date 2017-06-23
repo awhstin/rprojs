@@ -16,7 +16,7 @@ Before we start here is a link to the public gist with the full code.
 
 I found a website that seems to have a good list of speeches called The History Place. Not exactly a government run, sources cited sort of website, but it will do. Why don’t we start with the rvest package to grab a few of those speeches. First the packages
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(rvest)
 library(tidytext)
 library(dplyr)
@@ -29,7 +29,7 @@ library(ggthemes)
 
 Now the speeches. We will feed the main list page url into rvest to grab the href elements of the links on the page.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 url<-read_html('http://www.historyplace.com/speeches/previous.htm')
 
 urls <- url %>% 
@@ -44,7 +44,7 @@ name <- url %>%
 
 Now we have two variables, one with the page URl, and one with the name from the link. We don’t really want all of them so let’s grab some arbitrary number, like 40. Then create our data frame that has all the information we need to get the individual speeches, including the link rvest will follow, by pasting the URL to the specific speech URL.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 rurls<-head(urls,40)%>%unlist()
 rname<-head(name,40)
 data<-data.frame(urls=rurls,name=rname,stringsAsFactors = F)
@@ -53,7 +53,7 @@ data$link<-paste0('http://www.historyplace.com/speeches/',data$urls)
 
 Finally we can use a loop to follow the links in the data frame we created and grab all our speeches!
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 #get the speeches
 speeches<-NULL
 for(i in 1:nrow(data)){
@@ -74,14 +74,14 @@ for(i in 1:nrow(data)){
 
 Now that we have a decent collection of speeches I would say we want to compare some of the longer speeches. This isn’t really a necessity but I think it may be easier to see the arc of sentiment in speeches if there is a longer narrative time (length).
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 #big speeches
 big.speeches<-filter(speeches,size>2000)
 ```
 
 Now we can tidy! As I mentioned before Julia’s post was extremely helpful in learning how to properly leverage the tidytext package to easily tidy up the text. So we first will use the “unnest_tokens” function which helps us isolate the word tokens. Then using the magical properties of the pipe %>% we remove the stop words compiled in the tidytext package.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 tidy.speeches<-big.speeches %>% unnest_tokens(word,word)
 data("stop_words")
 tidy.speeches <- tidy.speeches %>% anti_join(stop_words)
@@ -98,7 +98,7 @@ speech.sentiment <- tidy.speeches %>%
 
 Finally we can work with sentiment
 
-```{r speeches, fig.path='../', dev='svg',include=FALSE}
+```{r speeches, fig.path='../', message=FALSE, warning=FALSE, dev='svg', include=FALSE}
 #plot a speech
 ggplot(speech.sentiment[1:62,], aes(index, sentiment, color = name)) +
  geom_line(stat = "identity", show.legend = FALSE) +
@@ -115,7 +115,7 @@ ggplot(speech.sentiment[1:62,], aes(index, sentiment, color = name)) +
 
 Then plot!
 
-```{r fig.width=7.5, fig.height=10}
+```{r fig.width=7.5, fig.height=10, message=FALSE, warning=FALSE}
 ggplot(speech.sentiment, aes(index, sentiment, color = name)) +
  geom_line(stat = "identity", show.legend = FALSE) +
  facet_wrap(~name, ncol = 2, scales = "free_x") +
