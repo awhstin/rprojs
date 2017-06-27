@@ -10,14 +10,13 @@
   background-color: #444444;
   font-family: Inconsolata;
   font-size:14px!important;
-  font-weight:bold;
 }
 
 .hljs-keyword,
 .hljs-selector-tag,
 .hljs-literal,
 .hljs-selector-id {
-  color:#72bcd4;
+  color:#eb2d3a;
 }
 
 .hljs-number {
@@ -31,7 +30,7 @@
 }
 
 .hljs-attribute {
-  color: #eb2d3a;
+  color: #72bcd4;
 }
 
 .hljs-code,
