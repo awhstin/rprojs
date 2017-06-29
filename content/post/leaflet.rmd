@@ -1,0 +1,67 @@
+---
+title: "Testing Leaflet & Blogdown"
+author: "@awhstin"
+date: 2017-05-10T21:13:14-05:00
+categories: ["R","dataviz"]
+titleimg: NA
+---
+<h2><a href="https://xkcd.com/523/" target="_blank">Graph!?</a> more like art</h2>
+Every once in a while, I run into an article with some data that really intrigues me, and sometimes I run into a data visualization that makes me think, "How can I do something like that?" Sometimes they both happen simultaneously and I have to drop everything to start working on it. That happened to me with the 538 <a href="https://fivethirtyeight.com/features/the-most-conservative-and-most-liberal-elite-law-schools/" target="_blank">article</a>, <strong>The Most Conservative And Most Liberal Elite Law Schools</strong>. Their visualization titled 'The Wide-Ranging Politics of Elite Law Schools' was something that immediately drew me in. 
+
+I spent a decent amount of time but did not arrive at anything I was too excited about. Then a couple months ago I ran across a <a href="https://twitter.com/AndriyGazin" target="_blank">@AndriyGazin</a> tweet about his remake of the very same plot! I decided to take a page out of his book and offer my approach. He has some great files to work off of on his <a href="https://github.com/andriy-gazin/weatherviz" target="_blank">GitHub</a> if you want to harvest your weather data. But in the interest of time, I just used a bit of data I had around. 
+
+<a href="https://drive.google.com/open?id=0ByOfjCmqEilLYndpOWJyZXhPVUk" target="_blank">Download CSV</a> of temps in Lincoln, NE.
+
+<h2>Code</h2>
+
+I think Andriy was going for more of a reproduction and, while I think he did a great job, I wanted to add some spins to it. The main element I wanted to add was the median label that would appear within the density shape. I thought this would add a nice minimal but important aspect. One note that; if you are going to use the CSV I provided, just delete the '#' and work from there. Here I create the month labels and the factor to help order the months. 
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(maps)
+library(tm) #really just for the removeWords function
+library(leaflet)
+library(RColorBrewer)
+
+uk.cities<-read.csv('http://biostall.com/wp-content/uploads/2012/11/towns.csv',stringsAsFactors = F,col.names = c('x','cities'))
+data('us.cities')
+us.cities$cities<-removeWords(us.cities$name,paste0(' ',us.cities$country.etc))
+
+#polygons
+mapStates <-  map("state", fill = TRUE, plot = FALSE)
+us.cities$flag<-if_else(us.cities$cities %in% uk.cities$cities,1,0)
+```
+Now one of the interesting aesthetic pieces of this plot is the scale that spans the entirety of the data. Especially in this example where you can see the temperatures as they occur during the month, along with the general trend. To do this we will first grab quick minimum and maximum values. Then we will aggregate the month data to find the median temperature of the median temperatures for the median line. After getting that we can just merge the original data and the aggregated data for ease in plotting. 
+```{r, message=FALSE, warning=FALSE}
+
+#fills
+stvalues<-aggregate(us.cities$flag,by=list(state=us.cities$country.etc),sum)
+matches<-NULL
+matches<-data.frame(mapStates[4],stringsAsFactors = F)
+matches$names<-gsub(':.*','',matches$names)
+matches$state<-state.abb[match(matches$names,tolower(state.name))]
+matches<-left_join(matches,stvalues,by='state')
+matches$x[is.na(matches$x)]<-0
+mapStates[5]<-list(matches$x)
+names(mapStates)[5]<-'value'
+```
+Once merged it is time for plotting. The <code>geom_density</code> aspect provides the main plot element, and the <code>geom_vline</code> is the median line that we calculated. The <code>geom_text</code> causes our plot element that I mentioned before to appear at the median value we calculated just above 0. Our original minimum and maximum calculations provide the scale. Then, all that's left is to make changes to the aesthetics. Finally, the always stellar <code>theme_ipsum</code> from the 'hrbrthemes' package helps with the rest. 
+```{r}
+
+#palette
+factpal<-colorFactor(brewer.pal(n = 9, name ="Blues"), mapStates$value) 
+
+#plot
+leaflet(us.cities) %>% 
+  addProviderTiles('Esri.WorldGrayCanvas') %>%
+  setView(lng = -99.29, lat = 41.1987, zoom = 4)%>%
+  addPolygons(data=mapStates,fillColor =~factpal(value),stroke = T,color='#dedede',opacity=.9,weight=.25,fillOpacity = .6)%>%
+  addCircleMarkers(~long, ~lat,radius=ifelse(us.cities$flag!=1,1,NA),color='#c4ccdb',popup=us.cities$name,group='All')%>%
+  addCircleMarkers(~long, ~lat,radius=ifelse(us.cities$flag!=1,NA,2),color='#192237',popup=us.cities$name,group='British')%>%
+  addLayersControl(overlayGroups=c('British','All'))%>% hideGroup("All")
+```
+Some may notice that I did not go for one of the more striking aspects from Andriy's work, or from the original for that matter. I decided not to go for the overlapping values for a couple reasons, but mainly because I am not sure what value it offers. I am sure someone could convince me otherwise, but I was always taught that visualizations should feature normality in aesthetics so the abnormality in the data is easier to see. I would enjoy hearing thoughts on this matter but, as always, thanks for taking a look. 
+
+
+
+

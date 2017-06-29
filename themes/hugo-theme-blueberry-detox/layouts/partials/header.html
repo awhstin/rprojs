@@ -1,13 +1,50 @@
     <header id="site-header">
+                 <ul id="navbar" class='nav'>
+	<li><a href="http://www.austinwehrwein.com/about/" target="_blank">about</a></li>
+	<li><a href="http://www.austinwehrwein.com/"  target="_blank">main</a></li>
+	<li><a href="https://github.com/awhstin/rprojs/"  target="_blank">github</a></li>
+	<li>
+                        {{ with .Site.Params.twitter }}
+                            <a class="button-square button-social hint--top" data-hint="Twitter" title="Twitter" href="{{ . }}">
+                                <i class="fa fa-twitter"></i>
+                            </a>
+                            </li>
+                        {{ end }}
+                        
+                        <li>
+                        {{ with .Site.Params.github }}
+                            <a class="button-square button-social hint--top" data-hint="Github" title="Github" href="{{ . }}">
+                                <i class="fa fa-github-alt"></i>
+                            </a>
+                            </li>
+                        {{ end }}
+                        <li>
+                        {{ with .Site.Params.stackoverflow }}
+                            <a class="button-square button-social hint--top" data-hint="Stack Overflow" title="Stack Overflow" href="{{ . }}">
+                                <i class="fa fa-stack-overflow"></i>
+                            </a>
+                            </li>
+                        {{ end }}
+                        <li>
+                        {{ with .Site.Params.linkedin }}
+                            <a class="button-square button-social hint--top" data-hint="LinkedIn" title="LinkedIn" href="{{ . }}">
+                                <i class="fa fa-linkedin"></i>
+                            </a>
+                            </li>
+                        {{ end }}
+                        <li>
+                        {{ with .Site.Params.email }}
+                            <a class="button-square button-social hint--top" data-hint="Email" title="Email" href="mailto:{{ . }}">
+                                <i class="fa fa-envelope"></i>
+                            </a>
+                        {{ end }}
+                        </li>
+                    </div>
+</ul>
+</div>
         <div class="container">
             <a href="{{ .Site.BaseURL }}" alt="{{ .Site.Title }}"><h1 class="blog-title">{{ .Site.Title }}</h1></a>
             <h4 class="blog-description">{{ .Site.Params.description }}</h4>
             <div class='container'>
-           <ul id="navbar" class='nav'>
-	<li><a href="http://www.austinwehrwein.com/about/" target="_blank">about</a></li>
-	<li><a href="http://www.austinwehrwein.com/"  target="_blank">main</a></li>
-	<li><a href="https://github.com/awhstin/rprojs/"  target="_blank">github</a></li>
-</ul>
-</div>
-
+              <hr>
     </header>
