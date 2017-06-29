@@ -52,7 +52,7 @@ graph&lt;-graph_from_data_frame(batman)
 V(graph)$degree&lt;-degree(graph)</code></pre>
 <p>Data! Now the part I wanted to get to when I started this thing, the plot. If you are a part of the Twitter-verse I suggest giving the <code class="language-r">ggraph</code> creator, <a href="https://twitter.com/thomasp85" target="_blank"><span class="citation">@thomasp85</span></a>, a follow. Great thoughts and posts about the #rstats community and the tweets were ultimately what made me want to give his package a try. This is the section where the beginning quote, a retro Robin-style <a href="https://en.wikipedia.org/wiki/List_of_exclamations_by_Robin" target="_blank">exclamation</a>, comes from. As I was learning and messing with the package I ran into problems with making the plot look how I wanted. So to create visual differences from the episode, and the character itself, I started using <code class="language-r">ifelse</code> statements. I guess you could say it got out of hand.</p>
 <pre class="r"><code>#prep and plot
-n.names&lt;-grep(&quot;[[:digit:]]&quot;,V(graph)$name,value=T)
+n.names&lt;-grep(&quot;[[:digit:]]&quot;,V(graph)$name,value=T)  
 
 ggraph(graph,layout=&#39;fr&#39;) + 
   geom_edge_link(aes(colour = factor(season)))+
@@ -67,7 +67,7 @@ ggraph(graph,layout=&#39;fr&#39;) +
                  size=ifelse(V(graph)$name %in% n.names,1.75,2.5),repel = T,check_overlap = T)+
   labs(title=&#39;Batman Villains&#39;,subtitle=&#39;Plotting 37 Batman villains across 3 seasons with\nnode ends representing season &amp; episode number&#39;,
        caption=&#39;ggraph walkthroughs available at: http://www.data-imaginist.com/\n Data from: http://mentalfloss.com/article/60213/visual-guide-all-37-villains-batman-tv-series&#39;)</code></pre>
-<img src="/post/batman_files/figure-html/unnamed-chunk-4-1.svg" width="960" style="display: block; margin: auto;" /> Great! The villains are the white nodes with labels. There are spots where all of the edges converge without a white node which are the origins of each season. I think there are more than a few interesting things looking at the data now that it is plotted. The first is the different characters who made single season, or single episode appearances vs. those in multiple. The classic Joker and Penguin are interesting as they are seen in all the seasons. I know these to be classic villains, but what is surprising is King Tut. Though not in as many episodes he did appear in at least two episodes a season.
+<img src="/post/batman_files/figure-html/unnamed-chunk-4-1.svg" width="75%" height="75%" /> Great! The villains are the white nodes with labels. There are spots where all of the edges converge without a white node which are the origins of each season. I think there are more than a few interesting things looking at the data now that it is plotted. The first is the different characters who made single season, or single episode appearances vs. those in multiple. The classic Joker and Penguin are interesting as they are seen in all the seasons. I know these to be classic villains, but what is surprising is King Tut. Though not in as many episodes he did appear in at least two episodes a season.
 <h4>
 So maybe the question we can answer after all this is when are we getting a Christopher Nolan film with King Tut?
 </h4>

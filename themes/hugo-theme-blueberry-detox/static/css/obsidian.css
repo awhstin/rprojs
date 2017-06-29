@@ -10,7 +10,6 @@
   background-color: #444444;
   font-family: Inconsolata;
   font-size:14px!important;
-  font-weight:bold;
 }
 
 .hljs-keyword,
@@ -27,11 +26,10 @@
 .hljs {
   color: #fff;
   font-size:12px;
-  font-weight:bold;
 }
 
 .hljs-attribute {
-  color: #eb2d3a;
+  color: #72bcd4;
 }
 
 .hljs-code,
@@ -67,7 +65,7 @@
 
 .hljs-string,
 .hljs-symbol {
-  color: #f2476a;
+  color: #9090ee;
 }
 
 .hljs-comment,

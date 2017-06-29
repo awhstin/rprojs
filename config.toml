@@ -13,7 +13,8 @@ baseurl = "https://awhstin.netlify.com/"
     # set this to the section name if section is not post
     viewMorePostLink     = "/blog/"
     disqusShortname = "newtry"
-
+    google_analytics = "UA-75498340-2"
+    
 # Optional Params
     categoriesByCount    = true
     includeReadingTime   = true
