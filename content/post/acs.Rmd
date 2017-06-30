@@ -20,7 +20,6 @@ library(ggthemes) #just for theme_map()
 library(viridis)
 ```
 ```{r eval=TRUE,include=FALSE}
-library(tidycensus)
 census_api_key("f4d05f3d779c7742e0b12dd248183069d04a423f")
 ```
 ```{r, message=FALSE, warning=FALSE}
