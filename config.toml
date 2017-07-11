@@ -54,3 +54,5 @@ baseurl = "https://awhstin.netlify.com/"
     shareGooglePlus = true
     shareLinkedIn = false
     dateFormat = "Mon, Jan 2, 2006"
+    disqusShortname = "newtry"
+    google_analytics = "UA-75498340-2"
