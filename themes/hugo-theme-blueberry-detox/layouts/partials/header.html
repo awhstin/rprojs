@@ -3,7 +3,9 @@
                  <ul id="navbar" class='nav'>
 	<li><a href="http://www.austinwehrwein.com/about/" target="_blank">about</a></li>
 	<li><a href="http://www.austinwehrwein.com/"  target="_blank">main</a></li>
-	<li><a href="https://github.com/awhstin/rprojs/"  target="_blank">github</a></li>
+	<li><a class="button-square button-social hint--top" href="https://github.com/awhstin/rprojs/" data-hint="Website Repo" title="Website Repo" href="{{ . }}">
+                                <i class="fa fa-code"></i>
+                            </a></li>
 	<li>
                         {{ with .Site.Params.twitter }}
                             <a class="button-square button-social hint--top" data-hint="Twitter" title="Twitter" href="{{ . }}">
