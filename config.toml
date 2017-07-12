@@ -1,6 +1,6 @@
 theme = "hugo-theme-blueberry-detox"
 title='Austin Wehrwein'
-baseurl = "https://awhstin.netlify.com/"
+baseurl = "http://austinwehrwein.com/"
 
 [params]
     # Sets the meta tag description, usually reserved for the main page
@@ -12,7 +12,7 @@ baseurl = "https://awhstin.netlify.com/"
     socialAppearAtBottom = true
     # set this to the section name if section is not post
     viewMorePostLink     = "/blog/"
-    disqusShortname = "newtry"
+    disqusShortname = "austinwehrwein"
     google_analytics = "UA-75498340-2"
 
     # Load custom CSS or JavaScript files. This replaces the deprecated params
@@ -37,7 +37,7 @@ baseurl = "https://awhstin.netlify.com/"
     headline = "Austin Wehrwein"
     description = "Sporadic Data Analysis & Occasional Visualizations with R"
     github = "https://github.com/awhstin"
-    linkedin = "linkedin.com/in/jaustinwehrwein"
+    linkedin = "https://linkedin.com/in/jaustinwehrwein"
     twitter = "https://twitter.com/awhstin"
     opengraph = true
     shareTwitter = true
