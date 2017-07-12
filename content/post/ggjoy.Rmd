@@ -19,7 +19,7 @@ Once you have the package installed from github, go ahead and download this <a h
 library(ggjoy)
 library(hrbrthemes)
 weather.raw$month<-months(as.Date(weather.raw$CST))
-weather.raw$months<-factor(weather.raw$month,levels=unique(weather.raw$month))
+weather.raw$months<-factor(rev(weather.raw$month),levels=rev(unique(weather.raw$month)))
 
 #scales
 mins<-min(weather.raw$Min.TemperatureF)
@@ -31,7 +31,7 @@ To plot I decided to use the always sharp looking <code class="language-r">hrbrt
 ```{r joy, fig.align='center', fig.height=8, fig.path='../', fig.width=10, message=FALSE, warning=FALSE, dev='svg', include=FALSE}
 ggplot(weather.raw,aes(x = Mean.TemperatureF,y=months,height=..density..))+
      geom_joy(scale=3) +
-      scale_x_continuous(limits = c(mins,maxs))+
+     scale_x_continuous(limits = c(mins,maxs))+
   theme_ipsum(grid=F)+
   theme(axis.title.y=element_blank(),
         axis.ticks.y=element_blank(),
@@ -40,7 +40,7 @@ ggplot(weather.raw,aes(x = Mean.TemperatureF,y=months,height=..density..))+
        subtitle='Median temperatures (Fahrenheit) by month for 2016\nData: Original CSV from the Weather Underground')
 ```
 ```{r fig.align='center', fig.height=8,fig.width=10}
-ggplot(weather.raw,aes(x = Mean.TemperatureF,y=`months`,height=..density..))+
+ggplot(weather.raw,aes(x = Mean.TemperatureF,y=months,height=..density..))+
      geom_joy(scale=3) +
       scale_x_continuous(limits = c(mins,maxs))+
   theme_ipsum(grid=F)+

@@ -16,13 +16,13 @@ code
 <pre class="r"><code>library(ggjoy)
 library(hrbrthemes)
 weather.raw$month&lt;-months(as.Date(weather.raw$CST))
-weather.raw$months&lt;-factor(weather.raw$month,levels=unique(weather.raw$month))
+weather.raw$months&lt;-factor(rev(weather.raw$month),levels=rev(unique(weather.raw$month)))
 
 #scales
 mins&lt;-min(weather.raw$Min.TemperatureF)
 maxs&lt;-max(weather.raw$Max.TemperatureF)</code></pre>
 <p>To plot I decided to use the always sharp looking <code class="language-r">hrbrthemes::theme_ipsum</code> and with a few lines we get a really nice looking joy plot. Which for the record is an awesome name, read <a href="https://blogs.scientificamerican.com/sa-visual/pop-culture-pulsar-origin-story-of-joy-division-s-unknown-pleasures-album-cover-video/" target="_blank">this</a>.</p>
-<pre class="r"><code>ggplot(weather.raw,aes(x = Mean.TemperatureF,y=`months`,height=..density..))+
+<pre class="r"><code>ggplot(weather.raw,aes(x = Mean.TemperatureF,y=months,height=..density..))+
      geom_joy(scale=3) +
       scale_x_continuous(limits = c(mins,maxs))+
   theme_ipsum(grid=F)+
