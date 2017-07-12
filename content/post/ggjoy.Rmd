@@ -1,0 +1,52 @@
+---
+title: "It brings me ggjoy"
+author: "@awhstin"
+date: 2017-06-15T21:13:14-05:00
+categories: ["R"]
+titleimg: "joy-1"
+---
+```{r, message=FALSE, warning=FALSE,include=FALSE}
+library(extrafont)
+weather.raw<-read.csv('~/Desktop/austin/nebraska-2016.csv',stringsAsFactors = F)
+```
+Awhile ago I posted about plotting the temperatures of Lincoln Nebraska that was inspired by a FiveThirtyEight article visualization. Well the internet have been abuzz with a new package found on <a href="https://github.com/clauswilke/ggjoy" target="_blank">github</a> by Claus Wilke called <code class="language-r">ggjoy</code>. So I decided to do a quick little post playing with it.
+
+<h3>code</h3>
+
+Once you have the package installed from github, go ahead and download this <a href="https://drive.google.com/file/d/0ByOfjCmqEilLYndpOWJyZXhPVUk/view" target="_blank">csv</a> of the 2016 temperatures in Lincoln, NE. Then we can clean and format it to plot.
+
+```{r, message=FALSE, warning=FALSE}
+library(ggjoy)
+library(hrbrthemes)
+weather.raw$month<-months(as.Date(weather.raw$CST))
+weather.raw$months<-factor(weather.raw$month,levels=unique(weather.raw$month))
+
+#scales
+mins<-min(weather.raw$Min.TemperatureF)
+maxs<-max(weather.raw$Max.TemperatureF)
+```
+
+To plot I decided to use the always sharp looking <code class="language-r">hrbrthemes::theme_ipsum</code> and with a few lines we get a really nice looking joy plot. Which for the record is an awesome name, read <a href="https://blogs.scientificamerican.com/sa-visual/pop-culture-pulsar-origin-story-of-joy-division-s-unknown-pleasures-album-cover-video/" target="_blank">this</a>. 
+
+```{r joy, fig.align='center', fig.height=8, fig.path='../', fig.width=10, message=FALSE, warning=FALSE, dev='svg', include=FALSE}
+ggplot(weather.raw,aes(x = Mean.TemperatureF,y=months,height=..density..))+
+     geom_joy(scale=3) +
+      scale_x_continuous(limits = c(mins,maxs))+
+  theme_ipsum(grid=F)+
+  theme(axis.title.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        strip.text.y = element_text(angle = 180, hjust = 1))+
+  labs(title='Temperatures in Lincoln NE',
+       subtitle='Median temperatures (Fahrenheit) by month for 2016\nData: Original CSV from the Weather Underground')
+```
+```{r fig.align='center', fig.height=8,fig.width=10}
+ggplot(weather.raw,aes(x = Mean.TemperatureF,y=`months`,height=..density..))+
+     geom_joy(scale=3) +
+      scale_x_continuous(limits = c(mins,maxs))+
+  theme_ipsum(grid=F)+
+  theme(axis.title.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        strip.text.y = element_text(angle = 180, hjust = 1))+
+  labs(title='Temperatures in Lincoln NE',
+       subtitle='Median temperatures (Fahrenheit) by month for 2016\nData: Original CSV from the Weather Underground')
+```

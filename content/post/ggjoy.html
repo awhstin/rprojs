@@ -1,0 +1,34 @@
+---
+title: "It brings me ggjoy"
+author: "@awhstin"
+date: 2017-06-15T21:13:14-05:00
+categories: ["R"]
+titleimg: "joy-1"
+---
+
+
+
+<p>Awhile ago I posted about plotting the temperatures of Lincoln Nebraska that was inspired by a FiveThirtyEight article visualization. Well the internet have been abuzz with a new package found on <a href="https://github.com/clauswilke/ggjoy" target="_blank">github</a> by Claus Wilke called <code class="language-r">ggjoy</code>. So I decided to do a quick little post playing with it.</p>
+<h3>
+code
+</h3>
+<p>Once you have the package installed from github, go ahead and download this <a href="https://drive.google.com/file/d/0ByOfjCmqEilLYndpOWJyZXhPVUk/view" target="_blank">csv</a> of the 2016 temperatures in Lincoln, NE. Then we can clean and format it to plot.</p>
+<pre class="r"><code>library(ggjoy)
+library(hrbrthemes)
+weather.raw$month&lt;-months(as.Date(weather.raw$CST))
+weather.raw$months&lt;-factor(weather.raw$month,levels=unique(weather.raw$month))
+
+#scales
+mins&lt;-min(weather.raw$Min.TemperatureF)
+maxs&lt;-max(weather.raw$Max.TemperatureF)</code></pre>
+<p>To plot I decided to use the always sharp looking <code class="language-r">hrbrthemes::theme_ipsum</code> and with a few lines we get a really nice looking joy plot. Which for the record is an awesome name, read <a href="https://blogs.scientificamerican.com/sa-visual/pop-culture-pulsar-origin-story-of-joy-division-s-unknown-pleasures-album-cover-video/" target="_blank">this</a>.</p>
+<pre class="r"><code>ggplot(weather.raw,aes(x = Mean.TemperatureF,y=`months`,height=..density..))+
+     geom_joy(scale=3) +
+      scale_x_continuous(limits = c(mins,maxs))+
+  theme_ipsum(grid=F)+
+  theme(axis.title.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        strip.text.y = element_text(angle = 180, hjust = 1))+
+  labs(title=&#39;Temperatures in Lincoln NE&#39;,
+       subtitle=&#39;Median temperatures (Fahrenheit) by month for 2016\nData: Original CSV from the Weather Underground&#39;)</code></pre>
+<p><img src="/post/ggjoy_files/figure-html/unnamed-chunk-3-1.png" width="960" style="display: block; margin: auto;" /></p>
