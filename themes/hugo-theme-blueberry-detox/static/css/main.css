@@ -252,9 +252,9 @@ h1 {
 a {
     color: #444444;
     text-decoration: none;
-    background-color: #90ee90;
+    border-bottom:  3px solid #90ee90;
+    background: transparent;
     line-height: inherit;
-    outline: 0;
     -webkit-transition: color .1s ease-out;
     -webkit-transition-property: color;
     -webkit-transition-duration: .1s;
@@ -270,8 +270,8 @@ a {
     transition-delay: initial;
 }
 a:hover {
-    color: #90ee90;
-    background-color: #fff;
+   color: #444444;
+    background-color: #c3f6c3 !important;
 }
 p a, p a:visited {
     line-height: inherit;
@@ -658,7 +658,7 @@ article {
     margin-bottom: 4em;
 }
 article.li {
-    margin-bottom: 2em;
+    margin-bottom: 3em;
 }
 @media (max-width: 800px) {
     article {
@@ -670,11 +670,11 @@ article.li {
 }
 .post-header {
     text-align: center;
-    margin-top: 2em;
+    margin-top: 1em;
 }
 .post-title {
     margin-bottom: 40px;
-    margin-top: 40px;
+    margin-top: 10px;
 }
 .post-time {
     text-transform: uppercase;
@@ -817,14 +817,14 @@ a:hover {
     
 	font-weight:  bold;
     
-	color:  #444444;
-    
-  background-color: #dedede;
+	color: #444444;
+    text-decoration: none;
+    border-bottom:  3px solid #90ee90;
+    background: transparent;
     
 }
 #navbar li a: hover  {
     
-	color:  #90ee90;
-    
-	background-color:  #fff;
+ color: #444444;
+    background-color: #c3f6c3;
  }
