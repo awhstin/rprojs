@@ -1,6 +1,6 @@
 theme = "hugo-theme-blueberry-detox"
 title='Austin Wehrwein'
-baseurl = "http://www.austinwehrwein.com/"
+baseurl = "http://austinwehrwein.com/"
 
 [params]
     # Sets the meta tag description, usually reserved for the main page
