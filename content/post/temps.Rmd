@@ -11,7 +11,6 @@ fm<- read.csv("~/Desktop/austin/CLIWOC15.csv", header = TRUE, sep = ",")
 shape <- readShapeLines("~/Desktop/austin/ne_10m_roads.shp")
 ```
 
-
 UPDATE: I had mentioned that I did not believe ggplot2 was the right route for the four panel style presentation but see the <a href="http://www.r-bloggers.com/world-map-panel-plots-with-ggplot2-2-0-ggalt/">R-Bloggers post</a> on how to achieve it with ggplot2 and ggalt.</blockquote>
 It has been awhile since I have posted a tutorial, or anything for that matter, on my website so I decided to revisit some data from my old post.
 
@@ -21,7 +20,7 @@ One of the most useful things I have found in business applications of R is the 
 
 First you will need the CLIWOC data I have messed with, which can be found on the CLIWOC <a href='http://pendientedemigracion.ucm.es/info/cliwoc/'>website</a>.
 
-Then you will want the shapefile I used to create the minimalist plot which can be downloaded from <a href="http://www.naturalearthdata.com/downloads/10m-cultural-vectors/roads/">these blue letters</a>. The reason I wanted to use these shapefiles instead of leveraging the google street maps and other really easy R mapping tools is because of design preferences. Too many times have I seen what could have been a decent chance at a touch of character and design in data presentation fall by the wayside to ease and quick production. I really like the simple contrast and colors against the minimalist maps.
+Then you will want the shapefile I used to create the minimalist plot which can be downloaded from <a href="http://www.naturalearthdata.com/downloads/10m-cultural-vectors/roads/">this link</a>. The reason I wanted to use these shapefiles instead of leveraging the google street maps and other really easy R mapping tools is because of design preferences. Too many times have I seen what could have been a decent chance at a touch of character and design in data presentation fall by the wayside to ease and quick production. I really like the simple contrast and colors against the minimalist maps.
 
 Great let's start:
 
@@ -38,7 +37,7 @@ uk<-fm[fm$Nation=="United Kingdom",]
 
 Great! We now have points for our plots. Now we will use a function from our package we called in to read our shapefile we downloaded.
 
-```{r multi2,fig.path='../',dev='svg',include=F,eval=F}
+```{r multi,fig.path='../',dev='svg',include=F,eval=F}
 plot(shape,lwd=.3, main="Spain")
 points(spain$Lon3,spain$Lat3,cex=.05, pch=19, col="red4")
 ```
