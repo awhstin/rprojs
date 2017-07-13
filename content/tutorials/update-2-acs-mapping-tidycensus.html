@@ -9,7 +9,7 @@ titleimg: "acs-1"
 
 
 <p>I guess what turned into one post about ACS data is now an installment series. The <a href="https://twitter.com/search?q=%23rstats&src=typd" target="_blank">#rstats</a> community is so productive with its output that as I finally figure out the extant of one package someone has made a streamlined, optimized, or shiny new one. Kyle Walker’s new <a href="https://walkerke.github.io/tidycensus/" target="_blank">tidycensus</a> package is the latest in that long line and before you go any further I encourage you to follow the link to read his brief introductions.</p>
-<p>I have posted a couple times about working with ACS data in R, mainly via the <code class="language-r">acs</code> package. The first time I wrote nearly a novel about <a href="http://www.austinwehrwein.com/tutorials/navigating-mapping-with-the-acs-package/" target="_blank">household income in Nebraska</a> and retrieving that data. The second time was using new found knowledge to get <a href="http://www.austinwehrwein.com/tutorials/update-mapping-acs/" target="_blank">household income over $200k</a> for the U.S. with some updated aesthetic elements. Some of the complications I ran into those first tutorials were with the data pull. The resulting pull from the API creates an acs object which to me are unwieldy at times, which is only one of many places where <code class="language-r">tidycensus</code> excels.</p>
+<p>I have posted a couple times about working with ACS data in R, mainly via the <code class="language-r">acs</code> package. But a lot of the complications I ran into those first tutorials were with the data pull and format. The resulting pull from the API creates an acs object which to me are unwieldy at times, which is only one of many places where <code class="language-r">tidycensus</code> excels.</p>
 <p>Before you start please get your <a href="http://api.census.gov/data/key_signup.html." target="_blank">API Key</a> for the Census Bureau Data API.</p>
 <pre class="r"><code>library(albersusa)
 library(tidycensus)
@@ -35,7 +35,7 @@ cty_income%&gt;%
   scale_fill_viridis(option = &quot;inferno&quot;) + 
   scale_color_viridis(option = &quot;inferno&quot;)+
   theme_map(base_size = 11,base_family = &#39;Roboto Condensed&#39;)+labs(title=&#39;Household Income by County&#39;,subtitle=&#39;Median household income from the 2011-2015 ACS&#39;)</code></pre>
-<p><img src="/post/acs_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="/tutorials/update-2-acs-mapping-tidycensus_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>Interesting. It seems like some of the darkest areas correspond with big metropolitan areas. I think it would be more interesting though if we could compare that median household income to something else. Luckily all we have to do is make another pull, this time for table ‘B25105_001’, which corresponds to the median monthly housing costs. Then we just calculate the percent and plot it replacing just the ‘fill’ and ‘color’ elements.</p>
 <pre class="r"><code>cty_income%&gt;%
   ggplot(aes(fill = percent, color = percent)) + 
@@ -43,5 +43,5 @@ cty_income%&gt;%
   scale_fill_viridis(option = &quot;inferno&quot;) + 
   scale_color_viridis(option = &quot;inferno&quot;)+
   theme_map(base_size = 11)+labs(title=&#39;Percent of Household Income Toward Housing Costs&#39;,subtitle=&#39;Median housing costs divided by median household income\nby county from the 2011-2015 ACS&#39;)</code></pre>
-<p><img src="/post/acs_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="/tutorials/update-2-acs-mapping-tidycensus_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>With both of these datasets we can start to get a better picture of how income is spread. Though this is an attempt at a very raw cost of living calculation I think it paints a more interesting picture. It seems that there is a pretty distinct band straight through the middle of the country, I guess you have to pay to live on the coast.</p>
