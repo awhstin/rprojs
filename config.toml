@@ -1,6 +1,6 @@
 theme = "hugo-theme-blueberry-detox"
 title='Austin Wehrwein'
-baseurl = "http://austinwehrwein.com/"
+baseurl = "http://www.austinwehrwein.com/"
 
 [params]
     # Sets the meta tag description, usually reserved for the main page
@@ -45,5 +45,5 @@ baseurl = "http://austinwehrwein.com/"
     shareGooglePlus = true
     shareLinkedIn = false
     dateFormat = "Mon, Jan 2, 2006"
-    disqusShortname = "newtry"
+    disqusShortname = "austinwehrwein"
     google_analytics = "UA-75498340-2"
