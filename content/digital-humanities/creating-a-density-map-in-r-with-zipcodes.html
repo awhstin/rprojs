@@ -11,8 +11,7 @@ titleimg: "pie-1"
 <p>Below is a tutorial that helps take ZIP code data and, with R, get rough latitude and longitude data from them as well as County. Then using <code class="language-r">ggplot2</code> we can create a nice visual of the data plotted at the county level. The first section was written as part of a larger project and I like to keep it around as it was one of the first tutorials on this website. The latter part though is being continually updated because my ability and the availability of new packages in R are always changing.</p>
 <p>First we will need a file with some ZIP code data. Let’s visit the USDA Local Food Directories page via the link below and get some Farmer’s Market Data.</p>
 <p><a href="https://www.ams.usda.gov/local-food-directories/farmersmarkets/" target="_blank">U.S. Farmer’s Markets.</a></p>
-<p>Directly below the table there is an ‘Export to Excel’ button. Which we can download and load directly into R using <code class="language-r">read.csv</code> which gets us something looking like this. (With many more columns)</p>
-<p><img src="http://www.austinwehrwein.com/wp-content/uploads/2014/04/Capture.png" alt="Capture" width="1024" height="464" class="aligncenter size-full wp-image-1816" /></p>
+<p>Directly below the table there is an ‘Export to Excel’ button. Which we can download and load directly into R using <code class="language-r">read.csv</code> which gets us some data to start with.</p>
 <p>Now that we have that loaded we can start exploring some of the data. This post, because it was written so long ago, stopped at just plotting the csv points to a map, we are going to do a little more now. But we still want to get the latitude and longitude for the ZIP codes. So let’s start with getting a count of markets by ZIP, then merging our ZIP codes data with those counts. Make sure to have the packages at the top installed.</p>
 <pre class="r"><code>library(zipcode)
 library(tidyverse)
