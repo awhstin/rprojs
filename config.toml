@@ -2,26 +2,6 @@ theme = "hugo-theme-blueberry-detox"
 title='Austin Wehrwein'
 baseurl = "http://austinwehrwein.com/"
 
-[params]
-    # Sets the meta tag description, usually reserved for the main page
-    description          = "Occasional Data Analysis & Sporadic Visualizations with R"
-    # This will appear on the top left of the navigation bar
-    navbarTitle          = ""
-    # Social media buttons that appear on the sidebar
-    socialAppearAtTop    = true
-    socialAppearAtBottom = true
-    # set this to the section name if section is not post
-    viewMorePostLink     = "/blog/"
-    disqusShortname = "austinwehrwein"
-    google_analytics = "UA-75498340-2"
-
-    # Load custom CSS or JavaScript files. This replaces the deprecated params
-    # minifiedFilesCSS and minifiedFilesJS. The variable is an array so that you
-    # can load multiple files if necessary. You can also load the standard theme
-    # files by adding the value, "default".
-    # customCSS            = ["default", "/path/to/file"]
-    # customJS             = ["default", "/path/to/file"]
-
     # Loading min files for exampleSite
     customCSS            = ["/css/main.css"]
     customCSSP            = ["/css/prism.css"]
