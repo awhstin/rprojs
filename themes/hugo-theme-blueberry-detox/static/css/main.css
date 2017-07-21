@@ -639,7 +639,7 @@ hr {
     border-style: solid;
     padding-top:  20px;
     padding-bottom:  20px;
-    border-color: #b3b3b3;
+    border-color: #b3b3b3!important;
     margin: .55em;
 }
 .blog-description {
