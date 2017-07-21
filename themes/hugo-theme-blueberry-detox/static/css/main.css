@@ -828,3 +828,10 @@ a:hover {
  color: #444444;
     background-color: #c3f6c3;
  }
+ 
+ th{
+   padding:2px 5px 2px 5px;
+ }
+ td{
+   padding:2px 5px 2px 5px;
+ }

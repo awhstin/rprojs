@@ -4,6 +4,7 @@ author: "@awhstin"
 date: 2017-05-10T21:13:14-05:00
 categories: ["R","dataviz"]
 titleimg: "five-1"
+imgtype: "svg"
 ---
 ```{r, message=FALSE, warning=FALSE,include=FALSE}
 weather.raw<-read.csv('~/Desktop/austin/nebraska-2016.csv',stringsAsFactors = F)

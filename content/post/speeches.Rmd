@@ -4,6 +4,7 @@ author: "@awhstin"
 date: 2017-04-20T21:13:14-05:00
 categories: ["R"]
 titleimg: "speeches-1"
+imgtype: "svg"
 ---
 
 When I first started messing with NLP and sentiment analysis, in R, a lot of the tidying was done manually. First you import your text, from some source, be it a flat text file or grab it from somewhere. Then you could tokenize, strip white-space, transform to lowercase, or whatever else you needed to do to set up your data. Times have changed. There are packages for clean data manipulation, there are even packages specifically for sentiment analysis. The tidyverse is ever expanding.

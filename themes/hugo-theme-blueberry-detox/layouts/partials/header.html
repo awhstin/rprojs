@@ -1,7 +1,7 @@
     <header id="site-header">
                  <ul id="navbar" class='nav'>
 	<li><a href="{{ .Site.BaseURL }}">main</a></li>
-	<li><a class="button-square button-social hint--top"  target="_blank" href="https://github.com/awhstin/rprojs/" data-hint="Website Repo" title="Website Repo" href="{{ . }}">
+	<li><a class="button-square button-social hint--top"  target="_blank" href="https://github.com/awhstin/rprojs/" data-hint="Website Repo" title="Website Repo">
                                 <i class="fa fa-code"></i>
                             </a></li>
 	<li>
@@ -39,6 +39,11 @@
                                 <i class="fa fa-envelope"></i>
                             </a>
                         {{ end }}
+                        </li>
+                        <li>
+                            <a class="button-square button-social hint--top" data-hint="Soccer" title="EPL" href="{{ .Site.BaseURL }}soccer/">
+                                <i class="fa fa-signal"></i>
+                            </a>
                         </li>
                     </div>
 </ul>
