@@ -818,9 +818,8 @@ a:hover {
     
 	color: #444444;
     text-decoration: none;
-    border-bottom:  3px solid #90ee90;
+    border-bottom:  transparent;
     background: transparent;
-    
 }
 #navbar li a: hover  {
     
