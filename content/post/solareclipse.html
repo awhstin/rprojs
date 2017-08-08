@@ -1,0 +1,100 @@
+---
+title: "Did you say eclipse?"
+author: "@awhstin"
+date: 2017-08-07T18:13:14-05:00
+categories: ["R",", ","maps"]
+titleimg: "solar-1"
+imgtype: "svg"
+---
+
+
+
+I am not sure if you have heard about it yet but there will be a solar eclipse on 8/21/17. If you are one of a very few people who this is news to, congrats! As the day nears there have been a lot of articles and posts on the subject, with more than a few really awesome visualizations. The unique part about the eclipse is its <a href="http://www.eclipse2017.org/2017/in_the_path.htm">path of totality</a> that cuts through the <a href="https://www.youtube.com/results?search_query=total+eclipse+of+the+heart">heart</a> of the United States. As you can imagine a lot of ArcGIS or javascript interactive maps exist but how creative can you really get with this somewhat limited data?
+<center>
+<blockquote class="twitter-tweet" data-lang="en">
+<p lang="en" dir="ltr">
+“There are no more eclipse maps to make”<br><br>Challenge accepted. <a href="https://t.co/PnFJSXeSiY">pic.twitter.com/PnFJSXeSiY</a>
+</p>
+— Joshua Stevens (<span class="citation">@jscarto</span>) <a href="https://twitter.com/jscarto/status/892933635761995780">August 3, 2017</a>
+</blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+</center>
+<p>Well put. There are a lot of iterations of similar data, but I wanted to take some time to chronicle some examples I really enjoy, and make one with R for myself. The first example is, of course, from FiveThirtyEight. Their article <a href="https://fivethirtyeight.com/features/eclipse-towns-planning/">Two Minutes of Darkness with 20,000 Strangers</a> is all about logistics. First is a striking map of traffic bottlenecks followed by a narrative that is supported by a table describing potential toilets needed for crowds in places. Interesting take.</p>
+<p>The second is actually Google. More specifically Google Trends search data for the <a href="https://trends.google.com/trends/story/US_cu_YdGNpF0BAACx9M_en">eclipse</a>. It was pointed out via many posts (I am not sure which one was the first) that you can actually see the path of the eclipse via search trends. This is interesting to me because maybe it is because of more word-of-mouth mentions of the eclipse drives searching, or most people are informed on the actual path of it. Either way the data is interesting, especially when it is presented in such a striking way.</p>
+<iframe width="100%" height="520" frameborder="0" src="https://googledataorg.carto.com/u/googledata/viz/51003fc8-28bc-4ac8-9d30-3c430a19b0c1/embed_map" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen>
+</iframe>
+Well let’s make a version in R. (Sort of)
+<hr>
+<div id="data-cleaning" class="section level2">
+<h2>data &amp; cleaning</h2>
+<p>We need a couple datasets, and more than a few packages in R. The data is listed below</p>
+<ul>
+<li><a href="">Trend Data</a> via Google Trends</li>
+<li><a href="http://simplemaps.com/data/us-cities">U.S. cities</a> via SimpleMaps</li>
+<li><a href="https://svs.gsfc.nasa.gov/4518">Path of the eclipse</a> via NASA’s Scientific Visualization Studio</li>
+</ul>
+<p>These can also be found <a href="https://github.com/awhstin/solareclipse">here</a> in a special Github repo for this post.</p>
+<pre class="r"><code>library(tidyverse)
+library(fuzzyjoin)
+library(hrbrthemes)
+library(raster)
+
+#trend data
+gtrends&lt;- read_csv(&quot;~/Desktop/solar/geoMap (3).csv&quot;, skip = 2)
+
+#cities
+us_cities &lt;- read_csv(&quot;~/Desktop/solar/uscitiesv1.3.csv&quot;)
+us_cities$name&lt;-paste(us_cities$city,us_cities$state_id)
+
+#shapefile
+path.m&lt;-shapefile(&quot;~/Desktop/solar/center17.shp&quot;)
+path.points&lt;-fortify(path.m)</code></pre>
+<p>If you start to inspect the trend data you’ll see it is by metro area. Instead of plotting it in that form I decided I wanted to match the cities in the metro area, and plot those by the search value. To do this we can use <code>strsplit</code>, but first we have to do a little arranging with <code>dplyr::row_number</code> to make sure the data is matched correctly.</p>
+<pre class="r"><code>#clean
+gtrends$state&lt;-substr(gtrends$DMA,nchar(gtrends$DMA)-1,nchar(gtrends$DMA))
+gtrends&lt;-gtrends%&gt;%
+  arrange(-row_number())%&gt;% #so it all works together
+  mutate(DMA=strsplit(as.character(DMA),&#39;-&#39;))%&gt;%
+  unnest(DMA)
+names(gtrends)[1]&lt;-&#39;count&#39;</code></pre>
+<p>Lastly, because some of the metro areas end with the state, we need to add the state abbreviation to the rest of them. Then using the handy <code>fuzzyjoin::stringdist_left_join</code> to aid us in matching some of those pesky counties that occur in other states and other problems. This is where we take a sharp left off of the paved road onto the beaten path of inaccuracy. There are more than a few errors but at 10:45pm at night I can live with them.</p>
+<pre class="r"><code>#add state
+gtrends$name&lt;-ifelse(substr(gtrends$DMA,nchar(gtrends$DMA)-1,nchar(gtrends$DMA))==gtrends$state,gtrends$DMA,paste(gtrends$DMA,gtrends$state))
+
+#first go
+first&lt;-stringdist_left_join(gtrends,us_cities,by=c(&#39;name&#39;),distance_col=&#39;dist&#39;)
+trends&lt;-subset(first,dist&lt;=0 &amp; state == state_id)</code></pre>
+<hr>
+</div>
+<div id="plot" class="section level2">
+<h2>plot</h2>
+<p>Now we get to the fun part. I wanted to combine the center path line and color from the FiveThirtyEight article with the minimalist gradient scale of the Google Trends map. I remember using a U.S. county outline for a previous map and thought that offered a nice low-impact background to build on. Then it was just a matter of plotting the data we have matching so far.</p>
+<pre class="r"><code>labels&lt;-subset(trends,count &gt;=83) #for the labels
+
+#plot
+us&lt;-map_data(&#39;county&#39;)
+solar&lt;-ggplot(trends,aes(lng,lat)) +
+  geom_polygon(data=us,aes(x=long,y=lat,group=group),color=&#39;#dedede&#39;,fill=NA,alpha=.45,cex=.35,show.legend = F)+
+  geom_point(aes(color=count,size=count),alpha=.55,show.legend = F) +
+  geom_line(data=path.points,aes(x=long,y=lat),color=&#39;#c52828&#39;,size=4,alpha=.25,show.legend = F)+
+  geom_line(data=path.points,aes(x=long,y=lat),color=&#39;#c52828&#39;,size=1,alpha=.75,show.legend = F)+
+  scale_colour_gradient(low = &quot;white&quot;, high = &quot;#444444&quot;)+
+  theme_ipsum(grid=F,plot_title_family = &#39;Slabo 27px&#39;,plot_title_face = &#39;bold&#39;,subtitle_size = 10,base_family = &#39;Roboto Condensed&#39;)+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())+
+  xlim(-135,-65)+ylim(20,50)
+
+solar+
+  labs(title=&#39;Google Trends for \&#39;Solar Eclipse\&#39;&#39;,
+           subtitle=&#39;Data for time period between 7/25/17 &amp; 8/1/2017&#39;,
+           caption=&#39;Search data from Google Trends\nSolar Eclipse Path Shapefile from NASA&#39;)+
+  geom_text(data=labels,aes(label=name.x,size=14),family=&#39;Roboto Condensed&#39; ,show.legend = F,check_overlap = T)</code></pre>
+<img src="/post/solareclipse_files/figure-html/unnamed-chunk-5-1.png" width="984" />
+<center>
+</center>
+<p>If you aren’t happy with this, or have other ideas I would love to see other interpretations of this data with R, or even improvements to this if you want.</p>
+</div>
