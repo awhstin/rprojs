@@ -38,14 +38,14 @@ library(hrbrthemes)
 library(raster)
 
 #trend data
-gtrends<- read_csv("~/Desktop/solar/geoMap (3).csv", skip = 2)
+gtrends<- read_csv("geoMap (3).csv", skip = 2)
 
 #cities
-us_cities <- read_csv("~/Desktop/solar/uscitiesv1.3.csv")
+us_cities <- read_csv("uscitiesv1.3.csv")
 us_cities$name<-paste(us_cities$city,us_cities$state_id)
 
 #shapefile
-path.m<-shapefile("~/Desktop/solar/center17.shp")
+path.m<-shapefile("center17.shp")
 path.points<-fortify(path.m)
 ```
 
