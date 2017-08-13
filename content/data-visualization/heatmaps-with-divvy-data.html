@@ -1,0 +1,114 @@
+---
+title: "Heat maps with Divvy data 2"
+author: '@awhstin'
+date: '2017-08-12T14:13:14-05:00'
+imgtype: svg
+categories: ['R',', ','tutorial']
+titleimg: divvy-1
+---
+
+
+
+<p>It is summer here in Chicago which means tourists abound and Divvy bikes are everywhere. Awhile ago, and a whole site ago, I posted a little how-to on making calendar heatmaps using the publicly available <a href="https://www.divvybikes.com/system-data">Divvy data</a>. While that site is gone there are still some links to it out on the internet, one being the awesome Revolution Analytics <a href="http://blog.revolutionanalytics.com/2016/11/divvy-chicago.html">blog</a>, so instead of leaving people with a <a href="https://www.explainxkcd.com/wiki/index.php/404:_Not_Found">404</a> I decided to revisit it.</p>
+<div id="code" class="section level3">
+<h3>code</h3>
+<p>Before we start you have to pay a visit the Divvy data link and download all the files. There are about 10.7 million rides between January 2014 and the end of Quarter 2 in 2017, which can take awhile to load. My suggestion is throwing all the downloaded files into one single folder and do this:</p>
+<pre class="r"><code>divvy.rides &lt;-list.files(pattern=&quot;*.csv&quot;) %&gt;% 
+    map_df(~read_csv(.))</code></pre>
+<p>Once we have all the rides loaded we can start making the variables we are interested in.</p>
+<pre class="r"><code>library(tidyverse)
+library(hrbrthemes)
+library(formattable)
+divvy.rides&lt;-readRDS(&#39;divvyrides.rds&#39;)
+
+divvy.rides&lt;-divvy.rides%&gt;%
+  mutate(day=as.Date(ifelse(is.na(starttime),start_time,starttime),&#39;%m/%d/%Y&#39;))%&gt;%
+  mutate(weekday=factor(weekdays(day,T),levels = rev(c(&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;,&quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;))))%&gt;%
+  mutate(year=format(day,&#39;%Y&#39;))%&gt;%
+  mutate(week=as.numeric(format(day,&quot;%W&quot;)))
+
+daily.rides&lt;-divvy.rides %&gt;%
+  group_by(year,week,day,weekday)%&gt;%
+  summarise(n=length(trip_id))</code></pre>
+<p>After we compute the variables we will need for the graph, then use the handy <code>dplyr::summarise</code> to get our aggregated data for each day. Then we can plot using an updated version of the old example.</p>
+<pre class="r"><code>#heatmap
+ggplot(daily.rides, aes(x = week, y = weekday, fill = n)) +
+    viridis::scale_fill_viridis(name=&quot;Divvy Rides&quot;,
+                       option = &#39;C&#39;,
+                       direction = 1,
+                       na.value = &quot;grey93&quot;) +
+    geom_tile(color = &#39;white&#39;, size = 0.1) +
+    facet_wrap(&#39;year&#39;, ncol = 1) +
+    scale_x_continuous(
+      expand = c(0, 0),
+      breaks = seq(1, 52, length = 12),
+      labels = c(&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;,
+                 &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;)) +
+    theme_ipsum_rc(plot_title_family = &#39;Slabo 27px&#39;)</code></pre>
+<p><img src="/data-visualization/heatmaps-with-divvy-data_files/figure-html/unnamed-chunk-3-1.png" width="912" style="display: block; margin: auto;" /></p>
+</div>
+<div id="how-has-divvy-grown" class="section level3">
+<h3>How has Divvy Grown?</h3>
+<p>As I was working through the data one question kept popping up, how has Divvy grown over the years? Though we do not have the 2013 data included in this, we do have all the data from 2014-2017 so let’s compare those. Ideally we would want to see steady growth year over year, with more and more users coming to the service every year.</p>
+<pre class="r"><code>weekly.rides&lt;-divvy.rides %&gt;%
+  group_by(year,week)%&gt;%
+  summarise(n=length(trip_id))
+
+ggplot(weekly.rides,aes(x=week,y=n,color=year))+
+  geom_line(alpha=.25)+
+  geom_smooth(se=F,method=&#39;loess&#39;,alpha=.35)+
+  theme_ipsum_rc(plot_title_family = &#39;Slabo 27px&#39;)+
+  labs(
+    title=&#39;Growth of Divvy&#39;,
+    subtitle=&#39;Count of Divvy rides by week from 2014-2017&#39;,
+    caption=&#39;Publicly available data from Divvy\nhttps://www.divvybikes.com/system-data&#39;)+
+  scale_y_continuous(labels=scales::comma)</code></pre>
+<p><img src="/data-visualization/heatmaps-with-divvy-data_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+<table class="floater">
+<thead>
+<tr>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:right;">
+rides
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+<span style="font-weight: bold">2014</span>
+</td>
+<td style="text-align:right;">
+2,454,634
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="font-weight: bold">2015</span>
+</td>
+<td style="text-align:right;">
+3,183,439
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="font-weight: bold">2016</span>
+</td>
+<td style="text-align:right;">
+3,595,383
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="font-weight: bold">2017</span>
+</td>
+<td style="text-align:right;">
+1,551,505
+</td>
+</tr>
+</tbody>
+</table>
+<p>It seems that there was substantial growth after the first full year of 2014, and then the user base has somewhat stayed stagnant. The actual ride counts are interesting, because though 2014 counts are less than the other there are much higher peaks around the summer months. Through Quarter 2 the totals for 2017 have it sitting more like two years ago more than 2016. How does Divvy reverse that stagnation? Well it seems like other large bike-share services, like Hubway in Boston or the Capital Bike Share in Washington D.C., are affected by the same slump. According to <a href="https://nacto.org/bike-share-statistics-2016/">data</a> from the National Association of City Transportation Officials (cool organization) the only one that accounts for more of the growth in the rideshare community is New York’s Citi Bike program. There are questions that start to arise from looking at this data. Why is the New York Citi Bike still growing? Is it purely driven by tourism? It seems likely. New York City saw tourism growth the last couple years, with <a href="http://www1.nyc.gov/office-of-the-mayor/news/963-16/mayor-de-blasio-total-nyc-visitors-surpasses-60-million-first-time">reported</a> visitor numbers surpassing 60 million in 2016. So it stands to reason that, along with the highest year for Divvy rides, Chicago rounded out 2016 by setting their own tourism <a href="https://en.wikipedia.org/wiki/Tourism_in_Chicago">record</a>. I guess instead of asking if rides will keep growing, we should be asking what is being done to boost tourism?</p>
+</div>

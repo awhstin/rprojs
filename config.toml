@@ -1,6 +1,7 @@
 theme = "hugo-theme-blueberry-detox"
 title='Austin Wehrwein'
 baseurl = "http://austinwehrwein.com/"
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
     # Loading min files for exampleSite
     customCSS            = ["/css/main.css"]
@@ -10,6 +11,7 @@ baseurl = "http://austinwehrwein.com/"
 # Insert your username and the icon will apear on the page as long as
 # socialAppearAtTop or socialAppearAtBottom is set to true in the params area
 # The social media icons will appear on the sidebar
+
 [social]
   
 [Params]

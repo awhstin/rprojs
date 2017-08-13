@@ -40,14 +40,14 @@ library(hrbrthemes)
 library(raster)
 
 #trend data
-gtrends&lt;- read_csv(&quot;~/Desktop/solar/geoMap (3).csv&quot;, skip = 2)
+gtrends&lt;- read_csv(&quot;geoMap (3).csv&quot;, skip = 2)
 
 #cities
-us_cities &lt;- read_csv(&quot;~/Desktop/solar/uscitiesv1.3.csv&quot;)
+us_cities &lt;- read_csv(&quot;uscitiesv1.3.csv&quot;)
 us_cities$name&lt;-paste(us_cities$city,us_cities$state_id)
 
 #shapefile
-path.m&lt;-shapefile(&quot;~/Desktop/solar/center17.shp&quot;)
+path.m&lt;-shapefile(&quot;center17.shp&quot;)
 path.points&lt;-fortify(path.m)</code></pre>
 <p>If you start to inspect the trend data you’ll see it is by metro area. Instead of plotting it in that form I decided I wanted to match the cities in the metro area, and plot those by the search value. To do this we can use <code>strsplit</code>, but first we have to do a little arranging with <code>dplyr::row_number</code> to make sure the data is matched correctly.</p>
 <pre class="r"><code>#clean
