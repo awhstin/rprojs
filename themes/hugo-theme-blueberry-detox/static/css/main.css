@@ -166,6 +166,7 @@ tr, img {
 }
 img {
     max-width: 100% !important;
+    height: auto;
     display:  block;
     margin:  0 auto;
 }
@@ -222,6 +223,7 @@ h1 {
 }
     img{
 	    max-width:100%;
+	    height:auto;
 	}
 }h4 {
     font-size: 24px;
@@ -410,9 +412,7 @@ img {
 a img {
     border: 0;
 }
-img[width], img[height] {
-    max-width: none;
-}
+
 figure>img {
     display: block;
 }
