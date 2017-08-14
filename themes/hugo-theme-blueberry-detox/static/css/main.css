@@ -639,7 +639,7 @@ hr {
 .blog-title {
     text-transform: uppercase;
     letter-spacing: 6px;
-    font-size: 75px;
+    font-size: 35px;
     border-style: solid;
     padding-top:  20px;
     padding-bottom:  20px;
@@ -652,7 +652,7 @@ hr {
     text-transform: uppercase;
     letter-spacing: 4px;
     color: #b3b3b3;
-    font-size: 18px;
+    font-size: 10px;
     font-family: Roboto Condensed;
      padding-bottom: 30px;
     width: 100%;
