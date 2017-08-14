@@ -637,12 +637,10 @@ hr {
     margin-bottom: 4em;
 }
 .blog-title {
-    width: 75%;
-    height:auto;
+    font-size:75%;
 }
 .blog-description {
-    width: 60%;
-    height:auto;
+    font-size:75%;
 }
 }.blog-title {
     text-transform: uppercase;
