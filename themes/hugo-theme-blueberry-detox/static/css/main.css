@@ -636,6 +636,28 @@ hr {
     padding-top: 4em;
     margin-bottom: 4em;
 }
+.blog-title {
+    text-transform: uppercase;
+    letter-spacing: 6px;
+    font-size: 75px;
+    border-style: solid;
+    padding-top:  20px;
+    padding-bottom:  20px;
+    border-color: #b3b3b3!important;
+    margin: .55em;
+    width: 100%;
+    height:auto;
+}
+.blog-description {
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: #b3b3b3;
+    font-size: 18px;
+    font-family: Roboto Condensed;
+     padding-bottom: 30px;
+    width: 100%;
+    height:auto;
+}
 }.blog-title {
     text-transform: uppercase;
     letter-spacing: 6px;
