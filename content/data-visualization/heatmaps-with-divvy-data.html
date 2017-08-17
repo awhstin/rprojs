@@ -10,29 +10,48 @@ titleimg: divvy-1
 
 
 <p>It is summer here in Chicago which means tourists abound and Divvy bikes are everywhere. Awhile ago, and a whole site ago, I posted a little how-to on making calendar heatmaps using the publicly available <a href="https://www.divvybikes.com/system-data">Divvy data</a>. While that site is gone there are still some links to it out on the internet, one being the awesome Revolution Analytics <a href="http://blog.revolutionanalytics.com/2016/11/divvy-chicago.html">blog</a>, so instead of leaving people with a <a href="https://www.explainxkcd.com/wiki/index.php/404:_Not_Found">404</a> I decided to revisit it.</p>
-<div id="code" class="section level3">
-<h3>code</h3>
-<p>Before we start you have to pay a visit the Divvy data link and download all the files. There are about 10.7 million rides between January 2014 and the end of Quarter 2 in 2017, which can take awhile to load. My suggestion is throwing all the downloaded files into one single folder and do this:</p>
-<pre class="r"><code>divvy.rides &lt;-list.files(pattern=&quot;*.csv&quot;) %&gt;% 
-    map_df(~read_csv(.))</code></pre>
-<p>Once we have all the rides loaded we can start making the variables we are interested in.</p>
+<div id="code-update" class="section level3">
+<h3>code (update!)</h3>
+<p>This post had not been out for long before I was made <a href="https://twitter.com/ma_salmon/status/898250513380130816">aware</a> of the awesome <code>bikedata</code> package available via the ROpenSci <a href="https://github.com/ropensci/bikedata">github</a>. After some initial loading we can have all the Divvy data right at our finger tips.</p>
+<pre class="r"><code>#devtools::install_github(&#39;ropensci/bikedata&#39;)
+library(bikedata)
+store_bikedata(city = &#39;chicago&#39;, bikedb = &#39;bikedb&#39;) #this can take a little bit</code></pre>
+<pre><code>## reading file 1/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2013.csv
+## reading file 2/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2014_Q1Q2.csv
+## reading file 3/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2014-Q3-07.csv
+## reading file 4/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2014-Q3-0809.csv
+## reading file 5/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2014-Q4.csv
+## reading file 6/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2015_Q4.csv
+## reading file 7/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2015_09.csv
+## reading file 8/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2015_08.csv
+## reading file 9/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2015_07.csv
+## reading file 10/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2015-Q1.csv
+## reading file 11/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2015-Q2.csv
+## reading file 12/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2016_04.csv
+## reading file 13/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2016_05.csv
+## reading file 14/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2016_06.csv
+## reading file 15/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2016_Q1.csv
+## reading file 16/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2016_Q3.csv
+## reading file 17/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2016_Q4.csv
+## reading file 18/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2017_Q1.csv
+## reading file 19/19: /var/folders/6t/k2153h8n1z7b6_wxg1plct8r0000gn/T//RtmpeBWVfI/Divvy_Trips_2017_Q2.csv</code></pre>
+<pre><code>## [1] 11544749</code></pre>
+<p>Once we have all the rides loaded we can start making the variables we are interested in, and to get them we ust the <code>bikedata::bike_daily_trips</code>.</p>
 <pre class="r"><code>library(tidyverse)
 library(hrbrthemes)
 library(formattable)
-divvy.rides&lt;-readRDS(&#39;divvyrides.rds&#39;)
+
+divvy.rides&lt;-bike_daily_trips(bikedb = &#39;bikedb&#39;)
 
 divvy.rides&lt;-divvy.rides%&gt;%
-  mutate(day=as.Date(ifelse(is.na(starttime),start_time,starttime),&#39;%m/%d/%Y&#39;))%&gt;%
-  mutate(weekday=factor(weekdays(day,T),levels = rev(c(&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;,&quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;))))%&gt;%
-  mutate(year=format(day,&#39;%Y&#39;))%&gt;%
-  mutate(week=as.numeric(format(day,&quot;%W&quot;)))
+  mutate(weekday=factor(weekdays(date,T),levels = rev(c(&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;,&quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;))))%&gt;%
+  mutate(year=format(date,&#39;%Y&#39;))%&gt;%
+  mutate(week=as.numeric(format(date,&quot;%W&quot;)))
 
-daily.rides&lt;-divvy.rides %&gt;%
-  group_by(year,week,day,weekday)%&gt;%
-  summarise(n=length(trip_id))</code></pre>
+daily.rides&lt;-subset(divvy.rides,year != &#39;2013&#39;)</code></pre>
 <p>After we compute the variables we will need for the graph, then use the handy <code>dplyr::summarise</code> to get our aggregated data for each day. Then we can plot using an updated version of the old example.</p>
 <pre class="r"><code>#heatmap
-ggplot(daily.rides, aes(x = week, y = weekday, fill = n)) +
+ggplot(daily.rides, aes(x = week, y = weekday, fill = numtrips)) +
     viridis::scale_fill_viridis(name=&quot;Divvy Rides&quot;,
                        option = &#39;C&#39;,
                        direction = 1,
@@ -45,14 +64,14 @@ ggplot(daily.rides, aes(x = week, y = weekday, fill = n)) +
       labels = c(&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;,
                  &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;)) +
     theme_ipsum_rc(plot_title_family = &#39;Slabo 27px&#39;)</code></pre>
-<p><img src="/data-visualization/heatmaps-with-divvy-data_files/figure-html/unnamed-chunk-3-1.png" width="912" style="display: block; margin: auto;" /></p>
+<p><img src="/data-visualization/heatmaps-with-divvy-data_files/figure-html/unnamed-chunk-4-1.png" width="912" style="display: block; margin: auto;" /></p>
 </div>
 <div id="how-has-divvy-grown" class="section level3">
 <h3>How has Divvy Grown?</h3>
 <p>As I was working through the data one question kept popping up, how has Divvy grown over the years? Though we do not have the 2013 data included in this, we do have all the data from 2014-2017 so let’s compare those. Ideally we would want to see steady growth year over year, with more and more users coming to the service every year.</p>
 <pre class="r"><code>weekly.rides&lt;-divvy.rides %&gt;%
   group_by(year,week)%&gt;%
-  summarise(n=length(trip_id))
+  summarise(n=sum(numtrips))
 
 ggplot(weekly.rides,aes(x=week,y=n,color=year))+
   geom_line(alpha=.25)+
@@ -60,10 +79,10 @@ ggplot(weekly.rides,aes(x=week,y=n,color=year))+
   theme_ipsum_rc(plot_title_family = &#39;Slabo 27px&#39;)+
   labs(
     title=&#39;Growth of Divvy&#39;,
-    subtitle=&#39;Count of Divvy rides by week from 2014-2017&#39;,
+    subtitle=&#39;Count of Divvy rides by week from 2013-2017&#39;,
     caption=&#39;Publicly available data from Divvy\nhttps://www.divvybikes.com/system-data&#39;)+
   scale_y_continuous(labels=scales::comma)</code></pre>
-<p><img src="/data-visualization/heatmaps-with-divvy-data_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+<p><img src="/data-visualization/heatmaps-with-divvy-data_files/figure-html/unnamed-chunk-5-1.png" width="960" /></p>
 <table class="floater">
 <thead>
 <tr>
@@ -76,6 +95,14 @@ rides
 </tr>
 </thead>
 <tbody>
+<tr>
+<td style="text-align:right;">
+<span style="font-weight: bold">2013</span>
+</td>
+<td style="text-align:right;">
+759,788
+</td>
+</tr>
 <tr>
 <td style="text-align:right;">
 <span style="font-weight: bold">2014</span>
