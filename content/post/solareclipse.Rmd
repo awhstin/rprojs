@@ -22,7 +22,7 @@ Well let's make a version in R. (Sort of)
 ##data & cleaning
 We need a couple datasets, and more than a few packages in R. The data is listed below
 
-+ [Trend Data]() via Google Trends
++ [Trend Data](https://github.com/awhstin/solareclipse/blob/master/geoMap%20(3).csv) via Google Trends
 + [U.S. cities](http://simplemaps.com/data/us-cities) via SimpleMaps
 + [Path of the eclipse](https://svs.gsfc.nasa.gov/4518) via NASA's Scientific Visualization Studio 
 

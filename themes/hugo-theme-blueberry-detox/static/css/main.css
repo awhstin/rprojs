@@ -78,6 +78,7 @@ sub {
 }
 img {
     border: 0;
+    max-width: 100%;
 }
 svg:not(:root) {
     overflow: hidden;
@@ -165,6 +166,7 @@ tr, img {
 }
 img {
     max-width: 100% !important;
+    height: auto;
     display:  block;
     margin:  0 auto;
 }
@@ -219,6 +221,10 @@ h1 {
     h3 {
     font-size: 28px;
 }
+    img{
+	    max-width:100%;
+	    height:auto;
+	}
 }h4 {
     font-size: 24px;
     font-size: 1.3333333333333333rem;
@@ -406,9 +412,7 @@ img {
 a img {
     border: 0;
 }
-img[width], img[height] {
-    max-width: none;
-}
+
 figure>img {
     display: block;
 }
@@ -631,6 +635,12 @@ hr {
     #site-header {
     padding-top: 4em;
     margin-bottom: 4em;
+}
+.blog-title {
+    font-size:50%;
+}
+.blog-description {
+    font-size:50%;
 }
 }.blog-title {
     text-transform: uppercase;
