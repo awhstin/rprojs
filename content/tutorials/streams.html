@@ -1,0 +1,98 @@
+---
+title: 'Streamgraphs: Economic trade flows with R'
+author: "@awhstin"
+date: 2017-09-27T21:13:14-05:00
+categories: ["R",', ','streamgraphs',', ','trade']
+titleimg: "streams-1"
+imgtype: "svg"
+---
+
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/d3/d3.min.js"></script>
+<link href="/rmarkdown-libs/colorbrewer/colorbrewer.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/colorbrewer/colorbrewer.js"></script>
+<link href="/rmarkdown-libs/streamgraph/streamgraph.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/streamgraph-binding/streamgraph.js"></script>
+
+
+<p>Recently I saw this really cool visualization around the reliance of the North Korean economy on trade from China.</p>
+<iframe width="1060" height="450" src="http://atlas.media.mit.edu/en/visualize/embed/tree_map/hs92/export/prk/show/all/2015/?controls=false" frameborder="0">
+</iframe>
+<p>This <code>tree_map</code> is striking in a number of ways. One is that it conveys a ton of information in an easy on the eyes and interactive way. Another is the data itself. North Korea really does have quite the reliance on China. This got me thinking how I would visualize the information with R and I then came across a really cool <a href="https://www.axios.com/the-growing-economic-isolation-of-north-korea-2489557466.html">example</a> of how someone else visualized the same data via a sort of stream graph. Luckily the <b>Observatory of Economic Complexity</b> (awesome name) has a pretty simple API that we can use to access this <a href="http://atlas.media.mit.edu/en/profile/country/prk/">information</a> so I figured I would give it a shot.</p>
+<div id="first-the-api" class="section level3">
+<h3>First the API</h3>
+<p>First we need to use the handy call <a href="http://atlas.media.mit.edu/api/">guide</a> from the O.E.C. API to get the import and export data as well as country information.</p>
+<pre class="r"><code>library(streamgraph) #found on github hrbrmstr/streamgraph
+library(jsonlite)
+library(tidyverse) 
+library(hrbrthemes) #a staple
+
+#trade data pull
+trade&lt;-read_json(&#39;http://atlas.media.mit.edu/hs92/import/1995.2015/prk/show/all/&#39;,simplifyVector = T)%&gt;%data.frame()
+#country specific information
+countries&lt;-read_json(&#39;http://atlas.media.mit.edu/attr/country/&#39;,simplifyVector = T)%&gt;%data.frame()%&gt;%
+  mutate(groups=case_when(
+    grepl(&quot;China&quot;, data.name) ~ &quot;China&quot;,
+    grepl(&quot;India&quot;, data.name) ~ &quot;India&quot;,
+    grepl(&quot;Japan&quot;, data.name) ~ &quot;Japan&quot;,
+    is.na(data.name) ~ &quot;Unknown&quot;,
+    TRUE ~ &quot;Other Countries&quot;
+  ))
+
+#data clean
+trade$groups&lt;-countries$groups[match(trade$data.dest_id, countries$data.id)]
+trade$data.import_val[is.na(trade$data.import_val)]&lt;-0 
+trade$data.export_val[is.na(trade$data.export_val)]&lt;-0
+trade$data.export_val&lt;-trade$data.export_val*-1 #convert exports to negative
+
+#aggregate
+export.data&lt;-aggregate(trade$data.export_val,by=list(trade$data.year,trade$groups),sum)
+import.data&lt;-aggregate(trade$data.import_val,by=list(trade$data.year,trade$groups),sum)
+trade.data&lt;-cbind(export.data,import=import.data$x)
+names(trade.data)[1:4]&lt;-c(&#39;year&#39;,&#39;country&#39;,&#39;export&#39;,&#39;import&#39;)</code></pre>
+<p>After we are done massaging we get to try our first plot. A quick aside I ran into a time when I wanted to use both the absolute value of the y-axis with <code>scale_y_comma</code> and also still include the commas. A short search later I landed on this <a href="https://stackoverflow.com/questions/37949473/how-do-you-make-ggplot-labels-use-both-labels-abs-and-labels-comma">Stack Overflow</a> question that gave me this little tidbit.</p>
+<pre class="r"><code>abs_comma &lt;- function (x, ...) {
+  format(abs(x), ..., big.mark = &quot;,&quot;, scientific = FALSE, trim = TRUE)
+}</code></pre>
+<p>With that now we can make our first plot.</p>
+<pre class="r"><code>ggplot(trade.data) + 
+  geom_area(data = trade.data, aes(x=year, y=import, fill=country),alpha=.95) + 
+  geom_area(data = trade.data, aes(x=year, y=export, fill=country),alpha=.95) +
+  annotate(&#39;text&#39;,x=1995,y=3000000000,label=&#39;imports&#39;,color=&#39;#cccccc&#39;)+
+  annotate(&#39;text&#39;,x=1995,y=-3000000000,label=&#39;exports&#39;,color=&#39;#cccccc&#39;)+
+  geom_hline(yintercept=0,color=&#39;white&#39;)+
+  scale_fill_ipsum()+ 
+  theme_ipsum(grid=&#39;Y&#39;,plot_title_family = &#39;Slabo 27px&#39;,subtitle_family = &#39;Roboto Condensed&#39;,subtitle_size = 8)+
+  expand_limits(y = c(4000000000, -4000000000))+
+  scale_y_comma(label=abs_comma)+ #where we use our SO tidbit
+  theme(legend.position = &#39;bottom&#39;)+
+  guides(fill=guide_legend(ncol=2))+
+  labs(title=&#39;North Korean Trade&#39;,subtitle=&#39;Timeline of import and export dollars for North Korea&#39;,y=&#39;dollars&#39;,caption=&#39;Data from the O.E.C. API\nhttp://atlas.media.mit.edu/api/&#39;)</code></pre>
+<p><img src="/tutorials/streams_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+<p>This is a start, and if we want to make it interactive like the example was we just need to wrap the plot with <code>plotly::ggplotly</code>. This looks good but apart from the oddity that happens in 2007 with Japan (when they ceased trade with North Korea), I think the <em>smoothness</em> is also something I want to change. Maybe there is something else we can try?</p>
+</div>
+<div id="streamgraph" class="section level3">
+<h3>Streamgraph</h3>
+<p>The interactivity and style you get with <code>ggplot</code> + <code>plotly</code> are great, but like all things I wanted to see if there were any other options out there. As if on cue I stumbled upon the <code>streamgraph</code> package on <a href="https://github.com/hrbrmstr/streamgraph">github</a> from <span class="citation">@hrbrmstr</span>. His examples are good looking and we already have some solid data from the API so let’s just give it a try.</p>
+<pre class="r"><code>import.data %&gt;%
+  streamgraph(&quot;Group.2&quot;, &quot;x&quot;, &quot;Group.1&quot;, offset=&quot;zero&quot;) %&gt;%
+  sg_axis_x(&#39;Group.2&#39;)%&gt;%
+  sg_axis_y(tick_format = &#39;$.0s&#39;)%&gt;%
+  sg_fill_brewer(&quot;Spectral&quot;)
+
+export.data %&gt;%
+  streamgraph(&quot;Group.2&quot;, &quot;x&quot;, &quot;Group.1&quot;, offset=&quot;zero&quot;) %&gt;%
+  sg_axis_y(tick_format = &#39;$.0s&#39;)%&gt;%
+  sg_fill_brewer(&quot;Spectral&quot;)</code></pre>
+<span>
+<center>
+<h4>
+North Korea’s Trade Flow
+</h4>
+<small>Data from the Observatory of Economic Complexity API</small><br/> <bold>imports</bold> <div id="htmlwidget-1" class="streamgraph html-widget" style="width:1000px;height:200px;"></div>
+<div id="htmlwidget-d7c7f4cde7c2bb43ef6b-legend" style="width:1000" class="streamgraph html-widget-legend"><center><label style='padding-right:5px' for='htmlwidget-d7c7f4cde7c2bb43ef6b-select'></label><select id='htmlwidget-d7c7f4cde7c2bb43ef6b-select' style='visibility:hidden;'></select></center></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"data":{"key":["China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries"],"value":[481468580,28062392,197860403,456050502,490252843,29644329,203956874,429810550,531954117,37465344,166513234,519460517,352401202,18578763,146998248,483953513,307540404,67003042,134600229,550651749,426108319,157886171,169654679,809515367,564446187,170250491,1047203224,1051210976,461211039,176976780,110631957,854491520,620124770,122322969,73764656,767691857,775164970,172890590,71372961,1114942460,1068820803,37810908,59789726,1235198742,1210745187,123145529,41835306,1429135494,1381580504,638181135,8986786,1177203141,2024404115,1091838652,7242606,1117345027,1870891195,310397985,2736927,764101044,2270693599,406807463,0,903035164,3155310838,173328048,0,455899669,3477139139,228089857,0,412017156,3622864679,238710438,0,479632676,3490467742,75248118,0,420608761,2946422604,108550714,0,417480399],"date":["1995-01-01","1995-01-01","1995-01-01","1995-01-01","1996-01-01","1996-01-01","1996-01-01","1996-01-01","1997-01-01","1997-01-01","1997-01-01","1997-01-01","1998-01-01","1998-01-01","1998-01-01","1998-01-01","1999-01-01","1999-01-01","1999-01-01","1999-01-01","2000-01-01","2000-01-01","2000-01-01","2000-01-01","2001-01-01","2001-01-01","2001-01-01","2001-01-01","2002-01-01","2002-01-01","2002-01-01","2002-01-01","2003-01-01","2003-01-01","2003-01-01","2003-01-01","2004-01-01","2004-01-01","2004-01-01","2004-01-01","2005-01-01","2005-01-01","2005-01-01","2005-01-01","2006-01-01","2006-01-01","2006-01-01","2006-01-01","2007-01-01","2007-01-01","2007-01-01","2007-01-01","2008-01-01","2008-01-01","2008-01-01","2008-01-01","2009-01-01","2009-01-01","2009-01-01","2009-01-01","2010-01-01","2010-01-01","2010-01-01","2010-01-01","2011-01-01","2011-01-01","2011-01-01","2011-01-01","2012-01-01","2012-01-01","2012-01-01","2012-01-01","2013-01-01","2013-01-01","2013-01-01","2013-01-01","2014-01-01","2014-01-01","2014-01-01","2014-01-01","2015-01-01","2015-01-01","2015-01-01","2015-01-01"]},"markers":null,"annotations":null,"offset":"zero","interactive":true,"interpolate":"cardinal","palette":"Spectral","text":"black","tooltip":"black","x_tick_interval":"Group.2","x_tick_units":"year","x_tick_format":"%Y","y_tick_count":5,"y_tick_format":"$.0s","top":20,"right":40,"bottom":30,"left":50,"legend":false,"legend_label":"","fill":"brewer","label_col":"black","x_scale":"date"},"evals":[],"jsHooks":[]}</script><div id="htmlwidget-2" class="streamgraph html-widget" style="width:1000px;height:200px;"></div>
+<div id="htmlwidget-63351ee00307f209239d-legend" style="width:1000" class="streamgraph html-widget-legend"><center><label style='padding-right:5px' for='htmlwidget-63351ee00307f209239d-select'></label><select id='htmlwidget-63351ee00307f209239d-select' style='visibility:hidden;'></select></center></div>
+<script type="application/json" data-for="htmlwidget-2">{"x":{"data":{"key":["China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries","China","India","Japan","Other Countries"],"value":[-58936545.91,-33478005.23,-329282342.47,-443921210.8,-61753457.85,-26675324.23,-281380797.43,-488731314.66,-108174875.39,-53204514.59,-290201956.28,-782744013.18,-49851196.57,-31646551.09,-211338449.4,-542086481.53,-38343315.04,-15443095.31,-195611144.56,-609894474.57,-26217920.81,-20013906.44,-250177566.76,-785919196.8,-139663597.16,-3643195.49,-220848351.38,-528775542.14,-253114043.13,-4769995.93,-231549532.44,-500545973.12,-373113955.12,-1003346.36,-171246309.66,-391345997.68,-549498793.91,-1472765.1,-161233484.84,-534084691.29,-453596051.59,-8071326.81,-128286955.23,-730013948.37,-400140046.24,-471521874.82,-75216461.03,-798120912.04,-521201927.86,-157320734.32,0,-923514656.37,-680214974.21,-91171016.14,0,-1279294257.47,-714875177.28,-5726597.11,0,-597983805.21,-1099892717.87,-44492203.78,0,-686648581.87,-2269788030.77,-9354073.88,0,-842820244.72,-2273733156.18,-131783.9,0,-490493918.88,-2718394688.48,-31645202.09,0,-530533285.56,-2673747154.86,-71636862.13,0,-350160133.89,-2338271127.31,-97796047.12,0,-396291657.15],"date":["1995-01-01","1995-01-01","1995-01-01","1995-01-01","1996-01-01","1996-01-01","1996-01-01","1996-01-01","1997-01-01","1997-01-01","1997-01-01","1997-01-01","1998-01-01","1998-01-01","1998-01-01","1998-01-01","1999-01-01","1999-01-01","1999-01-01","1999-01-01","2000-01-01","2000-01-01","2000-01-01","2000-01-01","2001-01-01","2001-01-01","2001-01-01","2001-01-01","2002-01-01","2002-01-01","2002-01-01","2002-01-01","2003-01-01","2003-01-01","2003-01-01","2003-01-01","2004-01-01","2004-01-01","2004-01-01","2004-01-01","2005-01-01","2005-01-01","2005-01-01","2005-01-01","2006-01-01","2006-01-01","2006-01-01","2006-01-01","2007-01-01","2007-01-01","2007-01-01","2007-01-01","2008-01-01","2008-01-01","2008-01-01","2008-01-01","2009-01-01","2009-01-01","2009-01-01","2009-01-01","2010-01-01","2010-01-01","2010-01-01","2010-01-01","2011-01-01","2011-01-01","2011-01-01","2011-01-01","2012-01-01","2012-01-01","2012-01-01","2012-01-01","2013-01-01","2013-01-01","2013-01-01","2013-01-01","2014-01-01","2014-01-01","2014-01-01","2014-01-01","2015-01-01","2015-01-01","2015-01-01","2015-01-01"]},"markers":null,"annotations":null,"offset":"zero","interactive":true,"interpolate":"cardinal","palette":"Spectral","text":"black","tooltip":"black","x_tick_interval":10,"x_tick_units":"year","x_tick_format":"%Y","y_tick_count":5,"y_tick_format":"$.0s","top":20,"right":40,"bottom":30,"left":50,"legend":false,"legend_label":"","fill":"brewer","label_col":"black","x_scale":"date"},"evals":[],"jsHooks":[]}</script> <bold>exports</bold>
+</center>
+</div>
