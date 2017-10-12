@@ -79,6 +79,7 @@ sub {
 img {
     border: 0;
     max-width: 100%;
+    padding-bottom:15px;
 }
 svg:not(:root) {
     overflow: hidden;
@@ -337,8 +338,8 @@ cite {
 html {
     margin: 0;
     padding: 0;
-    font-family: "PT Sans Narrow", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 100%;
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 85%;
     line-height: 1.65;
     font-weight: normal;
     overflow-y: scroll;
@@ -379,6 +380,15 @@ body:after {
     width: 90%;
     max-width: 1000px;
     margin: auto;
+   
+}
+.containerout {
+    width: 15%;
+     float:left;
+     margin:auto;
+     transform:lowercase;
+     font-size:10px;
+     padding-left:5px;
 }
 .nav {
     list-style: none;
@@ -562,7 +572,7 @@ input:focus, textarea:focus {
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
 }
 code, kbd, pre, samp {
-    font-family: Inconsolata, Menlo, Consolas, "Courier New", monospace;
+    font-family: Open Sans, Menlo, Consolas, "Courier New", monospace;
 }
 code {
     padding: 2px 4px;
@@ -626,7 +636,6 @@ hr {
     padding: 0.2em 0;
 }
 #site-header {
-    text-align: center;
     min-height: 2em;
     margin-bottom: 2em;
     margin-top: 2em;
@@ -644,21 +653,25 @@ hr {
 }
 }.blog-title {
     text-transform: uppercase;
-    letter-spacing: 6px;
-    font-size: 75px;
+    font-family:'Slabo 27px';
+    letter-spacing: 2px;
+    font-size: 40px;
     border-style: solid;
-    padding-top:  20px;
-    padding-bottom:  20px;
-    border-color: #b3b3b3!important;
-    margin: .55em;
+    border-color: #b3b3b3;
+    float:left;
+    padding-left:5px;
+    padding-right:5px;
 }
 .blog-description {
-    text-transform: uppercase;
-    letter-spacing: 4px;
+    text-transform: lowercase;
+    font-family:Slabo 27px;
     color: #b3b3b3;
-    font-size: 18px;
-    font-family: PT Sans Narrow;
-     padding-bottom: 30px;
+    font-size: 13px;
+    padding-top:50px;
+    float:left;
+}
+.blog-title h1:hover{
+  border-color:#fff !important;
 }
 #blog-logo img {
     margin: 0 auto 3em auto;
@@ -796,43 +809,28 @@ a:hover {
     text-align: center;
     height: 10em;
 }
-;
     
 #navbar  {
-    
-	width:  100%;
-    
-	float:  none;
-    
-	margin: 25px;
-    
+ 	float:  right;
 	list-style:  none;
-    
 	color:  #f2f2f2;
-    
-	font-family: PT Sans Narrow;
-    
+	font-family: Open Sans;
+	display:inline;
 }
 #navbar li  {
+  display:inline-block;
 }
 
 #navbar li a  {
-    
-	display:  inline-block;
-    
-	padding:  8px 15px;
-    
+	padding:  8px 10px;
 	text-decoration:  none;
-    
 	font-weight:  bold;
-    
 	color: #444444;
     text-decoration: none;
     border-bottom:  transparent;
     background: transparent;
 }
 #navbar li a: hover  {
-    
  color: #444444;
     background-color: #c3f6c3;
  }
