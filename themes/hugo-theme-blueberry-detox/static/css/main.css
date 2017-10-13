@@ -383,12 +383,13 @@ body:after {
    
 }
 .containerout {
-    width: 15%;
-     float:left;
+     width: 12%;
+     display:inline-block;   
      margin:auto;
-     transform:lowercase;
+     text-align:left;
      font-size:10px;
-     padding-left:5px;
+     padding-left:3px;
+      color:#b1b1b1;
 }
 .nav {
     list-style: none;
@@ -416,7 +417,7 @@ img, embed, object, video {
 }
 img {
     -ms-interpolation-mode: bicubic;
-    vertical-align: middle;
+    vertical-align: left;
     font-style: italic;
 }
 a img {
@@ -654,7 +655,6 @@ hr {
 }.blog-title {
     text-transform: uppercase;
     font-family:'Slabo 27px';
-    letter-spacing: 2px;
     font-size: 40px;
     border-style: solid;
     border-color: #b3b3b3;
@@ -752,6 +752,7 @@ a:hover {
 .author {
     float: left;
 }
+
 @media (max-width: 550px) {
     .author {
     float: none !important;
@@ -826,7 +827,6 @@ a:hover {
 	text-decoration:  none;
 	font-weight:  bold;
 	color: #444444;
-    text-decoration: none;
     border-bottom:  transparent;
     background: transparent;
 }
@@ -845,6 +845,11 @@ a:hover {
 .floater {
     float: left;
     display: inline-block;
+    padding:10px 20px 10px 20px;
+}
+.floaterr {
+    float: right;
+    display: inline-block;
     padding:0px 20px 10px 20px;
 }
 .floater td {
@@ -853,4 +858,7 @@ a:hover {
 }
 .floater th {
     text-align: center!important;
+}
+.img:after {
+  clear:both;
 }
