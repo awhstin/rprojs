@@ -1,6 +1,6 @@
 theme = "hugo-theme-blueberry-detox"
 title='Austin Wehrwein'
-baseurl = "http://austinwehrwein.com/"
+baseurl = "https://austinwehrwein.com/"
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
     # Loading min files for exampleSite
