@@ -16,7 +16,7 @@
 .hljs-selector-tag,
 .hljs-literal,
 .hljs-selector-id {
-  color:#72bcd4;
+  color:#ffa500;
 }
 
 .hljs-number {
@@ -29,7 +29,7 @@
 }
 
 .hljs-attribute {
-  color: #72bcd4;
+  color:#ffa500;
 }
 
 .hljs-code,
