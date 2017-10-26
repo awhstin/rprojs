@@ -7,7 +7,7 @@
   display: block;
   overflow-x: auto;
   padding: 1em;
-  background-color: #444444;
+  background-color: #565656;
   font-family: Inconsolata;
   font-size:13px!important;
 }
@@ -16,7 +16,7 @@
 .hljs-selector-tag,
 .hljs-literal,
 .hljs-selector-id {
-  color:#72bcd4;
+  color:#ffc04c;
 }
 
 .hljs-number {
@@ -29,7 +29,7 @@
 }
 
 .hljs-attribute {
-  color: #72bcd4;
+  color:#ffc04c;
 }
 
 .hljs-code,
