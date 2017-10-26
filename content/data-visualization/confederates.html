@@ -10,7 +10,7 @@ imgtype: "svg"
 
 
 <p>Before I begin I want to say that it is not my intention for this piece to be taken as political. This is more me looking into a dataset I kept coming across in the news cycle and found interesting.</p>
-<p>In the past few months a lot of things have captured the public eye’s focus and became blurry just as quick when something else happens. It is just the way news stories are covered now. One story, more specifically one dataset, kept appearing for me which prompted me to find it and do my own exploration of it. I first came across this data, originally from the <a href="https://www.splcenter.org/">Southern Poverty Law Center</a>, when FiveThirtyEight ran an interesting <a href="https://fivethirtyeight.com/features/there-are-still-more-than-700-confederate-monuments-in-the-u-s/">piece</a> looking at the momentum groups were gaining for taking down some of these monuments. As always my preferred vehicle of exploration is R but some may notice that here <code>a_theme</code> is used, this is part of a very hodge-podge package I use for my website. A version of the package with most of the aesthetic aspects can be found <a href="https://github.com/awhstin/awtools">here</a>.</p>
+<p>In the past few months a lot of things have captured the public eye’s focus and became blurry just as quick when something else happens. It is just the way news stories are covered now. One story, more specifically one dataset, kept appearing for me which prompted me to find it and do my own exploration of it. I first came across this data, originally from the <a href="https://www.splcenter.org/">Southern Poverty Law Center</a>, when FiveThirtyEight ran an interesting <a href="https://fivethirtyeight.com/features/there-are-still-more-than-700-confederate-monuments-in-the-u-s/">piece</a> looking at the momentum groups were gaining for taking down some of these monuments. And of course there is this piece from <a href="https://www.youtube.com/watch?v=J5b_-TZwQ0I">Last Week Tonight</a> that mixes a bit of comedy in with some facts. As always my preferred vehicle of exploration is R but some may notice that here <code>a_theme</code> is used, this is part of a very hodge-podge package I use for my website. A version of the package with most of the aesthetic aspects can be found <a href="https://github.com/awhstin/awtools">here</a>.</p>
 <pre class="r"><code>library(tidyverse)
 library(statebins)
 library(awtools) #just for the theme
@@ -45,7 +45,7 @@ ggplot(va,aes(x=year_dedicated,y=reorder(state,counts),color=group_class))+
        y=&#39;State&#39;,
        title=&#39;When Confederate monuments were dedicated&#39;,
        subtitle=&#39;A timeline of dedicated Confederate monuments by State with the most recent being dedicated in VA in 2014.\nMonuments with unknown years of dedication are omitted.&#39;,
-       caption=&#39;Data: Southern Poverty Law Center\nGraph: Inspired by The Washington Post&#39;)</code></pre>
+       caption=&#39;Data: Southern Poverty Law Center&#39;)</code></pre>
 <p><img src="/data-visualization/confederates_files/figure-html/disp2-1.png" width="960" /></p>
 </div>
 <div id="a-closer-look" class="section level2">
