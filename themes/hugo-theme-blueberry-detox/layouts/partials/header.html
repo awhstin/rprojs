@@ -6,7 +6,10 @@
         <nav>
        <a href="{{ .Site.BaseURL }}" alt="{{ .Site.Title }}"><h1 class="blog-title">{{ .Site.Title }}</h1></a>
   <ul class='nav' id='navbar'>
-	<li><a href="{{ .Site.BaseURL }}">main</a></li>
+	 <li><a class="button-square button-social hint--top" data-hint="Home"  target="_blank" title="Home" href="{{ .Site.BaseURL }}">
+                                <i class="fa fa-home"></i>
+                            </a>
+                            </li>
 	<li><a class="button-square button-social hint--top"  target="_blank" href="https://github.com/awhstin/rprojs/" data-hint="Website Repo" title="Website Repo">
                                 <i class="fa fa-code"></i>
                             </a></li>
