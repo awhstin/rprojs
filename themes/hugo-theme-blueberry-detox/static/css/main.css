@@ -664,6 +664,7 @@ hr {
     width:25%;
     padding-left:5px;
     padding-right:5px;
+    overflow: hidden;
 }
 .blog-title:after{clear:both;}
 .blog-description {
