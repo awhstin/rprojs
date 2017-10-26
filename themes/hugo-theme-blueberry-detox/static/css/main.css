@@ -660,6 +660,7 @@ hr {
     font-family:'Slabo 27px';
     font-size: 40px;
     float:left;
+    display:inline;
     width:25%;
     padding-left:5px;
     padding-right:5px;
