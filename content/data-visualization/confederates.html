@@ -1,0 +1,110 @@
+---
+title: 'Confederate monuments with the statebins 📦'
+author: "@awhstin"
+date: 2017-10-11T19:20:14-05:00
+categories: ["R",', ','statebin',', ','data-visualization']
+titleimg: "disp-1"
+imgtype: "svg"
+---
+
+
+
+<p>Before I begin I want to say that it is not my intention for this piece to be taken as political. This is more me looking into a dataset I kept coming across in the news cycle and found interesting.</p>
+<p>In the past few months a lot of things have captured the public eye’s focus and became blurry just as quick when something else happens. It is just the way news stories are covered now. One story, more specifically one dataset, kept appearing for me which prompted me to find it and do my own exploration of it. I first came across this data, originally from the <a href="https://www.splcenter.org/">Southern Poverty Law Center</a>, when FiveThirtyEight ran an interesting <a href="https://fivethirtyeight.com/features/there-are-still-more-than-700-confederate-monuments-in-the-u-s/">piece</a> looking at the momentum groups were gaining for taking down some of these monuments. As always my preferred vehicle of exploration is R but some may notice that here <code>a_theme</code> is used, this is part of a very hodge-podge package I use for my website. A version of the package with most of the aesthetic aspects can be found <a href="https://github.com/awhstin/awtools">here</a>.</p>
+<pre class="r"><code>library(tidyverse)
+library(statebins)
+library(awtools) #just for the theme
+
+confederate&lt;-read_csv(&#39;https://raw.githubusercontent.com/awhstin/dataSet-List/master/confederate_symbols.csv&#39;)
+
+#Washington Post
+confederate.na&lt;-subset(confederate,!is.na(year_dedicated))
+confederate.na$year_dedicated&lt;-as.numeric(confederate.na$year_dedicated)
+confederate.na&lt;-confederate.na%&gt;%
+  group_by(state)%&gt;%
+  mutate(counts=length(state))</code></pre>
+<div id="look-at-the-timeline" class="section level2">
+<h2>look at the time(line)</h2>
+<p>It would benefit us to see a timeline of when each monument was dedicated by state. Awhile ago there was this <a href="https://twitter.com/albertocairo/status/905049594899431428">thread</a> on Twitter that discussed <a href="https://www.nytimes.com/interactive/2017/09/01/upshot/cost-of-hurricane-harvey-only-one-storm-comes-close.html">this</a> visualization from the New York Times around the cost of national disasters. This visualization is one of the best examples of conveying a large amount of information in a very aesthetically pleasing way. I, along with others it seems, spent a bit of time trying to come up with other ways to represent this data and I certainly could not match the original. So calling to that New York Times chart as inspiration we can try and plot the timeline of confederate dedications for the state of Virigina.</p>
+<pre class="r"><code>va&lt;-subset(confederate.na,state==&#39;VA&#39;)
+
+ggplot(va,aes(x=year_dedicated,y=reorder(state,counts),color=group_class))+
+  geom_count(alpha=.35,show.legend = F)+
+  a_theme(emphasis=&#39;x&#39;)+
+  a_scale_color()+
+  scale_x_continuous()+
+  labs(x=&#39;Year&#39;,
+       y=&#39;State&#39;)</code></pre>
+<p><img src="/data-visualization/confederates_files/figure-html/unnamed-chunk-2-1.png" width="816" /> This gives us a detailed look into the spread of thsoe dedications over time, so now we just want to see how every state looks on the same timeline.</p>
+<pre class="r"><code>ggplot(confederate.na,aes(x=year_dedicated,y=reorder(state,counts),color=group_class))+
+  geom_count(alpha=.35)+
+  a_theme(emphasis=&#39;x&#39;)+
+  theme(legend.position=&quot;top&quot;)+
+  scale_x_continuous(position=c(&#39;top&#39;))+
+  labs(x=&#39;Year&#39;,
+       y=&#39;State&#39;,
+       title=&#39;When Confederate monuments were dedicated&#39;,
+       subtitle=&#39;A timeline of dedicated Confederate monuments by State with the most recent being dedicated in VA in 2014.\nMonuments with unknown years of dedication are omitted.&#39;,
+       caption=&#39;Data: Southern Poverty Law Center\nGraph: Inspired by The Washington Post&#39;)</code></pre>
+<p><img src="/data-visualization/confederates_files/figure-html/disp2-1.png" width="960" /></p>
+</div>
+<div id="a-closer-look" class="section level2">
+<h2>a closer look</h2>
+<p>With this sort of visualization we can see some high-level trends. Like the big band of monuments dedicated in the early 1900’s. Then a higher concentration of schools dedicated just after 1950. To dive specifically into the types of different dedications it could be useful to look specifically at each category. Using the <code>statebins</code> package authored by <a href="https://twitter.com/hrbrmstr">Bob Rudis</a> allows us to look at the distribution of specific categories across the states with a few lines.</p>
+<pre class="r"><code>states&lt;-data.frame(state=state.abb,stringsAsFactors = F)
+all.mon&lt;-left_join(states,confederate)
+all.mon[is.na(all.mon)]&lt;-0
+all.mon%&gt;%
+  group_by(state)%&gt;%
+  summarize(count=n()) %&gt;%
+  select(state=state, value=count) %&gt;%
+  statebins_continuous(legend_position=&quot;bottom&quot;, font_size=3, text_color=&#39;#ffffff&#39;,legend_title=&#39;count&#39;)+
+  labs(subtitle=nrow(all.mon))+
+  a_theme(grid=F,noaxis=T)</code></pre>
+Now we can take a look at each category specifically by using <code>subset</code> to filter on each category we are interested in.
+<hr>
+<div class="floater">
+<p><img src="/data-visualization/confederates_files/figure-html/unnamed-chunk-4-1.png" width="336" /></p>
+</div>
+<div id="schools" class="section level3">
+<h3>Schools</h3>
+<div id="total" class="section level4">
+<h4>143 total</h4>
+Confederate school dedications are the third largest category in the dataset and have around 61% of the dedications with known dedication years. The earliest dedication of a school in the dataset is the dedication of <a href="http://okcps.schooldesk.net/AboutOKCPS/AboutOurSchools/tabid/68929/Default.aspx">Lee Elementary</a> in 1910 located in Oklahoma. The latest dedication of a school is Robert E. Lee Primary Elementary School which was dedicated in 2012 and is located in Alabama. <br>
+<hr>
+<div class="floater">
+<p><img src="/data-visualization/confederates_files/figure-html/unnamed-chunk-5-1.png" width="336" /></p>
+</div>
+</div>
+</div>
+<div id="monuments" class="section level3">
+<h3>Monuments</h3>
+<div id="total-1" class="section level4">
+<h4>741 total</h4>
+Monuments make up 47% of the data making it easily the largest category and with only 8% of those have unknown dedication dates makes it the most complete as well. The earliest dedication of a monument in the dataset is of the <a href="http://www.exploregeorgia.org/listing/1047-confederate-flagpole">Confederate Flagpole</a> which resides in Georgia and was dedicated in 1861. The latest monument dedication in the dataset is of <a href="http://www.hmdb.org/marker.asp?marker=76686">The Heights at Smith Run</a> which is located in Virginia and was dedicated in 2014. <br>
+<hr>
+<div class="floater">
+<p><img src="/data-visualization/confederates_files/figure-html/unnamed-chunk-6-1.png" width="336" /></p>
+</div>
+</div>
+</div>
+<div id="roads-highways" class="section level3">
+<h3>Roads / Highways</h3>
+<div id="total-2" class="section level4">
+<h4>513 total</h4>
+The dedication dates of most of the highways and roadways in the dataset are unknown with over 98% unknown. Though there are some with speculated dates those of the dates that are known span from 1914 to 1957. The earliest dedication in the dataset is the dedication of <a href="http://www.stlmag.com/news/confederate-monument-in-forest-park/">Confederate Drive</a> located in Missouri and was dedicated in 1914. The latest highway or roadway is <a href="http://georgiahistory.com/ghmi_marker_updated/hood-avenue/">Hood Avenue</a> located in Georgia and was dedicated in 1957. <br>
+<hr>
+<div class="floater">
+<p><img src="/data-visualization/confederates_files/figure-html/unnamed-chunk-7-1.png" width="336" /></p>
+</div>
+</div>
+</div>
+<div id="counties" class="section level3">
+<h3>Counties</h3>
+<div id="total-3" class="section level4">
+<h4>96 total</h4>
+<p>There is a precipituous drop off in number of dedications after monuments and highways/roadways with counties being the fourth largest category but only comprising 4% of the overall data. The earliest known county dedication in the dataset is of <a href="https://en.wikipedia.org/wiki/Bradford_County,_Florida">Bradford County</a> which is a county in Florida that was dedicated in 1861. The latest known county dedication in the dataset is of <a href="http://georgiahistory.com/ghmi_marker_updated/bleckley-county/">Bleckley County</a> which is located in Georgia and was dedicated in 1985.</p>
+<hr>
+</div>
+</div>
+</div>

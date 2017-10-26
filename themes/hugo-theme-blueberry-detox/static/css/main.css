@@ -847,6 +847,7 @@ a:hover {
     display: inline-block;
     padding:10px 20px 10px 20px;
 }
+.floater:after{clear:right;}
 .floaterr {
     float: right;
     display: inline-block;
