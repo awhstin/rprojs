@@ -647,10 +647,12 @@ hr {
     margin-bottom: 4em;
 }
 .blog-title {
-    font-size:50%;
+    font-size:25%;
+    width:100%;
 }
 .blog-description {
-    font-size:50%;
+    font-size:25%;
+    width:100%;
 }
 }.blog-title {
     text-transform: uppercase;
