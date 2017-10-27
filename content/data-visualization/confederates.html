@@ -22,7 +22,7 @@ confederate.na&lt;-subset(confederate,!is.na(year_dedicated))
 confederate.na$year_dedicated&lt;-as.numeric(confederate.na$year_dedicated)
 confederate.na&lt;-confederate.na%&gt;%
   group_by(state)%&gt;%
- -  mutate(counts=length(state))</code></pre>
+  mutate(counts=length(state))</code></pre>
 <div id="look-at-the-timeline" class="section level2">
 <h2>look at the time(line)</h2>
 <p>It would benefit us to see a timeline of when each monument was dedicated by state. Awhile ago there was this <a href="https://twitter.com/albertocairo/status/905049594899431428">thread</a> on Twitter that discussed <a href="https://www.nytimes.com/interactive/2017/09/01/upshot/cost-of-hurricane-harvey-only-one-storm-comes-close.html">this</a> visualization from the New York Times around the cost of national disasters. This visualization is one of the best examples of conveying a large amount of information in a very aesthetically pleasing way. I, along with others it seems, spent a bit of time trying to come up with other ways to represent this data and I certainly could not match the original. So calling to that New York Times chart as inspiration we can try and plot the timeline of confederate dedications for the state of Virigina.</p>
