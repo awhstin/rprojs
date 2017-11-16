@@ -664,6 +664,7 @@ hr {
     padding-left:5px;
     padding-right:5px;
     overflow: hidden;
+    color: #4444444;
 }
 .blog-title:after{clear:both;}
 .blog-description {
