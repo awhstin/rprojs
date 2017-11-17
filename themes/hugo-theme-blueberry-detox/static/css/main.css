@@ -847,7 +847,8 @@ a:hover {
    font-family:'Slabo 27px';
  }
  td{
-   padding:2px 2px 2px 2px;
+   padding:3px 3px 3px 3px;
+   text-align: center;	 
  }
 .floater {
     float: left;
@@ -869,8 +870,4 @@ a:hover {
 }
 .img:after {
   clear:both;
-}
-table .table-condensed td{
-	padding: 2px;
-	text-align:center;
 }
