@@ -870,7 +870,7 @@ a:hover {
 .img:after {
   clear:both;
 }
-.table-condensed td{
+table .table-condensed td{
 	padding: 2px;
 	text-align:center;
 }
