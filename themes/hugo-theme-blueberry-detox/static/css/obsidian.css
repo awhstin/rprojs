@@ -11,7 +11,9 @@
   font-family: Inconsolata;
   font-size:13px!important;
 }
-
+.hljs-string a{
+  color: #9090ee!important;
+}
 .hljs-keyword,
 .hljs-selector-tag,
 .hljs-literal,

@@ -338,10 +338,10 @@ cite {
 html {
     margin: 0;
     padding: 0;
-    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 85%;
-    line-height: 1.65;
-    font-weight: normal;
+    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 90%;
+    line-height: 1.95;
+    font-weight: thin;
     overflow-y: scroll;
     min-height: 100%;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -381,6 +381,11 @@ body:after {
     max-width: 1000px;
     margin: auto;
    
+}
+.containerheader {
+     width: 95%;
+    max-width: 1175px;
+    margin: auto;
 }
 .containerout {
      width: 14%;
@@ -664,6 +669,7 @@ hr {
     padding-left:5px;
     padding-right:5px;
     overflow: hidden;
+    color: #4444444;
 }
 .blog-title:after{clear:both;}
 .blog-description {
@@ -706,6 +712,11 @@ article.li {
 .post-time {
     text-transform: uppercase;
     letter-spacing: 4px;
+    margin-bottom: 30px;
+    font-size: 80%}
+.post-cat {
+    text-transform: uppercase;
+    letter-spacing: 2px;
     margin-bottom: 30px;
     font-size: 80%}
 .post-footer {
@@ -847,6 +858,8 @@ a:hover {
  }
  td{
    padding:2px 2px 2px 2px;
+   text-align: center;
+   margin:2px;
  }
 .floater {
     float: left;
