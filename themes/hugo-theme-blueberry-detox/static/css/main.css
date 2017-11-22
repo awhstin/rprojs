@@ -857,7 +857,7 @@ a:hover {
  }
  td{
    padding:2px 2px 2px 2px;
-   text-align: center;
+   text-align: center!important;
    margin:2px;
  }
 .floater {
