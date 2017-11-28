@@ -853,11 +853,11 @@ a:hover {
  th{
    padding:2px 5px 2px 5px;
    text-align: center!important;
-   font-family:'Slabo 27px';
+   font-family:'Roboto';
  }
  td{
    padding:2px 2px 2px 2px;
-   text-align: center;
+   text-align: center!important;
    margin:2px;
  }
 .floater {
