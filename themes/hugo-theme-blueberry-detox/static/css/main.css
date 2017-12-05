@@ -385,7 +385,7 @@ body:after {
 .containerheader {
      width: 95%;
     margin: auto;
-    margin-top:100px;
+    display: inline-block;
 }
 .containerout {
      width: 14%;
