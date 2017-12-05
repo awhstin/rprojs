@@ -214,7 +214,7 @@ h1 {
     font-size: 43px;
 }
 }h3 {
-    font-size: 32px;
+    font-size: 36px;
     font-size: 2rem;
     margin-bottom: 0.825em;
 }
@@ -707,6 +707,8 @@ article.li {
 .post-title {
     margin-bottom: 40px;
     margin-top: 10px;
+    line-height: 1;
+    font-size:80%;
 }
 .post-time {
     text-transform: uppercase;
