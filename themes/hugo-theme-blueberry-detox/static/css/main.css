@@ -383,7 +383,7 @@ body:after {
 }
 .containerheader {
      width: 95%;
-    display: inline;
+    display: inline-block;
 }
 .containerout {
      width: 14%;
