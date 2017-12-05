@@ -380,11 +380,10 @@ body:after {
     width: 90%;
     max-width: 1000px;
     margin: auto;
-   
 }
 .containerheader {
      width: 95%;
-    display: inline-block;
+    display: inline;
 }
 .containerout {
      width: 14%;
