@@ -189,7 +189,7 @@ h2, h3 {
     hyphens: none;
 }
 h1, h2, h3, h4, h5, h6 {
-    font-family: "Slabo 27px";
+    font-family: "Roboto Slab";
     font-weight: 700;
     line-height: 1;
     margin-top: 0;
@@ -338,7 +338,7 @@ cite {
 html {
     margin: 0;
     padding: 0;
-    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Roboto Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 90%;
     line-height: 1.95;
     font-weight: thin;
@@ -380,11 +380,10 @@ body:after {
     width: 90%;
     max-width: 1000px;
     margin: auto;
-   
 }
 .containerheader {
      width: 95%;
-    margin: auto;
+    display: inline-block;
 }
 .containerout {
      width: 14%;
@@ -651,7 +650,7 @@ hr {
     margin-bottom: 4em;
 }
 .blog-title {
-    font-size:25%;
+    font-size:80% !important;
     width:100%;
 }
 .blog-description {
@@ -660,11 +659,12 @@ hr {
 }
 }.blog-title {
     text-transform: uppercase;
-    font-family:'Slabo 27px';
-    font-size: 40px;
+    font-family:'Roboto Slab';
+    font-size: 50px;
     float:left;
-    display:inline;
-    width:25%;
+    font-weight:700;
+    display:inline-block;
+    width:35%;
     padding-left:5px;
     padding-right:5px;
     overflow: hidden;
@@ -681,7 +681,7 @@ hr {
     
 }
 .blog-title h1:hover{
-  border-color:#fff !important;
+  border-color:#77ddaa !important;
 }
 #blog-logo img {
     margin: 0 auto 3em auto;
@@ -707,6 +707,8 @@ article.li {
 .post-title {
     margin-bottom: 40px;
     margin-top: 10px;
+    line-height: 1;
+    font-size:25px;
 }
 .post-time {
     text-transform: uppercase;
