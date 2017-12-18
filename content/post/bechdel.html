@@ -23,10 +23,10 @@ imgtype: "svg"
 <p>Though I was very intrigued by this data the reason for the post is two-fold. Before we begin I wanted to briefly introduce my personal theme and tools package, <a href="https://github.com/awhstin/awtools">awtools</a>, which I use personally at work and as the main theme on this website. Originally I had created a minal and distilled theme, <code>a_theme</code>, that used my main website font Slabo 27px and PT Sans Narrow. That is still included but recently I went full Roboto and now my title fonts are Roboto Slab and Roboto Light for the body. Since that change I wanted to include a few other aesthetic changes in the <code>awtools</code> package as well, feel free to visit the github page to view all the changes.</p>
 <pre class="r"><code>library(tidyverse)
 library(awtools) #devtools::install_github(&#39;awhstin/awtools&#39;)
-library(imdb)</code></pre>
+</code></pre>
 <p>The Bechdel Test API documentation is pretty straightforward so we can use their <code>getAllMovies</code> method to grab the full dataset to play with. They do request however that you do not frequently call it but instead cache or save the data locally.</p>
 <pre class="r"><code>#grab data from the API
-#you&#39;ll need json_lite if you don&#39;t already have it
+#you&#39;ll need the jsonlite package if you don&#39;t already have it
 #the website requests that you don&#39;t use the getAllMovies method so cache it for later use!
 movies&lt;-json_lite::read_json(&#39;http://bechdeltest.com/api/v1/getAllMovies&#39;,simplifyVector = TRUE)%&gt;%
   data.frame()%&gt;%
