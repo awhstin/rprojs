@@ -883,3 +883,8 @@ a:hover {
 .img:after {
   clear:both;
 }
+pre code {
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
+}
