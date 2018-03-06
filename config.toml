@@ -1,5 +1,5 @@
 theme = "hugo-theme-blueberry-detox"
-title='Austin Wehrwein'
+title='aw.stats'
 baseurl = "https://austinwehrwein.com/"
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
