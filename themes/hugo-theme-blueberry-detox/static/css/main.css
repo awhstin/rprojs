@@ -650,21 +650,16 @@ hr {
     margin-bottom: 4em;
 }
 .blog-title {
-    font-size:80% !important;
-    width:100%;
+    font-size:40px!important;
 }
 .blog-description {
-    font-size:25%;
-    width:100%;
 }
 }.blog-title {
-    
     font-family:'Roboto Slab';
     font-size: 50px;
     float:left;
     font-weight:700;
     display:inline-block;
-    width:35%;
     padding-left:5px;
     padding-right:5px;
     overflow: hidden;
