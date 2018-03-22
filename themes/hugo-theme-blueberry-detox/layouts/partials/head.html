@@ -19,11 +19,11 @@
         <script src="/js/highlight.pack.js"></script>
         <script>hljs.initHighlightingOnLoad();</script>
         <title>{{ .Site.Title }}</title>
-        <meta name="twitter:card" content="summary">
+        <meta name="twitter:card" content="summary_large_image">
         <meta property="og:title" content="{{ .Site.Title }}">
         <meta property="og:type" content="website">
         <meta name="twitter:image" content="{{ index .Params "titleimg" }}.{{ index .Params "imgtype" }}">
-        <meta property="description" content="{{ .Site.Params.description }}">
+        <meta property="description" content="{{ .Summary }}">
     </head>
 
 
