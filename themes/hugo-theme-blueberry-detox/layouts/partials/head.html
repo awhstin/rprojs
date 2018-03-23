@@ -30,15 +30,11 @@
   {{ index .Params "titleimg" }}
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://austinwehrwein.com/{{ index .Params "titleimg" }}.{{ index .Params "imgtype" }}">
-  {{ else }}
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:image" content="https://austinwehrwein.com/post/favicon.ico" >
-  {{ end }}
   
 {{ $defaultDescription := printf "Article posted by %s, on %s" .Params.author (.Date.Format "Monday, January 2nd, 2006") }}
 <meta property="description" content="{{ .Description | default $defaultDescription }}">
 <meta property="og:description" content="{{ .Description | default $defaultDescription }}">
-{{ end }}
+
 
 <meta name="twitter:creator" content="{{ .Params.author }}">
 <meta name="twitter:site" content="{{ .Params.author }}">
