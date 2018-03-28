@@ -192,6 +192,7 @@ h1, h2, h3, h4, h5, h6 {
     font-family: "IBM Plex Mono";
     font-weight: bold;
     margin-top: 0;
+    line-height: 1;
     text-rendering: optimizeLegibility;
 }
 h1 {
@@ -697,6 +698,7 @@ article.li {
 .post-header {
     text-align: center;
     margin-top: 1em;
+    width=60%;
 }
 .post-title {
     margin-bottom: 40px;
