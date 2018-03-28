@@ -3,7 +3,7 @@
         <h3 class="post-title"><a href="{{ .Permalink }}">{{ .Title }}</a></h3>
         <p class="post-time"><time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" | safeHTML }}">{{ .Date.Format "January 2, 2006" }}</time></p>
     </header>
-    <img  style="max-width:25%;max-height:25%;" src="{{ index .Params "titleimg" }}.{{ index .Params "imgtype" }}" />
+    <img  class ="titleimg" style="max-width:25%;max-height:25%;" src="{{ index .Params "titleimg" }}.{{ index .Params "imgtype" }}" />
     <section class="post-excerpt">
         <p>{{ .Summary }}</p>
     </section>
