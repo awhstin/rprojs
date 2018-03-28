@@ -169,6 +169,7 @@ img {
     max-width: 100% !important;
     height: auto;
     display:  block;
+    position: left;
     margin:  0 auto;
 }
 @page {
@@ -222,7 +223,7 @@ h1 {
     h3 {
     font-size: 28px;
 }
-    img{
+img{
 	    max-width:100%;
 	    height:auto;
 	}
