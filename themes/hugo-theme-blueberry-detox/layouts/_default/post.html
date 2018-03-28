@@ -1,6 +1,6 @@
 <article class="{{ .Type }}">
 	<header class="post-header">
-	<p class="post-time"><time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" | safeHTML }}">{{ .Date.Format "January 2, 2006" }}</time></p>	  
+	<p class="post-time">Written on <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" | safeHTML }}">{{ .Date.Format "January 2, 2006" }}</time></p>	  
         <h2 class="p-post-title">{{ .Title }}</h2>
 	<p class="post-cat">Found in {{ index .Params "categories" }} by @awhstin on <i class="fa fa-twitter" aria-hidden="true"></i>
 <p>
