@@ -23,7 +23,9 @@
         <title>{{ .Site.Title }}</title>
 <meta property="og:title" content="{{ .Title }}">
 <meta property="og:type" content="website">
-<meta property="description" content="{{ .Summary }}">
+{{ $defaultDescription := printf "Article posted by Austin, on %s" .Params.author (.Date.Format "Monday, January 2nd, 2006") }}
+<meta property="description" content="{{ .Description | default $defaultDescription }}">
+<meta property="og:description" content="{{ .Description | default $defaultDescription }}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://austinwehrwein.com/{{ index .Params "titleimg" }}.{{ index .Params "imgtype" }}">
     </head>
