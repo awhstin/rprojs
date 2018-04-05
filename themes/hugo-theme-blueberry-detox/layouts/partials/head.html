@@ -13,6 +13,7 @@
         <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">     
         <link href="https://fonts.googleapis.com/css?family=Concert+One" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400,700" rel="stylesheet"> 
         <script src="https://use.fontawesome.com/05cd59bd99.js"></script>
         <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
         <link rel="stylesheet" type="text/css" href="/css/obsidian.css"/>
@@ -20,18 +21,13 @@
         <script>hljs.initHighlightingOnLoad();</script>
 
         <title>{{ .Site.Title }}</title>
-<meta property="og:title" content="{{ .Site.Title }}">
+<meta property="og:title" content="{{ .Title }}">
 <meta property="og:type" content="website">
-<meta property="description" content="{{ .Site.Params.description }}">
-<meta property="og:description" content="{{ .Site.Params.description }}">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://austinwehrwein.com/{{ index .Params "titleimg" }}.{{ index .Params "imgtype" }}">
-  
-{{ $defaultDescription := printf "Article posted by Austin, on %s" (.Date.Format "Monday, January 2nd, 2006") }}
+{{ $defaultDescription := printf "Article posted on %s" (.Date.Format "Monday, January 2, 2006") }}
 <meta property="description" content="{{ .Description | default $defaultDescription }}">
 <meta property="og:description" content="{{ .Description | default $defaultDescription }}">
-<meta name="twitter:creator" content="{{ index .Params "author" }}">
-<meta name="twitter:site" content="{{ index .Params "author" }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://austinwehrwein.com/{{ index .Params "titleimg" }}.{{ index .Params "imgtype" }}">
     </head>
 
 

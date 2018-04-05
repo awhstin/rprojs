@@ -80,6 +80,7 @@ img {
     border: 0;
     max-width: 100%;
     padding-bottom:15px;
+	padding-right:15px;
 }
 svg:not(:root) {
     overflow: hidden;
@@ -169,6 +170,7 @@ img {
     max-width: 100% !important;
     height: auto;
     display:  block;
+    position: left;
     margin:  0 auto;
 }
 @page {
@@ -189,10 +191,10 @@ h2, h3 {
     hyphens: none;
 }
 h1, h2, h3, h4, h5, h6 {
-    font-family: "Roboto Slab";
-    font-weight: 700;
-    line-height: 1;
+    font-family: "IBM Plex Mono";
+    font-weight: bold;
     margin-top: 0;
+    line-height: 1;
     text-rendering: optimizeLegibility;
 }
 h1 {
@@ -222,7 +224,7 @@ h1 {
     h3 {
     font-size: 28px;
 }
-    img{
+img{
 	    max-width:100%;
 	    height:auto;
 	}
@@ -655,7 +657,7 @@ hr {
 .blog-description {
 }
 }.blog-title {
-    font-family:'Roboto Slab';
+    font-family:'IBM Plex Mono';
     font-size: 50px;
     float:left;
     font-weight:700;
@@ -696,14 +698,15 @@ article.li {
 }
 }
 .post-header {
-    text-align: center;
+    text-align: left;
     margin-top: 1em;
+    width: 75%;
 }
 .post-title {
     margin-bottom: 40px;
     margin-top: 10px;
     line-height: 1;
-    font-size:25px;
+    font-size:30px;
 	font-weight:700;
 }
 .post-time {
