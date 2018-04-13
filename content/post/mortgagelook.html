@@ -1,0 +1,82 @@
+---
+title: "Friday Fun: Comparing annual ACS data with tidycensus"
+author: '@awhstin'
+date: 2018-03-26T10:13:14-08:00
+titleimg: "mortgage-1"
+categories: ['Illinois',', ','mortgage',', ','awtools']
+imgtype: "png"
+---
+
+
+
+<p>At the time of writing this I have been mired in one of life’s most confusing and convoluted processes, buying a house. After constantly being fed numbers, stats, and figures all of which had Comic Sans as a font, I decided to find out some information for myself. Doing that greatly helped inform me about the buying process and actually empowered me to speak to the various powers at be (and there are a lot of them) with a little more knowledge. Now I am a little further into the process and I find myself wanting to learn a little more about mortgages, and mortgaged houses, in Illinois in general. Naturally my focus turned to the <code>tidycensus</code> package, which is another one of my favorite packages to work with.</p>
+<div id="before-we-start" class="section level4">
+<h4>before we start…</h4>
+<ul>
+<li>For some great tutorials, use cases and support for the <code>tidycensus</code> package visit Kyle Walker’s <a href="https://walkerke.github.io/tidycensus/">tidycensus website</a>.</li>
+<li>Also give him a follow on Twitter <a href="https://twitter.com/kyle_e_walker">@kyle_e_walker</a>.</li>
+<li>You must get a Census API key before we start, go to <a href="http://api.census.gov/data/key_signup.html.">http://api.census.gov/data/key_signup.html</a></li>
+</ul>
+<pre class="r"><code>library(tidyverse)
+library(tidycensus)
+library(awtools) #only for the theme, colors etc
+
+#startup
+census_api_key(&quot;Your Key Here Please&quot;)</code></pre>
+<p>This API is full of amazing data and (for me) it can be hard to find exactly the data <a href="https://www.youtube.com/watch?v=GO_xfR64qSk">you are looking for</a>. I have developed a sort of system for searching the variables by keywords when I don’t know exactly the tables I am looking for. It is by no means perfect but works for me. In this case I want to look for variables that have to do with <em>mortgage</em> so naturally I used that as a keyword.</p>
+<pre class="r"><code>#find var
+v15 &lt;- load_variables(2016, &quot;acs1&quot;, cache = TRUE)
+variables.list&lt;-v15[grep(&quot;mortgage&quot;, v15$label), ]</code></pre>
+<p>This makes things much more manageable. From there I use it to look for the variables I know I want. In this case the actual variables we want are to look at high level values for houses with, and without mortgages for the last few years which is variable <em>B25097</em>. Normally the <code>get_acs</code> function uses 2016 as the default year and would pull the most recent data or a single year’s data. To get all the years of data we have to do a little extra using the <code>map_df</code> function. In my version I want to look at Cook County specifically.</p>
+<pre class="r"><code>#IL stuff
+#first look at total value etc
+acsyears&lt;-2010:2016
+il.value&lt;-map_df(acsyears, function(x) {
+  get_acs(geography = &quot;county&quot;, 
+                  year=x,
+                  variables = c(&#39;B25097_002E&#39;,&#39;B25097_003E&#39;),
+                  state=&#39;IL&#39;,
+                  county=&#39;Cook&#39;)}%&gt;%
+    mutate(year=x))</code></pre>
+<p>Now that all the data is together I want to join the variables and labels from the <code>variables.list</code> and then make a pretty label for plotting.</p>
+<pre class="r"><code>il.value&lt;-il.value%&gt;%
+  mutate(name=paste0(variable,&#39;E&#39;))%&gt;%
+  left_join(variables.list)%&gt;%
+  mutate(type=ifelse(name == &#39;B25097_002E&#39;,&#39;With Mortgage&#39;,&#39;Without Mortgage&#39;))</code></pre>
+<p>Now we will plot the data. One thing to note is the use of <code>a_concert_theme</code> and <code>abs_comma</code>, both of which are purely formatting and aesthetic edits that you do not need to include. If you are interested in using my theme and some of its functions, or want to tweak it and use it for yourself you can find that on github in my <a href="https://github.com/awhstin/awtools">awtools</a> repo.</p>
+<pre class="r"><code>#films passing the bechdel test every year
+ggplot(il.value,aes(x=year,y=estimate,color=type))+
+  geom_line()+
+  geom_point(alpha=.33)+
+  a_concert_theme()+
+  scale_y_continuous(name=&#39;Dollars&#39;,labels = abs_comma)+
+  labs(title=&#39;IL Mortgage Values&#39;,
+       subtitle=&#39;ACS median mortgage values by year for Cook County, IL&#39;)</code></pre>
+<p><img src="/post/mortgagelook_files/figure-html/bechdel2-1.png" width="672" /> This trend is interesting but maybe not surprising. The slight increase from 2015 to 2016 in the ‘With Mortgage’ group is interesting and I want to look more into that. First I revisited the <code>variables.list</code> dataframe and found <em>B25096</em> which has to do with the number of homes with a mortgage in a price range. Using the same logic as before but adding a piece of logic with <code>paste0</code> that pulls the individuals variables we can collect all the data for the ‘With Mortgage’ group for these years.</p>
+<pre class="r"><code>#Interesting, I want to focus on the group with a mortgage.
+#specific home value numbers
+il.mortgages&lt;-map_df(acsyears, function(x) {
+  get_acs(geography = &quot;county&quot;, 
+          year=x,
+          variables = c(paste0(&#39;B25096_00&#39;,3:9,&#39;E&#39;)),
+          state=&#39;IL&#39;,
+          county=&#39;Cook&#39;)}%&gt;%
+    mutate(year=x))
+
+ill.mortgages&lt;-il.mortgages%&gt;%
+  mutate(name=paste0(variable,&#39;E&#39;))%&gt;%
+  left_join(variables.list)%&gt;%
+  mutate(type=unlist(lapply(strsplit(label,&#39;!!&#39;),&#39;[&#39;,4)))</code></pre>
+<p>Once we gathered the data and cleaned it similar to the first time we can take a look at how the trends look in the plot. I would imagine that the lower to mid range mortgage price levels will have risen in the last couple years of the survey. I imagine this is because people’s aversion to getting a mortgage, fairer rates, and general stability have raised people’s interest.</p>
+<pre class="r"><code>#look
+ggplot(ill.mortgages,aes(x=year,y=estimate,color=type))+
+  geom_line()+
+  geom_point(alpha=.3)+
+  a_concert_theme()+
+  a_primary_color()+
+  scale_y_continuous(labels = abs_comma)+
+  labs(title=&#39;You get a mortgage &amp; you get a mortgage&#39;,
+    subtitle=&#39;Housing units by mortgage value range for Cook County, IL&#39;,
+    caption=&#39;Data from ACS years 2010-2016&#39;)</code></pre>
+<p><img src="/post/mortgagelook_files/figure-html/unnamed-chunk-7-1.png" width="960" /> Much like I thought it seems that the mortgage trends are generally rising for the lower third of the price ranges. Mortgages over $200k all seem to be trending negatively but there could be other reasons for that. The ACS reported substantial decreases in <a href="https://www.census.gov/acs/www/methodology/sample-size-and-data-quality/response-rates/">response rates</a> could also be to blame for some of the negative trend in the data. Though knowing that makes the trend of lower priced mortgages upwards all the more interesting. Another reason for these trends could be that there is a general move out of the downtown <a href="http://www.chicagotribune.com/news/local/breaking/ct-chicago-census-population-loss-met-20170322-story.html">Chicago</a> towards the suburbs where it is more common to find lower priced houses.</p>
+</div>
