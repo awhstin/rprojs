@@ -1,0 +1,130 @@
+---
+title: 'A look into U.S. infectious diseases'
+author: "@awhstin"
+date: 2018-05-03T21:13:14-05:00
+categories: ["R",', ','diseases',', ','data']
+titleimg: "disease-1"
+imgtype: "png"
+---
+
+
+
+<p>During the week I come across different articles, stories, posts even tweets that inspire or intrigue me and they end up in a list of things for me to revisit. Usually the subject is something that I know very little about but I want to. This week was no exception. I stumbled on an article from FiveThirtyEight titled <a href="https://fivethirtyeight.com/features/more-americans-are-dying-from-suicide-drug-use-and-diarrhea/?ex_cid=538twitter">More Americans Are Dying From Suicide, Drug Use And Diarrhea</a> and was intrigued. In the past I have looked into CDC Wonder data but this seemed to be much more of a narrative around the data that the Institute for Health Metrics and Evaluation <a href="http://www.healthdata.org/">IHME</a> puts out and the article summarizes it saying; ‘Even as the trends differ, however, they have something in common: huge disparities by region and sometimes even within states.’</p>
+<p>After looking into the data I thought I wanted to look for myself specifically at the infectious diseases mentioned in the article to learn more.</p>
+<div id="getting-the-data" class="section level4">
+<h4>Getting the data</h4>
+<p>First off this fantastic dataset is available on the IHME data portal <a href="http://ghdx.healthdata.org/us-data">GHDx</a> which stands for the Global Health Data Exchange. It is available as an Excel file that is multi-tabbed but for the purpose of this I created a tidier version of it available in my <a href="https://raw.githubusercontent.com/awhstin/Dataset-List/master/diseases.csv">Dataset-List</a> github repo. That way we don’t spend too much time on the tidying part.</p>
+To do this we will need a few different packages.
+<li>
+<a href="https://www.tidyverse.org/">tidyverse</a>
+</li>
+<li>
+<a href="https://github.com/hrbrmstr/albersusa">albersusa</a>
+</li>
+<p><br> First is the <code>tidyverse</code> which helps us get the data into something we can work with. Secondly is <code>albersusa</code> a great package from creating great map projections. The other two are personal preferences, with the <code>RColorBrewer</code> providing the color palettes and my personal package <code>awtools</code> which is just my playground for different themes and functions that I use on this website.</p>
+<pre class="r"><code>library(tidyverse)
+library(albersusa)
+library(RColorBrewer)
+library(awtools)
+#you may need to download the dev ggplot2 to get sf to work, if so:
+#devtools::install_github(&#39;tidyverse/ggplot2&#39;)
+
+diseases &lt;- read.csv(&#39;https://raw.githubusercontent.com/awhstin/Dataset-List/master/diseases.csv&#39;, stringsAsFactors = FALSE)</code></pre>
+If you look at the diseases dataframe in comparison to the Excel file provided we now have a row for each disease and each county. One of the first questions I was interested in answering was in what states do we see the highest changes during the time period? Luckily with the <code>tidyverse</code> it is only a few steps away. It is also one of my favorites:
+<center>
+{{% tweet "986983998651019264" %}}
+</center>
+<pre class="r"><code>state_diseases&lt;- diseases%&gt;%
+  select(c(2,4:6)) %&gt;%
+  mutate(state=gsub(&quot;.*, &quot;, &quot;&quot;,Location)) 
+top_states &lt;- state_diseases %&gt;% 
+  group_by(Disease,state) %&gt;%
+  summarize(mean.change=mean(Percent.Change)) %&gt;%
+  arrange(desc(mean.change)) %&gt;% 
+  group_by(Disease) %&gt;%
+  slice(1:5) %&gt;%
+  ungroup()</code></pre>
+<p>Now that we have states separated from the <em>Location</em> field and summarized the <em>Percent.Change</em> field we can visualize which of these states saw the highest changes.</p>
+<pre class="r"><code>ggplot(top_states, aes(x=state, y=mean.change, fill=Disease)) +
+  geom_bar(stat=&#39;identity&#39;, show.legend = FALSE) +
+  facet_wrap(~Disease, ncol = 2, scales = &#39;free&#39;) +
+  a_primary_fill() +
+  a_plex_theme() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  labs(caption=&#39;Data from the IHME Global Health Data Exchange\n
+       http://ghdx.healthdata.org/us-data&#39;)</code></pre>
+<p><img src="/data-visualization/diseases_files/figure-html/stateplot-1.png" width="960" /> Looking at each of the diseases I can see that there is a commonality of region to most the states within each. It would be interesting to know where saw the highest changes at the county level. This should further corroborate our story that there is a strong regional aspect to the changes we are seeing in the infectious disease rates. We will look at the absolute value of percent change because there are some diseases that are showing decline.</p>
+<pre class="r"><code>top_diseases &lt;- diseases %&gt;% 
+  arrange(desc(abs(Percent.Change))) %&gt;% 
+  group_by(Disease) %&gt;%
+  slice(1:8)</code></pre>
+<p>Now plot.</p>
+<pre class="r"><code>ggplot(top_diseases,aes(x=year,
+                        y=rate,
+                        color = Disease )) +
+  geom_line(data = diseases,
+            aes(group = Location), 
+            colour = &quot;grey&quot;, 
+            alpha = .2)+
+  geom_line(show.legend = FALSE)+
+  geom_label(data = subset(top_diseases, year == 1995),
+             aes(label = gsub(&#39;,&#39;,&#39;\n&#39;, Location),
+                 x = year,
+                 y = rate*1.5,
+                 group = Disease), 
+             show.legend = FALSE,
+             family = &#39;IBM Plex Mono&#39;,
+             size = 3,
+             nudge_y = 1)+
+  facet_wrap(~Disease, ncol = 2, scales=&#39;free_y&#39;)+
+  a_primary_color()+
+  labs(title=&#39;U.S. Infectious Diseases&#39;,
+       subtitle=&#39;Mortality rates per 100,00 persons by county from 1980-2014. Counties that have the highest absolute percent change are highlighted.&#39;,
+       caption=&#39;Data from the IHME Global Health Data Exchange\n
+       http://ghdx.healthdata.org/us-data&#39;)+
+  a_plex_theme()</code></pre>
+<p><img src="/data-visualization/diseases_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+<p>It is interesting to see the general direction of the changes by disease and the counties that are highlighted back up that regionality aspect. These counties and the other top counties should be the centers of the regions if we only had some sort of geographic visualization we could use.</p>
+</div>
+<div id="lets-do-that" class="section level4">
+<h4>Let’s do that</h4>
+<p>Using the <code>albersusa</code> package we can match our data to the simple feature geometry the package provides us. I also want to create a state version of the same projection to add state outlines to our chart.</p>
+<pre class="r"><code>#percent changes
+change_disease&lt;-diseases %&gt;%
+  select(c(2,3,4,5)) %&gt;%
+  distinct()
+#sf object
+cty_sf &lt;- counties_sf(&quot;aeqd&quot;)
+cty_sf$Location&lt;-paste0(cty_sf$name,&#39; &#39;,cty_sf$lsad,&#39;, &#39;,cty_sf$state)
+cty_disease&lt;-left_join(cty_sf, change_disease, by=c(&#39;Location&#39;))
+names(cty_disease)[9]&lt;-&#39;geometry&#39;
+
+#us states
+us &lt;- usa_sf(&#39;aeqd&#39;)
+us_map &lt;- fortify(us, region=&quot;name&quot;)</code></pre>
+<p>One of the interesting charts from the original article was looking specifically at the <em>Percent.Change</em> of lower respiratory infections. Let’s take a look at that first, we should see the area around where Louisiana and Mississippi meet as the focal point based on the states that came up in our first look.</p>
+<pre class="r"><code>  ggplot(subset(cty_disease, Disease==&#39;Lower respiratory infections&#39;), aes(fill = Percent.Change, color=Percent.Change)) + 
+  geom_sf() + 
+  scale_fill_distiller(palette = &#39;Spectral&#39;, na.value = &#39;white&#39;) +
+  scale_color_distiller(palette = &#39;Spectral&#39;, na.value = &#39;white&#39;) +
+  geom_sf(data=us_map, color=&#39;white&#39;, size=0.25, fill=NA)+
+  a_plex_theme() +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank()) +
+  labs(title=&#39;Lower respiratory infections&#39;, subtitle=&#39;Change in mortality rates per 100k persons from 1980-2014&#39;,
+       caption=&#39;Data from the IHME Global Health Data Exchange\n
+       http://ghdx.healthdata.org/us-data&#39;)</code></pre>
+<p><img src="/data-visualization/diseases_files/figure-html/unnamed-chunk-6-1.png" width="960" /> It looks like that is the case. As the original article states it looks like the disparity of regions is only growing. In some parts of the country there was a marked decrease in the rates whereas others have grown. Most of the growth seems to be focused in one area. The original post doesn’t expand on some of the other infectious diseases so it would be interesting to note if they all are centered in the same regions. Let’s look at the other infectious diseases we have data to see.</p>
+<h4>
+HIV/AIDS
+</h4>
+<p><img src="/data-visualization/diseases_files/figure-html/unnamed-chunk-7-1.png" width="768" /></p>
+<h4>
+Diarrheal diseases
+</h4>
+<p><img src="/data-visualization/diseases_files/figure-html/unnamed-chunk-8-1.png" width="768" /> For both the HIVand the Diarrheal diseases there seem to be strong regional aspects to both of them. The HIVmirrors the Lower respiratory infections regions. The Diarrheal diseases are spread out in pockets, with peaks in California, Washington, &amp; Illinois-Indiana seemingly indicating this is a different sort of regional aspect. The Diarrheal diseases were actually the only major infectious diease that increased nationally (from 2000-2014). The originaly article states that a lot of this was to do with a certain bacteria, commonly found in the aging population.</p>
+</div>
+<div id="final-thoughts" class="section level4">
+<h4>Final thoughts</h4>
+<p>Exploring this data and creating my own visualizations has helped me gain a better understanding not only of the article I found them in but also the narrative in general. For me doing this sort of secondary look, like this one that is inspired by another article or post, really substantiates the narrative that originally interested me. This leads to me <em>hopefully</em> being more knowledgeable and curious about the topic in the future.</p>
+</div>
