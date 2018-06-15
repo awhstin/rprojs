@@ -1,0 +1,126 @@
+---
+title: "A World Cup 2018 primer, with graphs!"
+date: 2018-06-14T17:00:00-05:00
+categories: ["R",', ','world cup',', ','soccer']
+titleimg: "wc-1"
+imgtype: "svg"
+---
+
+
+
+<p>The Premier League just ended and normally this time of year is just spent reading up on transfer news until the league starts again, but not this year! It is a World Cup year which means that as of today the (real) biggest sporting event in the world kicks off. Some of you may know I (sort of) kept up my English Premier League <a href="https://austinwehrwein.com/soccer/">predictions</a> and while I am not doing the same for this World Cup I do have my own picks. I am proudly very German but with the United States not qualifying I find myself wanting to follow who I think plays the most exciting football. My recipe is simple, one part passion, two parts admiration of their game, and one part ‘not Brazil’.</p>
+<center>
+<hr>
+<div>
+<h3 id="my-picks">My Picks</h3>
+<p><strong>Finals</strong>: France vs. Germany<br> <strong>Winner</strong>: Germany<br> <strong>Who I’ll support</strong>: England</p>
+</div>
+<hr>
+</center>
+<p>I have really enjoyed the news coverage and awesome data visualization centered pieces that have come up for this World Cup. There are a number of really cool sites to follow that offer some great articles to get acquainted with the teams, as well as updates during games. Here are some of my favorites:</p>
+<div id="getting-started" class="section level4">
+<h4>Getting started</h4>
+<ul>
+<li>FiveThirtyEight - <a href="https://projects.fivethirtyeight.com/world-cup-quiz/">Which World Cup Team Should You Root For?</a></li>
+<li>New York times - <a href="https://www.nytimes.com/2018/06/11/sports/world-cup-groups.html">World Cup 2018: Guide</a></li>
+</ul>
+</div>
+<div id="following-along" class="section level4">
+<h4>Following along</h4>
+<ul>
+<li>FiveThirtyEight - <a href="https://projects.fivethirtyeight.com/2018-world-cup-predictions/">2018 World Cup Predictions &amp; Matches</a></li>
+<li>The Guardian - <a href="https://www.theguardian.com/football/world-cup-2018">World Cup 2018 live</a></li>
+<li>Fox Sports - <a href="https://www.foxsports.com/soccer/fifa-world-cup">FIFA World Cup Live</a></li>
+</ul>
+</div>
+<div id="interesting-reads" class="section level4">
+<h4>Interesting reads</h4>
+<ul>
+<li>The Telegraph - <a href="https://www.telegraph.co.uk/world-cup/world-cup-2018-winners-predictions-forecast-champions/">What makes a World Cup winner?</a></li>
+<li>National Geographic - <a href="https://www.nationalgeographic.com/magazine/2018/07/world-cup-fifa-soccer-players-national-teams-foreign-born/">See Which World Cup Teams Have the Most Foreign-Born Players</a></li>
+</ul>
+<p>Reading through some of these articles I started to get the sense of how analysts and reporters were comparing the different international squads and started to get some ideas of my own. One reoccuring theme was the comparison of some of the different nations top players, often referring to their performance during their respective club seasons. This is a good indicator of the player’s form and potential but international play is a different thing altogether. A lot of the nations with high value players don’t play together on the same club or even the same league so chemistry can be a problem.</p>
+</div>
+<div id="sifting-through-the-numbers" class="section level2">
+<h2>sifting through the numbers</h2>
+<p>This is when I started to think that looking at the international team’s market value as a whole along with the FIFA ranking would be interesting. This would try to get at a sense of which of those team’s have decent players (market value) <em>and</em> chemistry (FIFA ranking) together.</p>
+<p>First off we need some data. First off we can get the FIFA ranking from the FIFA <a href="&#39;https://www.fifa.com/fifa-world-ranking/ranking-table/men/index.html&#39;">website</a>. Then we will need some market value data, which Transfer Markt provides via their <a href="&#39;https://www.transfermarkt.com/world-cup-2018/teilnehmer/pokalwettbewerb/WM18&#39;">World Cup 2018</a> page. This data along with using the <code>rvest</code> package we can get the information we need.</p>
+<pre class="r"><code>library(tidyverse)
+library(rvest)
+library(awtools) #optional: just for the graph aesthetics
+#devtools::install_github(&#39;awhstin/awtools&#39;)</code></pre>
+<p>Once we have those loaded we can gather the data from the two sites and combine to get what we are interested in. If you want a very nice primer on working with the <code>rvest</code> package check out this <a href="&#39;http://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/&#39;">tutorial</a> over on the RStudio blog. All we need now is the CSS selector for the tables we need and then can import the data.</p>
+<pre class="r"><code>world.rank &lt;-read_html(&#39;https://www.fifa.com/fifa-world-ranking/ranking-table/men/index.html&#39;) %&gt;%
+  html_nodes(&#39;.table&#39;) %&gt;%
+  html_table() %&gt;%
+  data.frame(.[1]) %&gt;%
+  mutate(Confederation = Var.20.1) %&gt;%
+  select(c(2,3,41)) %&gt;%
+  mutate(Team = case_when(Team == &#39;IR Iran&#39; ~ &#39;Iran&#39;,
+                          Team == &#39;Korea Republic&#39; ~ &#39;South Korea&#39;,
+                          TRUE ~ Team))
+
+squads &lt;-read_html(&#39;https://www.transfermarkt.com/world-cup-2018/teilnehmer/pokalwettbewerb/WM18&#39;) %&gt;%
+  html_nodes(&#39;#yw1 &gt; table:nth-child(2)&#39;) %&gt;%
+  html_table(fill=TRUE) %&gt;%
+  data.frame(.[1]) %&gt;%
+  select(c(2, 4, 6, 7)) %&gt;%
+  transmute(
+    Team = Club,
+    Age = as.numeric(gsub(&#39;,&#39;, &#39;.&#39;, Squad)),
+    Percent.Abroad = unlist(lapply(strsplit(gsub(&#39;,&#39;, &#39;.&#39;, WC.particip.), &#39; &#39;), &#39;[&#39;, 1)),
+    Market.Value = parse_number(gsub(&#39;,&#39;, &#39;.&#39;, Abroad))
+  ) %&gt;%
+  mutate(Market.Value = as.numeric(ifelse(Team %in% c(&#39;France&#39;,&#39;Spain&#39;), Market.Value*1000000000, Market.Value*1000000)),
+         Percent.Abroad = as.numeric(Percent.Abroad))
+
+#join data
+squad.rank &lt;- inner_join(squads, world.rank)</code></pre>
+<p>I did do some massaging to the data that I want to briefly mention. I first had to replace two teams names so they were consistent across both. I also had to format and clean some of the numbers so they were easy to work with. Once that was all done I joined the world rank data to the data from Transfer Markt of those teams that qualified for the World Cup. So now we can plot to see how the teams look.</p>
+<pre class="r"><code>#ggplot
+ggplot(squad.rank, aes(reorder(Team, -Rank), Market.Value, color = Confederation)) +
+  geom_point() +
+  geom_linerange(aes(ymin = 0, ymax = Market.Value)) +
+  scale_y_continuous(labels = scales::comma)+
+  geom_text(aes(label = m.compress(Market.Value)), check_overlap = TRUE, family = &#39;Open Sans&#39;, colour = &#39;#444444&#39;, hjust = -.25, size = 3) +
+  coord_flip() +
+  a_plex_theme(grid=FALSE) +
+  a_primary_color() +
+  labs(title=&#39;Doing more with less&#39;, 
+       subtitle=&#39;A look at World Cup teams by FIFA rank and estimated team value by Transfer Markt&#39;,
+       x=&#39;Team (by FIFA rank)&#39;,
+       y=&#39;Market Value (€)&#39;,
+       caption=&#39;Market Value and Team data from Transfer Markt\nWorld Ranking and Confederation from FIFA&#39;)</code></pre>
+<p><img src="/data-visualization/world-cup_files/figure-html/unnamed-chunk-3-1.png" width="960" /> This is exactly what I wanted to see. It looks like, as I had expected, most of the top nations are <em>also</em> some of the most expensive but the few outliers are what is exciting. Teams like Switzerland, Poland, and Peru are teams that seem to be doing “more with less” (particularly Peru). That is not intended to be a slight to those nations but more just noticing that of those tops teams there must be some sort of chemistry specific to these teams outside of raw player value.</p>
+<p>Another aspect of this graph that I added was the Confederation as the color group. This adds another interesting element that I think contributes to understanding the value vs. rank. Though Peru is valued drastically less than say Brazil or Argentina, it still is part of the CONMEBOL (South America) Confederation. This offers it some stiff competition that undoubtedly help make the team better.</p>
+<p>I think we can zoom in a little more to get a sense of that chemistry by looking at the percentage of players who play abroad. Luckily that is already included!</p>
+<pre class="r"><code>ggplot(squad.rank, aes(reorder(Team, -Rank), Percent.Abroad, fill = Confederation))+
+  geom_bar(stat = &#39;identity&#39;) +
+  coord_flip() +
+  a_plex_theme(grid = FALSE) +
+  geom_text(aes(label = Percent.Abroad), check_overlap = TRUE, family=&#39;Open Sans&#39;, colour=&#39;#444444&#39;, hjust=-.25, size=3)+
+  a_primary_fill() +
+  labs(title=&#39;Nobody\&#39;s home&#39;, 
+       subtitle=&#39;A look at World Cup teams by FIFA rank and percent of players who play abroad.&#39;,
+       x=&#39;Team (by FIFA rank)&#39;,
+       y=&#39;Percent Abroad&#39;,
+       caption=&#39;Team data from Transfer Markt\nWorld Ranking and Confederation from FIFA&#39;)</code></pre>
+<p><img src="/data-visualization/world-cup_files/figure-html/unnamed-chunk-4-1.png" width="816" /> Germany, Spain and England (with an astounding 0% of players playing abroad) top the charts as the highest ranked teams with the lowest percentage of players playing in leagues abroad. This hints at an idea echoed through many articles discussing World Cup performance. The theory is that playing in the same league, not even in the same league, helps chemistry more than many players across disparate leagues. If that is true a nation like England, highly ranked and low percent abroad, could actually make a bigger splash than predicted.</p>
+<p>Clearly, and to be expected, the European and South American (UEFA, CONMEBOL respectively) confederations make up nearly all of the top half of teams. To round out this primer I wanted to provide some confederation stats.</p>
+<pre class="r"><code>confederation &lt;- squad.rank %&gt;%
+  group_by(Confederation) %&gt;%
+  summarize(mean.age = mean(Age),
+            mean.abroad = mean(Percent.Abroad),
+            mean.value = mean(Market.Value),
+            mean.rank = median(Rank)) %&gt;%
+  ungroup() %&gt;%
+  gather(type,value,2:5)</code></pre>
+<pre class="r"><code>ggplot(confederation,aes(x=Confederation, y=value, fill=type)) +
+  geom_bar(stat=&#39;identity&#39;, show.legend = FALSE) +
+  coord_flip() +
+  facet_wrap(~type, scales = &#39;free&#39;, ncol = 2) +
+  scale_y_continuous(labels = m.compress)+
+  a_plex_theme(grid=FALSE) +
+  a_secondary_fill()</code></pre>
+<p><img src="/data-visualization/world-cup_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
