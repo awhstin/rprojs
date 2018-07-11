@@ -49,7 +49,7 @@ divvy.rides&lt;-divvy.rides%&gt;%
   mutate(week=as.numeric(format(date,&quot;%W&quot;)))
 
 daily.rides&lt;-subset(divvy.rides,year != &#39;2013&#39;)</code></pre>
-<p>After we compute the variables we will need for the graph, then use the handy <code>dplyr::summarise</code> to get our aggregated data for each day. Then we can plot using an updated version of the old example.</p>
+<p>After we compute the variables we will need for the graph, before the bikedata package we would have to use the handy <code>dplyr::summarise</code> to get our aggregated data for each day but the package includes the <code>numtrips</code> variable so it is already done. Then we can plot using an updated version of the old example.</p>
 <pre class="r"><code>#heatmap
 ggplot(daily.rides, aes(x = week, y = weekday, fill = numtrips)) +
     viridis::scale_fill_viridis(name=&quot;Divvy Rides&quot;,
