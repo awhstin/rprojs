@@ -11,7 +11,7 @@
             <a href="https://www.facebook.com/{{ . }}" title="Facebook" target="_blank"><span class="tooltip"><i class="fa fa-facebook"></i></span></a>
           {{ end }}
           {{ with .Site.Params.github }}
-            <a href="https://www.github.com/{{ . }}" title="GitHub" target="_blank"><span class="tooltip"><i class="fa fa-github"></i></span></a>
+            <a href="{{ . }}" title="GitHub" target="_blank"><span class="tooltip"><i class="fa fa-github"></i></span></a>
           {{ end }}
           <a href="{{ .Site.BaseURL }}index.xml" title="Get the RSS feed"><span class="tooltip"><i class="fa fa-rss"></i></span></a>
           <section>&copy; <a href="{{ .Site.BaseURL }}">{{ .Site.Params.author }}</a> 2017 | All rights reserved</section>
