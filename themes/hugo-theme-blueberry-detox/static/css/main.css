@@ -852,19 +852,23 @@ a:hover {
  }
  
  th{
-   padding:2px 5px 2px 5px;
+   padding:0px 5px 5px 5px;
    text-align: center!important;
    font-family:'Roboto';
  }
  td{
-   padding:2px 2px 2px 2px;
    text-align: center!important;
-   margin:2px;
  }
 .floater {
     float: left;
-    display: inline-block;
+    display: block;
     padding:10px 20px 10px 20px;
+    height:250px;
+}
+.floaterrs {
+    float: left;
+    font-size:1em;
+    margin-right:15px;
 }
 .floater:after{clear:right;}
 .floaterr {
@@ -879,6 +883,12 @@ a:hover {
 .floater th {
     text-align: center!important;
 }
+.floaterrs td {
+    border: 1px solid #dedede;
+}
+.floaterrs th {
+    text-align: center!important;
+}
 .img:after {
   clear:both;
 }
@@ -887,4 +897,11 @@ pre code {
   word-wrap: normal;
   white-space: pre;
 }
-
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+.gameweek{
+  clear:left;
+}
