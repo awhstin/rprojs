@@ -1,0 +1,78 @@
+---
+title: 'Friday follow-up: Washington Post Homicides Database'
+author: "@awhstin"
+date: 2018-07-27T09:10:14-05:00
+categories: ["R",', ','homicides',', ','Washington Post',', ','']
+titleimg: "highlight-1"
+imgtype: "png"
+---
+
+
+
+<p>I, like many of you I am sure, spend most of my time during the day on around or in front of the screen. Every once in awhile I come across an intriguing chart, a compelling article, or some very data that I want to inspect for myself. I have done a few of these in different iterations like a couple of my recent posts, <a href="https://austinwehrwein.com/data-visualization/diseases/">A look into U.S. infectious diseases</a> and <a href="https://austinwehrwein.com/post/mortgagelook/">Friday Fun: Comparing annual ACS data with tidycensus</a>. Though the past few weeks I have been fairly disengaged with Twitter, and the website, I came across another bit of visualization inspiration that I first saw on Alberto Cairo’s feed.</p>
+<center>
+{{% tweet "1022232394219356168" %}}
+</center>
+<p>First off if you are interested in data visualization at all (which I assume you are since you somehow found this) you should give him a follow. When I saw this I remembered reading an article earlier in June that dealt with this subject. This article, <a href="https://www.washingtonpost.com/graphics/2018/investigations/where-murders-go-unsolved/?utm_term=.a4d83a1a7a57">Where Killings Go Unsolved</a> and the database mentioned in the tweet provided me with a couple hours of engaged learning, reading, and consuming. The maps of different cities showing where unsolved homicides happen, the charts breaking out city by city data was to me a supreme example of data journalism and I had to take them up on the offer of the data via their <a href="https://github.com/washingtonpost/data-homicides">Github</a>.</p>
+<p>The most compelling piece for me was the connected dot-plot (thanks to Andy Kirk’s Chartmaker Directory for the nomenclature) detailing the different cities and how their arrest rates compared by race. Though the originaly graphic was highly inspiring I wanted to take it and iterate on it by adding a highlight to illustrate the cities that have the worst disparities between the arrest rates.</p>
+<div id="first-the-data" class="section level3">
+<h3>First the data</h3>
+<pre class="r"><code>library(tidyverse)
+library(extrafont)
+library(ggrepel)
+library(awtools) #just for theme
+homicides&lt;-read_csv(&#39;https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv&#39;)
+
+#1. clean/add
+homicides&lt;- homicides %&gt;% 
+  mutate(race=ifelse(victim_race == &#39;White&#39;,&quot;white&quot;,&#39;minority&#39;),
+         arrested=ifelse(disposition==&#39;Closed by arrest&#39;,1,0),
+         open=ifelse(disposition!=&#39;Closed by arrest&#39;,1,0)) 
+
+#2. overall city rate
+cities&lt;- homicides %&gt;%
+  group_by(city) %&gt;%
+  summarise(city.rate=sum(arrested)/sum(arrested,open)*100)
+
+#3. rates by race
+city.homicides&lt;- homicides %&gt;%
+  group_by(city,race) %&gt;%
+  summarise(rate=sum(arrested)/sum(arrested,open)*100) %&gt;%
+  left_join(.,cities) 
+
+#4. purely for highlighting
+hs&lt;- city.homicides %&gt;%
+  group_by(city) %&gt;%
+  mutate(diff = round(rate - lag(rate, default=last(rate)))) %&gt;%
+  arrange(diff) %&gt;%
+  ungroup() %&gt;%
+  left_join(cities)%&gt;%
+  slice(1:10)</code></pre>
+<p>My comments are probably not helpful to you so let me briefly explain each part before we graph.</p>
+<ol style="list-style-type: decimal">
+<li>Here I add three new variables to the data to help streamline the calculations I want to make and they are the count of arrests, and unsolved, and a grouping of race similar to the original graphic.</li>
+<li>We need to calculate the overall arrest rate by city.</li>
+<li>Here we calculate the solved murder rate by city and race, then join with the overall city rate.</li>
+<li>I want to highlight the cities with the largest differences in solved murder rates by race. So I compute the difference, join the city data for label positioning and grab the top 10.</li>
+</ol>
+<p>Great. Now we can plot.</p>
+<pre class="r"><code>#plot plot plot
+ggplot(city.homicides,aes(x=rate, y=city.rate, color=race,group=city))  +
+  geom_line(color=ifelse(city.homicides$city %in% hs$city,&#39;#444444&#39;,&#39;#dedede&#39;)) +
+  geom_point(alpha=ifelse(city.homicides$city %in% hs$city,.75,.25),
+             size=ifelse(city.homicides$city %in% hs$city,2,1)) +
+  geom_label_repel(data = hs,aes(x=rate,y=city.rate,label=paste0(city,&#39; &#39;,abs(diff),&#39;%&#39;)),
+            nudge_x = -1.5,
+            color=&#39;#444444&#39;,
+            family=&#39;IBM Plex Mono&#39;,
+            size=3) +
+  a_plex_theme() +
+  a_main_color() +
+  theme(legend.position=&quot;top&quot;) + 
+  labs(x=&#39;Arrest rate by race\nof victim&#39;,
+       y=&#39;City arrest rate&#39;,
+       title=&#39;Unsolved homicides and the racial divide&#39;,
+       subtitle=&#39;A look at arrest rates by race of victim with the top 10 cities highlighting\nthe largest difference between arrest rates for minority and white victims.&#39;,
+       caption=&#39;Original data and inspiration by The Washington Post \n Data: https://github.com/washingtonpost/data-homicides&#39;)</code></pre>
+<p><img src="/data-visualization/cityhomicides_files/figure-html/unnamed-chunk-3-1.png" width="960" /> Though not an exhaustive list, the data is striking. The Post collected this data from 50 of the United State’s largest cities and though I am not an expert I think the tale could be consistent for a lot more cities not included. It is data journalism like this that makes you question, inspect, educate yourself because it puts the information into a narrative that leads you to insight. Follow organizations like the <a href="https://twitter.com/PostGraphics">Washington Post Graphics</a> and <a href="https://twitter.com/FiveThirtyEight">FiveThirtyEight</a> on Twitter and read their articles for not only great examples of data journalism but also access to their process, line of thinking and the data so you can explore it for yourself.</p>
+</div>
