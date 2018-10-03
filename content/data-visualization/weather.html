@@ -1,0 +1,63 @@
+---
+title: 'Short and sweet: temperature variability with ggridges 📦'
+author: "@awhstin"
+date: 2018-10-02T21:17:14-05:00
+categories: ["R",', ','weather',', ','NCDC']
+titleimg: "weather-1"
+imgtype: "svg"
+---
+
+
+
+<p>I was chatting with a friend recently about where we were from. He, being from the west coast talked about how the weather was almost always pleasant. I, being from Nebraska, lived about as far from that sort of weather trend. The summers were scorching and humid which gave way quickly to winters that were windy and blisteringly cold. This conversation led us to a <a href="https://fivethirtyeight.com/features/which-city-has-the-most-unpredictable-weather/">538 article</a> we both read about places with the most unpredictable weather. This got me thinking about how one could visualize these weather patterns.</p>
+<p>I have been busy at work with quite a few projects but I wanted to take a break and do something. Recently at work I have been looking at some NCDC climate data and thought a refresh of one of my favorite posts would be great. Awhile ago when the <a href="https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html">ggridges</a> was released I posted a little <a href="https://austinwehrwein.com/data-visualization/it-brings-me-ggjoy/">tutorial</a> using that package to look at annual temperature trends.</p>
+<p>It has been a little while and now that I live in Chicago it is time to update and expand on that. I think that the previous post showed an interesting look at how the temperature changes by month/year but I think this technique could also be used to emphasize temperature variability.</p>
+<div id="getting-the-data" class="section level4">
+<h4>Getting the data</h4>
+<p>I have been looking into some climate data that is available from the NCDC and their <a href="https://www.ncdc.noaa.gov/cdo-web/datasets">website</a> is very helpful. There you can pull tons of data and even search based on cities, ZIP, or station. Since I live north of the city I decided to use the data available from the O’Hare International Airport station.</p>
+<p>To make things easier for this post I created a <a href="https://github.com/awhstin/temperaturesv2">github repo</a> that has a subset of the data I have been working with on it.</p>
+<pre class="r"><code>library(tidyverse)
+library(ggridges)
+library(awtools)
+
+#import from github removing a field that doesn&#39;t exist in current year
+ohare15&lt;-read_csv(&#39;https://raw.githubusercontent.com/awhstin/temperaturesv2/master/OHARE-NCDC-2015.csv&#39;) %&gt;% select(-c(5))
+ohare16&lt;-read_csv(&#39;https://raw.githubusercontent.com/awhstin/temperaturesv2/master/OHARE-NCDC-2016.csv&#39;) %&gt;% select(-c(5))
+ohare17&lt;-read_csv(&#39;https://raw.githubusercontent.com/awhstin/temperaturesv2/master/OHARE-NCDC-2017.csv&#39;) %&gt;% select(-c(5))
+ohare18&lt;-read_csv(&#39;https://raw.githubusercontent.com/awhstin/temperaturesv2/master/OHARE-NCDC-2018.csv&#39;)</code></pre>
+<p>Now that all the data is loaded we can join everything together and fill in some gaps in the temperature data <code>TAVG</code>.</p>
+<pre class="r"><code>ohare&lt;-ohare15 %&gt;%
+  union(.,ohare16) %&gt;%
+  union(.,ohare17) %&gt;%
+  union(.,ohare18) %&gt;%
+  mutate(year=format(DATE,&#39;%Y&#39;),
+         month=factor(months(DATE), levels=rev(month.name)),
+         TAVG=ifelse(is.na(TAVG),(TMAX+TMIN)/2,TAVG)) </code></pre>
+<p>Now we can use the <code>TAVG</code> field along with <code>geom_density_ridges</code> from the ggridges package to visualize the average temperature from the O’Hare station by month and year since 2015. My idea is that if we plot multiple years of average temperatures a broader picture of the months and their ranges.</p>
+<pre class="r"><code>ggplot(ohare, aes(x=TAVG, y=month, fill=year)) +
+  geom_density_ridges(scale=.9, color=NA) +
+  a_plex_theme(grid=FALSE) +
+  scale_fill_manual(values=c(&#39;#d6d6d6&#39;,&#39;#adadad&#39;,&#39;#707070&#39;,&#39;#333333&#39;)) +
+  labs(title=&#39;Annual Temperature Variablity&#39;, 
+       subtitle=&#39;Changes in temperature at O\&#39;Hare Airport from January 1st 2015 to September 28 2018 &#39;,
+       caption=&#39;Data from the NCDC\nhttps://www.ncdc.noaa.gov/&#39;,
+       x=&#39;Temperature (F)&#39;,
+       y=&#39;Month&#39;)</code></pre>
+<p><img src="/data-visualization/weather_files/figure-html/unnamed-chunk-2-1.png" width="864" /></p>
+<p>By contrast let’s look at how temperatures at LAX shake out. I think that if the O’Hare temperatures emphasize the midwest’s temperature variability LAX temperatures would be consistent and offer a nice comparison. I didn’t have the data for this already so I used the NCDC website to pull a summary for the 2015-2018 so that is why this looks a little different.</p>
+<pre class="r"><code>lax&lt;-read_csv(&#39;https://raw.githubusercontent.com/awhstin/temperaturesv2/master/LAX-NCDC-2015-18.csv&#39;) %&gt;%
+  mutate(year=format(DATE,&#39;%Y&#39;),
+         month=factor(months(DATE), levels=rev(month.name)),
+         TAVG=ifelse(is.na(TAVG),(TMAX+TMIN)/2,TAVG)) </code></pre>
+<pre class="r"><code>ggplot(lax, aes(x=TAVG, y=month, fill=year)) +
+  geom_density_ridges(scale=.9, color=NA) +
+  a_plex_theme(grid=FALSE) +
+  scale_fill_manual(values=c(&#39;#d6d6d6&#39;,&#39;#adadad&#39;,&#39;#707070&#39;,&#39;#333333&#39;)) +
+  labs(title=&#39;Annual Temperature Variablity&#39;, 
+       subtitle=&#39;Changes in temperature at LAX Airport from January 1st 2015 to September 28 2018 &#39;,
+       caption=&#39;Data from the NCDC\nhttps://www.ncdc.noaa.gov/&#39;,
+       x=&#39;Temperature (F)&#39;,
+       y=&#39;Month&#39;) +
+  scale_x_continuous(limits = c(0,100))</code></pre>
+<p><img src="/data-visualization/weather_files/figure-html/unnamed-chunk-3-1.png" width="864" /></p>
+</div>
