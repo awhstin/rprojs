@@ -1,0 +1,209 @@
+---
+title: "Who is doing more with less? A look into Premier League performance and market value."
+date: 2018-12-07T8:00:00-05:00
+categories: ["R",', ','world cup',', ','soccer']
+titleimg: "eplm-1"
+imgtype: "svg"
+---
+
+
+
+<p>During the World Cup I did a <a href="&#39;https://austinwehrwein.com/data-visualization/world-cup/&#39;">write-up</a> of FiveThirtyEight SPI rankings and estimated team market value to see where each team fell. The idea was identifying those teams who seem to be performing higher than their team value would suggest. I decided that for a quick little post I would explore that same concept but now since club season has started I can look at the English Premier League.</p>
+<div id="getting-the-data" class="section level3">
+<h3>Getting the data</h3>
+<p>We will need data from a couple different places so let us start with that. We can scrape the league table from this very website. Then we will use the SPI ranking from FiveThirtyEight which you can read more about <a href="&#39;https://fivethirtyeight.com/methodology/how-our-club-soccer-predictions-work/">here</a> and finally we can use the Transfer Markt estimated team market value that was used in the previous World Cup post.</p>
+<pre class="r"><code>library(tidyverse)
+library(rvest)
+library(waffle)
+library(awtools) #optional: just for the graph aesthetics
+#devtools::install_github(&#39;awhstin/awtools&#39;)</code></pre>
+<p>Once we have those loaded we can gather the data from the two sites and combine to get what we are interested in. If you want a very nice primer on working with the <code>rvest</code> package check out this <a href="&#39;http://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/&#39;">tutorial</a> over on the RStudio blog. All we need now is the CSS selector for the tables we need and then can import the data.</p>
+<p>Now that we have those disparate datasets we can do a little work and bring them together.</p>
+<pre class="r"><code>#join data
+squads &lt;- squads %&gt;%
+  mutate(name = case_when(name == &#39;Brighton &amp; Hove Albion&#39; ~ &#39;Brighton and Hove Albion&#39;,
+                          name == &#39;Newcastle United&#39; ~ &#39;Newcastle&#39;,
+                          name == &#39;Wolverhampton Wanderers&#39; ~ &#39;Wolverhampton&#39;,
+                          TRUE ~ name)) 
+
+squad.rank &lt;- inner_join(squads,world.rank) %&gt;%
+  inner_join(.,epl.table) %&gt;%
+  left_join(.,teamcolors)</code></pre>
+<p>As you will notice we also manually added a color variable. My first idea is to look at where the teams fall when organized by their SPI rank and estimated Market Value. I imagine there are some interesting groups.</p>
+<pre class="r"><code>ggplot(squad.rank,aes(x=Market.Value,y=rank,color=color)) + 
+  geom_point(aes(size=Market.Value),show.legend=FALSE) + 
+  geom_label(aes(label=name,colour=color), family=&#39;IBM Plex Mono&#39;,size=3.5,vjust=&quot;inward&quot;,hjust=&quot;inward&quot;) +
+  scale_colour_identity() +
+  scale_x_continuous(labels = scales::comma)+
+  a_plex_theme() +
+  labs(
+    x=&#39;Market Value (Euros)&#39;,
+    y=&#39;SPI Rank&#39;,
+    caption=&#39;Market Value and Team data from Transfer Markt\nSPI ranking from FiveThirtyEight&#39;)</code></pre>
+<p><img src="/data-visualization/eplmarket_files/figure-html/unnamed-chunk-3-1.png" width="960" /></p>
+<p>There is a clear group, usually referred to as the big 6, of <em>Manchester City, Liverpool, Chelsea, Tottenham, Manchester United and Arsenal</em> that have both a high market value and a good SPI ranking. Followed by the meat of the Premier League that spans from <em>Everton</em> to <em>Huddersfield</em> with three teams sort of pulling up the rear. The plot does follow a trend but a couple teams seem to buck that trend. <em>Fulham</em> seems to have a lower SPI ranking than their market value suggests while Watford (and Arsenal for that matter) seem to have a higher SPI than their counterparts with higher market value.</p>
+<p>This chart shows us how the rank of each team corresponds to the market value but another compelling view would be to look at how the team is performing at this point in the year in the league. Similar to my chart from the World Cup it could show what teams are essentially over-performing based on their value.</p>
+<p>We already have the data so let’s do it.</p>
+<pre class="r"><code>ggplot(squad.rank,aes(x=reorder(name,-pos),y=Market.Value)) +
+  geom_linerange(aes(ymin=0,ymax=Market.Value),color=&#39;#dcdcdc&#39;) +
+  geom_point(aes(color=color), size = 2) +
+  scale_color_identity() +
+  scale_y_continuous(labels = scales::comma)+
+  geom_text(aes(label=m.compress(Market.Value)),check_overlap = TRUE, family=&#39;Open Sans&#39;,colour=&#39;#444444&#39;, hjust=-.25,size=3) +
+  coord_flip() +
+  a_plex_theme(grid=FALSE) +
+  labs(title=&#39;Doing more with less&#39;, 
+       subtitle=&#39;A look at Premier League teams by current table and estimated team value by Transfer Markt&#39;,
+       x=&#39;Team (by current EPL position)&#39;,
+       y=&#39;Market Value (Euros)&#39;,
+       caption=&#39;Market Value and Team data from Transfer Markt\nSPI ranking from FiveThirtyEight&#39;)</code></pre>
+<p><img src="/data-visualization/eplmarket_files/figure-html/unnamed-chunk-4-1.png" width="864" /></p>
+<p>Interesting, Manchester United is a definite outlier, but it is intriguing to see <em>AFC Bournemouth</em> in the mix towards the top.</p>
+</div>
+<div id="derbies" class="section level3">
+<h3>Derbies</h3>
+<p>Because last weekend was the NLD and Merseyside I decided to look at the history of a couple derbies as well. It was in the morning so naturally a waffle plot resonated with me. Using the <code>engsoccerdata</code> package we can get the data for the Manchester, Merseyside and North London derbies.</p>
+<pre class="r"><code>eng&lt;-read_csv(&#39;https://raw.githubusercontent.com/jalapic/engsoccerdata/master/data-raw/england.csv&#39;)
+
+manchester &lt;- eng %&gt;%
+  filter((home == &quot;Manchester United&quot; &amp; visitor == &#39;Manchester City&#39;)| (visitor == &quot;Manchester United&quot; &amp; home == &#39;Manchester City&#39;)) %&gt;%
+  mutate(derby=&#39;manchester&#39;) %&gt;%
+  gather(team,club,4:5) %&gt;%
+  mutate(win=ifelse(team==&#39;home&#39; &amp; result ==&#39;H&#39;,&#39;win&#39;,
+                    ifelse(team==&#39;visitor&#39; &amp; result ==&#39;A&#39;,&#39;win&#39;,ifelse(result==&#39;D&#39;,&#39;draw&#39;,&#39;loss&#39;))))
+
+merseyside &lt;- eng %&gt;%
+  filter((home == &quot;Everton&quot; &amp; visitor == &#39;Liverpool&#39;)| (visitor == &quot;Everton&quot; &amp; home == &#39;Liverpool&#39;))%&gt;%
+  mutate(derby=&#39;merseyside&#39;)%&gt;%
+  gather(team,club,4:5) %&gt;%
+  mutate(win=ifelse(team==&#39;home&#39; &amp; result ==&#39;H&#39;,&#39;win&#39;,
+                    ifelse(team==&#39;visitor&#39; &amp; result ==&#39;A&#39;,&#39;win&#39;,ifelse(result==&#39;D&#39;,&#39;draw&#39;,&#39;loss&#39;))))
+
+nld &lt;- eng %&gt;%
+  filter((home == &quot;Arsenal&quot; &amp; visitor == &#39;Tottenham Hotspur&#39;)| (visitor == &quot;Arsenal&quot; &amp; home == &#39;Tottenham Hotspur&#39;))%&gt;%
+  mutate(derby=&#39;north london&#39;) %&gt;%
+  gather(team,club,4:5) %&gt;%
+  mutate(win=ifelse(team==&#39;home&#39; &amp; result ==&#39;H&#39;,&#39;win&#39;,
+                    ifelse(team==&#39;visitor&#39; &amp; result ==&#39;A&#39;,&#39;win&#39;,ifelse(result==&#39;D&#39;,&#39;draw&#39;,&#39;loss&#39;))))
+
+derbies &lt;- manchester %&gt;%
+  rbind(.,merseyside,nld) %&gt;%
+  group_by(derby,club,win) %&gt;%
+  summarise(wins = n()) %&gt;%
+  filter(win !=&#39;loss&#39;)
+
+knitr::kable(derbies)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">derby</th>
+<th align="left">club</th>
+<th align="left">win</th>
+<th align="right">wins</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">manchester</td>
+<td align="left">Manchester City</td>
+<td align="left">draw</td>
+<td align="right">51</td>
+</tr>
+<tr class="even">
+<td align="left">manchester</td>
+<td align="left">Manchester City</td>
+<td align="left">win</td>
+<td align="right">44</td>
+</tr>
+<tr class="odd">
+<td align="left">manchester</td>
+<td align="left">Manchester United</td>
+<td align="left">draw</td>
+<td align="right">51</td>
+</tr>
+<tr class="even">
+<td align="left">manchester</td>
+<td align="left">Manchester United</td>
+<td align="left">win</td>
+<td align="right">61</td>
+</tr>
+<tr class="odd">
+<td align="left">merseyside</td>
+<td align="left">Everton</td>
+<td align="left">draw</td>
+<td align="right">63</td>
+</tr>
+<tr class="even">
+<td align="left">merseyside</td>
+<td align="left">Everton</td>
+<td align="left">win</td>
+<td align="right">57</td>
+</tr>
+<tr class="odd">
+<td align="left">merseyside</td>
+<td align="left">Liverpool</td>
+<td align="left">draw</td>
+<td align="right">63</td>
+</tr>
+<tr class="even">
+<td align="left">merseyside</td>
+<td align="left">Liverpool</td>
+<td align="left">win</td>
+<td align="right">76</td>
+</tr>
+<tr class="odd">
+<td align="left">north london</td>
+<td align="left">Arsenal</td>
+<td align="left">draw</td>
+<td align="right">45</td>
+</tr>
+<tr class="even">
+<td align="left">north london</td>
+<td align="left">Arsenal</td>
+<td align="left">win</td>
+<td align="right">64</td>
+</tr>
+<tr class="odd">
+<td align="left">north london</td>
+<td align="left">Tottenham Hotspur</td>
+<td align="left">draw</td>
+<td align="right">45</td>
+</tr>
+<tr class="even">
+<td align="left">north london</td>
+<td align="left">Tottenham Hotspur</td>
+<td align="left">win</td>
+<td align="right">51</td>
+</tr>
+</tbody>
+</table>
+<p>Now for waffles using the <code>waffle</code> package.</p>
+</div>
+<div id="manchester-derby" class="section level3">
+<h3>Manchester Derby</h3>
+<pre class="r"><code>#waffle
+man &lt;- c(`Manchester United (61)` = 61, `Draw (51)` = 51, `Manchester City (44)` = 44)
+waffle(
+  man, rows = 6, size = 1, 
+  colors = c(&quot;#DA291C&quot;, &quot;#cdcdcd&quot;, &quot;#009bda&quot;), legend_pos = &quot;bottom&quot;
+)</code></pre>
+<p><img src="/data-visualization/eplmarket_files/figure-html/unnamed-chunk-6-1.png" width="768" /></p>
+</div>
+<div id="merseyside-derby" class="section level3">
+<h3>Merseyside Derby</h3>
+<pre class="r"><code>mer &lt;- c(`Liverpool (76)` = 76, `Draw (63)` = 63, `Everton (57)` = 57)
+waffle(
+  mer, rows = 6, size = 1, 
+  colors = c(&quot;#c8102E&quot;, &quot;#cdcdcd&quot;, &quot;#003399&quot;), legend_pos = &quot;bottom&quot;
+)</code></pre>
+<p><img src="/data-visualization/eplmarket_files/figure-html/unnamed-chunk-7-1.png" width="768" /></p>
+</div>
+<div id="north-london-derby" class="section level3">
+<h3>North London Derby</h3>
+<pre class="r"><code>nld &lt;- c(`Arsenal (64)` = 64, `Draw (45)` = 45, `Tottenham (51)` = 51)
+waffle(
+  nld, rows = 6, size = 1, 
+  colors = c(&quot;#EF0107&quot;, &quot;#cdcdcd&quot;, &quot;#132257&quot;), legend_pos = &quot;bottom&quot;
+)</code></pre>
+<p><img src="/data-visualization/eplmarket_files/figure-html/unnamed-chunk-8-1.png" width="768" /></p>
+</div>
