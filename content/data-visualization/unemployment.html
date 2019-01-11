@@ -1,0 +1,78 @@
+---
+title: "Friday follow-up: inspiration for an interactive look at unemployment"
+date: 2019-01-11T17:00:00-05:00
+categories: ["R",', ','data visualization',', ','unemployment']
+titleimg: "unemp-1"
+imgtype: "svg"
+---
+
+
+
+<p>Every once in awhile the internet gifts me a little inspiration rather than the normal disappointment. I have done a few posts in the past based on inspiration from around the web like this one on <a href="&#39;https://austinwehrwein.com/data-visualization/confederates/&#39;">confederate monuments</a> or this one looking at <a href="&#39;https://austinwehrwein.com/data-visualization/it-brings-me-ggjoy/&#39;">temperature trends</a> with the <code>ggridges</code> package. This time as I was browsing Twitter I found this tweet by The Economist:</p>
+<center>
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en">
+<p lang="en" dir="ltr">
+Democracy is in decline in Turkey and Russia. One reason for this is the erosion of civil liberties <a href="https://t.co/lUDrFGQq4R">pic.twitter.com/lUDrFGQq4R</a>
+</p>
+— The Economist (<span class="citation">@TheEconomist</span>) <a href="https://twitter.com/TheEconomist/status/1083063878819479554?ref_src=twsrc%5Etfw">January 9, 2019</a>
+</blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</center>
+<p>The Democracy Index data, from The Economist Intelligence unit, shows the declining trend in the countries of Turkey and Russia. The thing that hit me was the image of the chart and how easy it was to intepret the data, the context, and in general I really enjoyed the presentation so I sat down and decided to make my own version of the chart.</p>
+<p>I have long been interested in curating compelling data to use on my site here and I was recently reminded of The World Bank website and decided to take a look at countries and their unemployment rate trends.</p>
+<div id="getting-the-data" class="section level3">
+<h3>Getting the data</h3>
+<p>The World Bank website is a great resource for lots of different pieces of data and thankfully the one we are interested in, Unemployment, total (% of total labor force), is available for <a href="&#39;https://data.worldbank.org/indicator/SL.UEM.TOTL.ZS&#39;">download</a> so grab the csv and put it somewhere you can access it. Instead of looking at all the countries included in that file I want to subset it by something and luckily I had the perfect thing just lying around. Using this <a href="&#39;https://raw.githubusercontent.com/awhstin/Dataset-List/master/pop50.csv&#39;">file</a> of the top 50 most populous countries in the world (around about 2017) we can winnow that larger country list down.</p>
+<pre class="r"><code>library(tidyverse)
+library(awtools)
+library(shiny)
+
+unemploy&lt;-read.csv(&#39;unemploy.csv&#39;,stringsAsFactors = FALSE)
+
+pop&lt;-read.csv(&#39;https://raw.githubusercontent.com/awhstin/Dataset-List/master/pop50.csv&#39;, stringsAsFactors = FALSE)</code></pre>
+<p>Now in our environment we have two dataframes. One is <code>unemploy</code> that is the csv that can be downloaded from The World Bank link above. The other is <code>pop</code> which is a list of the top 50 most populous countries I have had lying around for awhile but recently added to Github.</p>
+<p>If we inspect the <code>unemploy</code> dataframe we see that it is in a <em>wide</em> format where the years are columns but we want it in a <em>long</em> format where the years are in one column and each rate by year is a row. Luckily the <code>tidyr::gather</code> function can help us here. Then we will get only the years on or after 2010, and filter by the list of 50 most populous countries.</p>
+<p>The next part we want to do is generate a grouping variable for the rates. Finally we generate some variables to help with our final plot, here I decided to highlight the United States values specifically.</p>
+<pre class="r"><code>#manipulate and filter
+unemploy&lt;-unemploy %&gt;%
+  gather(year, rate, 5:62) %&gt;%
+  mutate(year = gsub(&#39;X&#39;, &#39;&#39;, year),
+         rate = round(rate, 3)) %&gt;%
+  filter(year &gt;= 2010 &amp;
+         Country.Name %in% pop$Country) 
+
+unemployment&lt;-unemploy %&gt;%
+  mutate_at(.funs = funs(level = ntile(.,8)),
+            .vars = vars(year , rate)) %&gt;%
+  mutate(alph = ifelse(Country.Name == &#39;United States&#39;, 1, 0),
+         phil = factor(rate_level, levels = 1:8),
+         labl = ifelse(Country.Name == &#39;United States&#39;, rate, NA)) </code></pre>
+<p>Now if we look at the <code>unemployment</code> dataframe we can see that it is in <em>long</em> format and the variables we created are there. I had some fun naming them so it should be pretty self explanatory where they go!</p>
+<pre class="r"><code>ggplot(unemployment, aes(x = year, y = rate, group = rate, fill = phil, alpha = alph))+ 
+  geom_col(position = &#39;fill&#39;, color = &#39;white&#39;, show.legend = FALSE)+
+  geom_label(aes(label = labl, x = year, y = rate), 
+             position=&#39;fill&#39;,
+             size = 4, 
+             color= &#39;#333333&#39;, 
+             family = &#39;IBM Plex Mono&#39;,
+             show.legend = FALSE) +
+  scale_alpha_continuous(range = c(.35,.95)) +
+  a_plex_theme(grid = FALSE, emphasis = &#39;x&#39;) +
+  scale_fill_brewer(palette = &#39;Spectral&#39;, direction = -1) +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.title.x = element_blank()) +
+  scale_x_discrete(position = &quot;top&quot;) +
+  labs(title=paste(&#39;United States Unemployment Rate (2010-2017)&#39;),
+       subtitle=&#39;Share of the labor force that is without work but\navailable for and seeking employment&#39;,
+       caption=&#39;Data: World Bank\n
+       https://data.worldbank.org/indicator/SL.UEM.TOTL.ZS&#39;)</code></pre>
+<p>I am pretty pleased with the result. The bands of rates creates a pretty interesting effect and the <code>geom_label</code> works perfectly in this situation since it mirrors the alpha. If you change the country you are looking at, or even select a few and use <code>facet_grid</code> it paints an interesting picture but I think it needs something more. With pretty much the same code as above we can make a little <code>Shiny</code> app so we can select the country we are interested in.</p>
+Let’s use <code>Shiny</code> and get interactive with it!
+<hr>
+<div>
+<iframe src="https://austinsprojects.shinyapps.io/unemployment/" frameborder="0" style="top:0;left:0;width:900px;height:700px;">
+</iframe>
+</div>
+</div>
