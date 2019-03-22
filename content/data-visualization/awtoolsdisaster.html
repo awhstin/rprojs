@@ -1,0 +1,102 @@
+---
+title: "awtools Update: Visualizing Natural Disaster Cost"
+date: 2019-03-22T8:00:00-05:00
+categories: ["R",', ','awtools']
+titleimg: "awt-1"
+imgtype: "png"
+---
+
+
+
+<p>On this website I use <code><a href="&#39;https://github.com/awhstin/awtools&#39;">awtools</a></code> which is a light (read not fully built) aesthetics package for all the charts and visuals. Every once in awhile I like to make tweaks so I thought I could take a minute to display some of the edits I made. Most the changes are to the color palettes, but there are a few spacing edits as well as tweaks to dark theme so why not makes a few charts. To do this we are going to need some data. Not too long ago I came across an article, <a href="&#39;https://www.nytimes.com/interactive/2017/09/01/upshot/cost-of-hurricane-harvey-only-one-storm-comes-close.html?mcubz=1&#39;">The Cost of Hurricane Harvey: Only One Recent Storm Comes Close</a>, which was discussed at length on Twitter for its visualization merit and I have long been interested in the data so that seems like a great dataset to revisit.</p>
+<pre class="r"><code>library(rvest)
+library(ggplot2)
+library(dplyr)
+library(awtools) 
+library(ggbeeswarm)
+library(ggforce)
+
+#Natural Disasters from the NYT article
+disasters &lt;- read.csv(&#39;https://static01.nyt.com/newsgraphics/2017/08/29/expensive-storms/79088630ae1af934d7840e104a0e3f1e8a6c7bf1/data-2.tsv&#39;, 
+                      sep=&#39;\t&#39;, 
+                      stringsAsFactors = FALSE)
+
+costs &lt;- disasters %&gt;%
+  mutate(
+    Disaster=case_when(
+      col2 == &#39;#397dc2&#39; ~ &#39;Hurricane&#39;,
+      col2 == &#39;#efba2b&#39; | col2 == &#39;#9b0e11&#39; ~ &#39;Drought/Fire&#39;,
+      col2 == &#39;#699d8f&#39; ~ &#39;Flooding&#39;,
+      col2 == &#39;#9d76b0&#39; ~ &#39;Storm&#39;,
+      col2 == &#39;#61c6e2&#39; ~ &#39;Winter Storm&#39;
+    )
+  )</code></pre>
+<p>Now that the data is grouped I think the first question I would want to answer is a simple one: what does the distribution of disasters look like? I will group by disasters then plot them along a timeline so why not also use the new <code>a_dark_theme</code> which is my default theme using the IBM Plex Mono with a dark background and a couple other minor tweaks. We can size by the cost of the disaster and try to see if we notice any trends.</p>
+<div style="width:100%; background-color:#2a2a2a; padding:-20%">
+<pre class="r"><code>ggplot(costs, aes(x=year,y=Disaster,color=Disaster))+
+  ggbeeswarm::geom_quasirandom(alpha=.75,aes(size=cost),groupOnX = FALSE, show.legend = FALSE)+
+  a_dark_theme() +
+  a_main_color() +
+  labs(title=&#39;Billion Dollar Natural Disasters&#39;,
+       subtitle=&#39;The most costly naturdal disasters from 1980 - 2017&#39;,
+       y=&#39;&#39;,
+       caption=&#39;Data: New York Times\nOriginal Article: &quot;The Cost of Hurricane Harvey: Only One Recent Storm Comes Close&quot;&#39;)</code></pre>
+<p><img src="/data-visualization/awtoolsdisaster_files/figure-html/unnamed-chunk-2-1.png" width="960" /></p>
+</div>
+<p>Although it looks like there may be a slight upward trend in number of disasters overall there are clear increases in the Drought/Fire and Storm groups. This makes me ask then what do these sorts of trends do to the cost of the disasters, maybe something like a running total of cost of disaster year over year.</p>
+<p>We already have the data so let’s do it.</p>
+<pre class="r"><code>total.cost &lt;- costs %&gt;%
+  group_by(Disaster) %&gt;%
+  arrange(Disaster,year) %&gt;%
+  mutate(total = cumsum(cost))</code></pre>
+<p>Now that we have the running total of cost we need to display it. I think some sort of hybrid line chart that also has points indicating the disasters themselves.</p>
+<pre class="r"><code>#running total
+ggplot(total.cost, aes(x=year,
+                       y=total,
+                       fill = Disaster, 
+                       group = Disaster)) +   
+  geom_line(size=.5,aes(color=Disaster)) +
+  geom_point(aes(color=Disaster)) +
+  a_plex_theme() +
+  a_main_fill() +
+  a_main_color() +
+  labs(title=&#39;Natural Disasters and Runaway Cost&#39;,
+       subtitle=&#39;Running total of cost of natural disasters (over $1 billion in estimated cost) from 1980 - 2017&#39;,
+       caption=&#39;Data: New York Times\nOriginal Article: &quot;The Cost of Hurricane Harvey: Only One Recent Storm Comes Close&quot;&#39;)</code></pre>
+<p><img src="/data-visualization/awtoolsdisaster_files/figure-html/unnamed-chunk-4-1.png" width="864" /></p>
+<p>I see that the cost of hurricanes (even if I were to remove Katrina) have been rising a bit more rapidly than the other groups. Similarly we see that within the groups the steps seem to get larger since 2010.</p>
+<p>My final question I want to ask of the data is a bit self serving and was inspired by this tweet.</p>
+<blockquote class="twitter-tweet">
+<p lang="en" dir="ltr">
+I am super excited to finally give ggforce the update it deserves. Read all about the new CRAN release here <a href="https://twitter.com/hashtag/rstats?src=hash&amp;ref_src=twsrc%5Etfw">#rstats</a> <a href="https://twitter.com/hashtag/ggplot2?src=hash&amp;ref_src=twsrc%5Etfw">#ggplot2</a> <a href="https://t.co/9XNxmqldQT">https://t.co/9XNxmqldQT</a>
+</p>
+— Thomas Lin Pedersen (<span class="citation">@thomasp85</span>) <a href="https://twitter.com/thomasp85/status/1103666440111079425?ref_src=twsrc%5Etfw">March 7, 2019</a>
+</blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<p>In this release there are tons of awesome new features but one I wanted to try was the new marking geoms that are included. To do this I will grab the top ten disasters in cost by group and plot them out over the years.</p>
+<pre class="r"><code>top.ten&lt;-costs %&gt;%
+  group_by(Disaster) %&gt;%
+  top_n(n = 10, wt = cost)
+
+labels&lt;-costs %&gt;%
+  group_by(Disaster) %&gt;%
+  top_n(n = 1, wt = cost) %&gt;%
+  filter(!Disaster %in% c(&#39;Winter Storm&#39;,&#39;Flooding&#39;))</code></pre>
+<p>Now we can use the new <code>geom_mark_circle</code> to label a few.</p>
+<pre class="r"><code>#running total
+ggplot(top.ten, aes(x=year, y=cost, color = Disaster, group = Disaster)) +   
+  geom_point() +
+  geom_mark_circle(data=labels, aes(label=name,
+                                    color=Disaster, 
+                                    fill=NA),
+                   label.family = &#39;IBM Plex Mono&#39;,
+                   label.fontsize = 8,
+                   label.fill = NA,
+                   label.fontface = &#39;plain&#39;) +
+  a_plex_theme() +
+  a_main_fill() +
+  a_main_color() +
+  labs(title=&#39;Most Costly Disasters&#39;,
+       subtitle=&#39;Top ten natural disasters (over $1 billion in estimated cost) by group 1980 - 2017&#39;,
+       caption=&#39;Data: New York Times\nOriginal Article: &quot;The Cost of Hurricane Harvey: Only One Recent Storm Comes Close&quot;&#39;)</code></pre>
+<p><img src="/data-visualization/awtoolsdisaster_files/figure-html/unnamed-chunk-6-1.png" width="864" /></p>
