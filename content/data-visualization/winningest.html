@@ -1,0 +1,58 @@
+---
+title: "Can I do that? Inspiration from a Pudding data visualization."
+date: 2019-05-22T8:00:00-07:00
+categories: ["R",', ','data visualization']
+titleimg: "win-1"
+imgtype: "png"
+---
+
+
+
+<p>I spend a lot of time sifting through articles shared on Twitter trying to break up the monotony of the commute with fascinating stories, interesting research or compelling data visualizations. Few websites are more intriguing to me then The Pudding. Their combination of in-depth articles, stories, and fantastic data visualizations makes each piece a must-read.</p>
+<p>The Pudding is known for some amazing scrolly-telling pieces and this past week I came upon one such story: <a href="https://pudding.cool/2018/11/titletowns/">What makes a titletown?</a>. This article sets out to answer the question, ‘Of all the cities to field a professional or college level team in the last 150 years, which is the winningest?’. The article is fascinating but the thing that caught my eye was the interactive visual for Case 1.</p>
+<center>
+<img src="https://pbs.twimg.com/media/Dra-Bz4VsAA1gWh?format=jpg&name=4096x4096">
+</center>
+<p>This plot, a sort of fixed-width stacked line (bar?) plot, resonated with me. I thought that it helped not only tell the story of the winningest metro areas but also allowed the reader to see trends within those areas and the interactivity expanded on that. As I was reading it also occured to me that I had not* seen something similar done with <code>ggplot2</code> and wondered… Can I do that?</p>
+<p>*Not suggesting it has not been done, just that I either have not seen it or more likely don’t remember seeing it. So seeing some free time this week I just wanted to give it a go.</p>
+<pre class="r"><code>library(tidyverse)
+library(awtools) #just for the plot themes
+
+#data from the Pudding repo
+titles &lt;- read.csv(&#39;https://raw.githubusercontent.com/the-pudding/data/master/titletowns/titles.csv&#39;,stringsAsFactors = FALSE)</code></pre>
+<p>The pudding has a great <a href="https://github.com/the-pudding/data">github repository</a> with the data they use in their articles so I thought we should start there. Once loaded in it is just a matter of organizing things to make it easier to plot. First grabbing the top metros, then creating a cleaner group variable and filter on those top metro areas.</p>
+<pre class="r"><code>top.titles &lt;- titles %&gt;%
+  group_by(winner_metro) %&gt;%
+  summarize(n=n()) %&gt;%
+  top_n(.,21) %&gt;%
+  ungroup()
+
+titles.type &lt;- titles %&gt;%
+  mutate(type = case_when(
+    level == &#39;college&#39; ~ &#39;NCAA&#39;,
+    TRUE ~sport)) %&gt;%
+  inner_join(.,top.titles)</code></pre>
+<p>Now for the trickier part. I didn’t explore if it was possible to use <code>geom_dotplot</code> by somehow changing the geom type, instead I decided to start with <code>geom_bar</code> since I have actually made something similar to this by <a href="https://twitter.com/accidental__aRt">accident</a>. The main pieces are providing a 1 for the y variable. and then tweaking the width and size within <code>geom_bar</code>.</p>
+<pre class="r"><code>ggplot(titles.type, aes(reorder(winner_metro,n), 1, color=type)) +
+  coord_flip() +
+  geom_bar(stat=&#39;identity&#39;,
+           aes(group=rev(index), fill=type),
+           width=.75,
+           color=&#39;white&#39;,
+           size=1.25,
+           alpha=.85
+           ) +
+  a_primary_fill() +
+  geom_label(aes(label=n,y=n+2), family=&#39;IBM Plex Sans&#39;, color=&#39;#444444&#39;, label.size = 0, size=3) +
+  a_plex_theme(plot_title_size=27.5) +
+  labs(
+    title=&#39;Winningest Metro Areas&#39;,
+    subtitle=&#39;Count of titles from 1870-2018 by North American metro area.&#39;,
+    x=&#39;&#39;,
+    y=&#39;&#39;,
+    fill=&#39;&#39;,
+    caption=&#39;Data &amp; Chart Inspiration from The Pudding:\nhttps://pudding.cool/2018/11/titletowns/&#39;
+  )</code></pre>
+<p><img src="/data-visualization/winningest_files/figure-html/unnamed-chunk-3-1.png" width="960" />
+Though the original was interactive I think this static version still tells an interesting story. The bars are in chronological order for each metro area which was part of the original appeal for me. There are cities, like Chicago, where you can see the string of NBA wins that correspond to that famed Bulls team with Michael Jordan. This ended up being more straightforward than I originally thought but it was a great exercise that I am sure I will use for a couple projects I have coming up at work.</p>
+<p>Thanks for following along. Also I recently updates the package I use for every visualization on this site, <code>awtools 0.2.0</code>, take a look at what’s new on <a href="https://github.com/awhstin/awtools">github</a>.</p>
