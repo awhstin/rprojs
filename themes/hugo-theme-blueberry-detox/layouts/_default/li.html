@@ -1,12 +1,15 @@
 <article class="li {{ .Type }}">
+    <div class="clearfix">
     <header class="post-header">
         <h3 class="post-title"><a href="{{ .Permalink }}">{{ .Title }}</a></h3>
         <p class="post-time"><time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" | safeHTML }}">{{ .Date.Format "January 2, 2006" }}</time></p>
     </header>
-    <img  class ="titleimg" style="max-width:25%;max-height:25%;float: left!important;" src="{{ index .Params "titleimg" }}.{{ index .Params "imgtype" }}" />
+    
+    <img  class ="titleimg" style="max-width:25%;max-height:25%;float: left!important;overflow:hidden;" src="{{ index .Params "titleimg" }}.{{ index .Params "imgtype" }}" />
     <section class="post-excerpt">
         <p>{{ .Summary }}</p>
     </section>
+    
     <footer class="post-footer">
         <span>
             {{ if .Site.Params.disqusShortname }}
@@ -18,5 +21,6 @@
             {{ end }}
         </span>
     </footer>
+        </div>
 </article>
 <hr>
