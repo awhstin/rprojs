@@ -1,0 +1,76 @@
+---
+title: "Look who's tweeting: 2020 Presidential Candidates"
+date: 2019-06-28T8:00:00-07:00
+categories: ["R",', ','data visualization',', ','Twitter']
+titleimg: "can-1"
+imgtype: "png"
+---
+
+
+
+<p>If you’re like me you have a list of favorites or retweets on Twitter a mile long. I use those two buttons interchangeably as a way to remind myself that I want to come back to the content and give it much more attention then a passing glance. Occasionally this backfires then I am stuck never returning to something I originally was curious about.</p>
+<p>Luckily a couple days ago I saw an article from Bloomberg titled <a href="https://www.bloomberg.com/graphics/2020-democratic-presidential-candidate-policies/">‘How 24,000 Tweets Tell You What the Democratic Presidential Candidates Care About’</a> and was able to take my time. This brilliantly written and expertly presented article looks at topics of 2020 Democratic Presidential candidates to see where their focus lies. Please give it a read because it is much more insightful and interesting than this little tutorial. In this piece there are a couple of striking visualizations (which always get me). One is a streamgraph detailing the mention of topics since January 1st which is interesting but the second, a stacked bar chart of topics by candidate really resonated with me.</p>
+<p>I relish every opportunity to use the <a href="https://rtweet.info/">rtweet</a> package so I wanted to see if I could try my hand at a quick and dirty version of the original. So to start we need a few packages, then we can get right into the tweets thanks to the awesome work <a href="https://twitter.com/kearneymw">Mike Kearney</a> has done with the <code>rtweet</code> package.</p>
+<p>Really the only think we need is a list of the candidates to get started. Here I utilize a list of presidential candidates from the official TwitterGov account. Then it is just a matter of getting their timelines.</p>
+<pre class="r"><code>library(tidyverse)
+library(rtweet)
+library(fuzzyjoin) #to hastily match topics
+library(awtools)
+library(extrafont)
+
+candidates&lt;- lists_members(slug = &#39;presidential-candidates&#39;, owner_user = &#39;TwitterGov&#39;) %&gt;%
+  top_n(10,followers_count)
+
+#coool now let&#39;s get those tweets
+tweets&lt;-get_timelines(candidates$user_id, n=1500, include_rts= FALSE)</code></pre>
+<p>Once we have the candidate tweets we then need to be able to categorize the tweets by topic. Since the Bloomberg article does not make their keyword/topic data available I found a CNN page, <a href="https://www.cnn.com/specials/politics/2020-election-coverage">2020 Election Coverage</a>, with topics and election coverage and loosely based some topics on that article along with other keywords I have seen lately. I am sure there is better topic/keyword data that you don’t have to do manually but in the interest of time this is what I came up with.</p>
+<pre class="r"><code>#keyword stuff loosely based on CNN Politics: https://www.cnn.com/specials/politics/2020-election-coverage
+topics&lt;-data.frame(topic=c(&#39;Immigration border immigrants&#39;,
+&#39;Students education debt&#39;,
+&#39;Foreign policy peace&#39;,
+&#39;Climate change emissions&#39;,
+&#39;Economy taxes tariffs&#39;,
+&#39;Criminal justice crime&#39;,
+&#39;Election democracy politics&#39;,
+&#39;Veterans troops war&#39;,
+&#39;Jobs employment wage&#39;,
+&#39;Drug opioid epidemic&#39;,
+&#39;Health insurance medicare&#39;,
+&#39;Reproductive rights abortion&#39;,
+&#39;Green New Deal&#39;,
+&#39;Gun control violence&#39;),stringsAsFactors = FALSE) %&gt;%
+  mutate(keys=strsplit(tolower(topic),&#39; &#39;)) %&gt;%
+  group_by(topic) %&gt;%
+  separate_rows()</code></pre>
+<p>Now that we have topics and keywords we can use this data to join the topics to tweets. This could be done a ton of different ways but because I wanted to get to the end result as quickly as possible I decided to go for a little <code>fuzzy_join</code>.</p>
+<pre class="r"><code>#clean and get topics
+tweet.topics &lt;- tweets %&gt;%
+  select(2:6) %&gt;%
+  regex_inner_join(.,topics,by = c(&#39;text&#39;=&#39;keys&#39;)) 
+
+#summarize and get candidate info
+candidate.topics &lt;- tweet.topics %&gt;%
+  group_by(screen_name,topic) %&gt;%
+  summarize(n = n_distinct(status_id)) %&gt;%
+  left_join(.,select(candidates,screen_name,name))</code></pre>
+<p>Now time for the main event, creating the chart. I added a larger palette to <code>awtools</code> called ‘b_scale_fill(color)’ to accomodate a situation like this where there are more categories and I do not necessarily want to use the <code>ggplot</code> default.</p>
+<pre class="r"><code>ggplot(candidate.topics,aes(x = gsub(&#39; &#39;,&#39;\n&#39;, name), y = n, fill = topic)) +
+  geom_bar(position = &#39;fill&#39;, stat = &#39;identity&#39;) +
+  b_scale_fill() +
+  scale_x_discrete(position = &quot;top&quot;) +
+  a_concert_theme(plot_title_size = 28,
+               grid = FALSE) +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = &#39;bottom&#39;, 
+        legend.direction = &#39;horizontal&#39;,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x=NULL,
+       fill=NULL,
+       title=&quot;Look Who&#39;s Tweeting&quot;,
+       subtitle=&#39;A look at tweet topics from the top ten 2020 candidates for President by follower count.&#39;)</code></pre>
+<p><img src="/data-visualization/2020candidates_files/figure-html/unnamed-chunk-4-1.png" width="960" />
+This is by no means perfect since some of the ‘topics’ can cross over. Take for example ‘debt’ could refer to the country’s economic debt or (possibly more likely) refer student debt which is a hot topic currently. I think overall this is an interesting way to take a look at candidates. Elizabeth Warren has specific plans for student debt and corporate taxes so it makes sense that she would be someone who is tweeting most about those topics.</p>
+<p>To wrap it up I have to say I had fun and learned a lot about the candidates through interacting with their tweets. Engaging content like this is why I favorite/retweet things to go back to, if only I had the time to explore the data like I had for this one. Thanks for taking a look.</p>
