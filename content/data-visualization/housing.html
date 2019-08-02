@@ -1,0 +1,60 @@
+---
+title: "Burden of roof: revisiting housing costs with tidycensus"
+date: 2019-08-02T8:00:00-07:00
+categories: ["R",', ','data visualization',', ','tidycensus']
+titleimg: "hrd-1"
+imgtype: "png"
+---
+
+
+
+<p>Since rebranding this website from an undergraduate thesis project to what it is now I have wrote about a number of r packages that I really enjoy. One of them I keep coming back to for work and for this little hobby is <code><a href="https://walkerke.github.io/tidycensus/">tidycensus</a></code> by <a href="https://twitter.com/kyle_e_walker">Kyle Walker</a>. As luck would have it I came upon a story on Twitter that gave me a chance to use <code>tidycensus</code> again but also create a map! The <a href="https://smartasset.com/career/income-needed-to-pay-rent-in-us-cities-2019">article</a> was about the income you needed to make in the largest U.S. cities to be able to afford a two bedroom apartment. This reminded me of a post I did awhile back looking at the percent of median household income that is taken up by housing costs so I decided to resurrect that old post and put a new twist on it!</p>
+<pre class="r"><code>library(albersusa) #for the projection
+library(tidycensus) #data
+library(awtools) #aesthetics
+library(tidyverse) 
+library(viridis)
+library(ggrepel)</code></pre>
+<p>Once we have those packages loaded (or installed) and once you have followed the instructions found <a href="https://walkerke.github.io/tidycensus/articles/basic-usage.html">here</a> we can get started with gathering data from the ACS api. The two variables we will be using are: B19013_001 which is the median household income, and B25105_001 which is the median monthly housing cost.</p>
+<pre class="r"><code>options(tigris_use_cache = TRUE)
+income&lt;- get_acs(geography = &quot;county&quot;, variables = &quot;B19013_001&quot;)</code></pre>
+<pre><code>## Getting data from the 2013-2017 5-year ACS</code></pre>
+<pre class="r"><code>hc&lt;- get_acs(geography = &quot;county&quot;, variables = &quot;B25105_001&quot;, geometry = TRUE)</code></pre>
+<pre><code>## Getting data from the 2013-2017 5-year ACS</code></pre>
+<pre class="r"><code>hc$estimated&lt;-hc$estimate*12
+income$percent&lt;-hc$estimated/income$estimate*100</code></pre>
+<p>Once we have both of those and have calulcated our percents we need to prepare the map projection. Then join the map to the ACS data we gathered before. Before this happens I believe this is most likely an opportunity for improvement but in the interest of keeping this under an hour I decided to reuse code I have used before without really looking for better ways. If you have some suggestions feel free to drop them in the comments! Thanks.</p>
+<pre class="r"><code>cty_sf &lt;- counties_sf(&quot;aeqd&quot;)
+cty_sf$NAME&lt;-paste0(as.character(cty_sf$name),&#39; &#39;,as.character(cty_sf$lsad),&#39;, &#39;,as.character(cty_sf$state))
+cty_income&lt;-left_join(cty_sf,income,by=&#39;NAME&#39;)</code></pre>
+<p>I think it would be interesting to see where some of the highest percentages are so I want to isolate the top 25 areas by percent and use that data for the labels on our map.</p>
+<pre class="r"><code>#find the cities 
+hrdshp&lt;- income %&gt;%
+  arrange(-percent) %&gt;%
+  slice(1:25) %&gt;%
+  inner_join(.,cty_sf) %&gt;%
+  mutate(
+    label=paste0(name,&#39;, &#39;,as.character(iso_3166_2))
+  )</code></pre>
+<p>Now we can put it all together!</p>
+<pre class="r"><code>cty_income %&gt;%
+  ggplot(aes(fill = percent, color = percent)) + 
+  geom_sf() + 
+  geom_label_repel(data=hrdshp,
+                aes(label=label, geometry=geometry),
+                size=3,
+                color=&#39;#222222&#39;,
+                stat = &quot;sf_coordinates&quot;) +
+  scale_fill_viridis(option = &quot;magma&quot;) + 
+  scale_color_viridis(option = &quot;magma&quot;)+
+  a_plex_theme(grid = FALSE) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        legend.position=&quot;bottom&quot;) +
+  labs(title=&#39;Burden of roof&#39;,
+       subtitle=&#39;The impact of housing costs on income. The percent value is calculated by dividing median household\nincome (B19013_001) by the median monthly housing costs (B25105_001) by county. The map\nshows the names of the top 25 counties by their percent.&#39;,
+       caption=&#39;Data: tidycensus\nACS 2013-2017 5-year estimates&#39;)</code></pre>
+<p><img src="/data-visualization/housing_files/figure-html/img-1.png" width="960" /></p>
+<p>Clearly these counties are centered around some of the largest metropolitan areas that were mentioned in the article. Areas around Washington D.C., Los Angeles, New York City, Miami all have high housing costs as a percentage of the median household income. The original article mentions that the HUD (Department of Housing and Urban Development) describes housing a burden if it occupies more than 30% of your income.</p>
