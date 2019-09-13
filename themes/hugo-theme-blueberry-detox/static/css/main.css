@@ -855,11 +855,8 @@ a:hover {
  
  th{
    padding:0px 5px 5px 5px;
-   text-align: center!important;
-   font-family:'Roboto';
  }
  td{
-   text-align: center!important;
  }
 .floater {
     float: left;
