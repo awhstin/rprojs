@@ -1,0 +1,107 @@
+---
+title: "Where are we going? A look at the U.S. Men's National Soccer Team"
+date: 2019-10-18T8:00:00-07:00
+categories: ["R",', ','USMNT',', ','soccer']
+titleimg: "usmnt-1"
+imgtype: "png"
+---
+
+
+
+If you were like me you spent this last Tuesday (10/15) sad, scared, and a little bit frustrated at how poorly the U.S. Men’s National Team (USMNT) were performing against our rivals to the North, Canada. Now I am being hyperbolic about a couple of those emotions but I really was quite frustrated at our seemingly backwards progress. Roger Bennett, of the <a href="https://meninblazers.com/">Men In Blazers</a>, eloquently tweeted this.
+<center>
+<blockquote class="twitter-tweet">
+<p lang="en" dir="ltr">
+US Men's Soccer Team just lost 2-0 to Canada. First Canadian win in 34 years. Should be a National Outcry. Saddest Truth is no one cares. Even US soccer fans are apathetic about Men's National Team. Slid back to periphery of American sporting consciousness. Utterly Insignificant <a href="https://t.co/y703rsktA5">pic.twitter.com/y703rsktA5</a>
+</p>
+— roger bennett (<span class="citation">@rogbennett</span>) <a href="https://twitter.com/rogbennett/status/1184280488892129280?ref_src=twsrc%5Etfw">October 16, 2019</a>
+</blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</center>
+<p>Number one you should join me (and all other great friends of the pod) and listen to their podcast. Number two is that I did not want to sit idly by and be apathetic, I wanted to learn and know how this was happening. I have read we as a team are improving, and to trust the system and that there is a plan but those are all words we have heard before. So I decided to look into the numbers. How are we really doing?</p>
+<p>Before I start I want to say that this may come off as condemning of Berhalter. There are a number of internal issues with our soccer federation that I both cannot and do not understand. But what I do believe is that the team’s performance on the field starts and stops with him, so that is what I will try to keep the scope of this to. So first off let’s take a look at the last few manager’s and their win/loss/draws to see how the last couple compare.</p>
+<pre class="r"><code>library(tidyverse)
+library(rvest)
+library(awtools)
+
+#look at managers
+managers&lt;-read_html(&#39;https://en.wikipedia.org/wiki/List_of_United_States_men%27s_national_soccer_team_managers&#39;) %&gt;%
+  html_nodes(&#39;.wikitable&#39;) %&gt;%
+  html_table() %&gt;%
+  data.frame()
+
+managers_clean &lt;- managers %&gt;%
+  select(1:7) %&gt;%
+  mutate(order=row_number(),
+         Managers=gsub(&#39;\\s*\\[[^\\)]+\\]&#39;,&#39;&#39;,Managers)) %&gt;%
+  group_by(Managers,Years,M,Result..,order) %&gt;%
+  gather(type,n,4:6) %&gt;%
+  ungroup() %&gt;%
+  filter(order&lt;=12)</code></pre>
+<p>I pulled the manager information from Wikipedia’s <a href="https://en.wikipedia.org/wiki/List_of_United_States_men%27s_national_soccer_team_managers">List of USMNT Managers</a>. Once we have that in we create the <code>managers_clean</code> object where we create the order and column data to compare. Then plot.</p>
+<pre class="r"><code>ggplot(managers_clean,aes(x=reorder(gsub(&#39; &#39;,&#39;\n&#39;, Managers),order),y=n,fill=type)) +
+  geom_bar(position=&#39;fill&#39;, stat=&#39;identity&#39;) +
+  a_flat_fill() +
+  a_plex_theme(grid = FALSE,axis_text_size = 8) +
+  scale_x_discrete(position = &quot;top&quot;) +
+  scale_y_continuous(labels = scales::percent) +
+  theme(legend.position = &#39;top&#39;) +
+  labs(y=&#39;%&#39;,
+       x=&#39;&#39;,
+       title= &#39;U.S. Men\&#39;s National Team\nManagers&#39;,
+       subtitle = &#39;Win, Loss, and Draw statistics for the last 12 USMNT managers.&#39;,
+       caption=&#39;USMNT Managers List\nfrom Wikipedia&#39;,
+       fill=&#39;&#39;)</code></pre>
+<p><img src="/post/usmnt_files/figure-html/unnamed-chunk-2-1.png" width="864" /></p>
+<p>Interesting. Berhalter’s win percentage is one of the highest at ~60%, so maybe we really are doing alright. One thing this sort of visual does not describe is when these wins happened so I decided to create a list of the last 100 USMNT games which is available in my <a href="https://github.com/awhstin/Dataset-List/blob/master/us_results.csv">Dataset-list</a> repo on github. In the last 100 games for the USMNT there were only four total managers.</p>
+<pre class="r"><code>#load
+us_results&lt;-read.csv(&#39;https://raw.githubusercontent.com/awhstin/Dataset-List/master/us_results.csv&#39;,stringsAsFactors = FALSE)
+
+us_results&lt;-us_results %&gt;%
+  mutate(trend=if_else(result == &#39;W&#39;,1,0),
+         trend.winloss=case_when(result==&#39;W&#39;~1,result==&#39;T&#39;~0,result==&#39;L&#39;~-1)) %&gt;%
+  group_by(manager) %&gt;%
+  mutate(game=1:n()) %&gt;% ungroup()
+
+#summary
+trends &lt;- us_results %&gt;%
+  group_by(manager) %&gt;%
+  mutate(trend=cumsum(trend),
+            trend.winlosst=cumsum(trend.winloss))
+
+overall &lt;- us_results %&gt;%
+  arrange(order) %&gt;%
+  mutate(trends=cumsum(trend.winloss))</code></pre>
+<p>Once the game data is loaded in we create two new variables, <code>trend</code> and <code>trend.winloss</code>. The first of these helps us paint the picture of how the managers compare to each other with wins by calculating a running sum of wins which we will plot by game.</p>
+<pre class="r"><code>ggplot(trends,aes(x=game,y=trend,color=manager,group=manager))+
+  geom_point() +
+  geom_line() +
+  a_flat_color() +
+  a_plex_theme() +
+  labs(x=&#39;Game&#39;,
+       y=&#39;Wins&#39;)</code></pre>
+<p><img src="/post/usmnt_files/figure-html/unnamed-chunk-4-1.png" width="768" /></p>
+<p>So it looks like Berhalter has had a pretty decent start compared to the last few managers but we can see a recent string of draws/losses that have brought him back in line with the others. As we can see it took quite a few games before Jurgen’s team hit its stride. So in terms of number of wins it looks like Berhalter is certainly performing within the expected range. This visualization though is just looking a wins, we need to incorporate all the games to get the full picture.</p>
+<p>Another way to look at this then is with the <code>trend.winloss</code> which we change the calculation slightly to +1 for a win, 0 for a draw, and -1 for a loss. This will help us see the bigger picture of how the USMNT is currently trending.</p>
+<pre class="r"><code>ggplot(overall,aes(x=order,y=trends,color=manager))+
+  geom_point(alpha=.5) +
+  geom_line(size=1.5) +
+  a_flat_color() +
+  a_plex_theme() +
+  theme(legend.position = &#39;top&#39;) +
+  labs(
+    x=&#39;Game&#39;,
+    y=&#39;Trend&#39;,
+    title=&#39;USMNT Last 100 Games&#39;,
+    subtitle=&#39;USMNT win-loss trend over the last 100 games by manager&#39;,
+    caption=&#39;Interim Manager: Dave Sarachan&#39;,
+    color=&#39;&#39;
+  )</code></pre>
+<p><img src="/post/usmnt_files/figure-html/img-1.png" width="864" /></p>
+<p>This paints the picture that I have in my mind. As you can see the trend of the USMNT over the last few games is in decline and the losses have made Berhalter’s start less than ideal. With 9 wins in 16 matches, as the first chart shows, is a good return. But those wins were mostly strung together and only one win in the last five is certainly not promising. Two of those losses came at the hands of a good Mexico team but poor defense and lackluster creation on offense seem to be in the lineup for the US recently. I do have hope that this is merely a blip like so many other blips (even in the last 100 games) but with press like this it can be hard:</p>
+<ul>
+<li><a href="https://www.sbnation.com/soccer/2019/10/16/20917403/usmnt-canada-loss-gregg-berhalter-future-head-coach">There’s no reason to believe this USMNT will ever get good</a></li>
+<li><a href="https://www.youtube.com/watch?v=Dardy6_PfJ0">Christian Pulisic and the USMNT slump to nightmare defeat vs. Canada | CONCACAF Nations League</a></li>
+<li><a href="https://www.foxsports.com/soccer/video/1624883267593">Alexi Lalas: Time has come for USMNT to ‘say goodbye to romance’</a></li>
+</ul>
+<p>Our next two fixtures are Canada and Cuba again in the CONCACAF Nations League so I hope these will be two opportunities to reverse this trend.</p>
