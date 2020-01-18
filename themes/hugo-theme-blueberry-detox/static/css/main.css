@@ -645,6 +645,7 @@ hr {
     min-height: 2em;
     margin-bottom: 2em;
     margin-top: 2em;
+    background: #2c7e55;
 }
 @media (max-width: 800px) {
     #site-header {
