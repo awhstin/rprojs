@@ -382,6 +382,7 @@ body:after {
     width: 90%;
     max-width: 1000px;
     margin: auto;
+	    background: #2c7e55;
 }
 .containerheader {
      width: 100%;
