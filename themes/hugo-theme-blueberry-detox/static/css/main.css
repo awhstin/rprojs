@@ -383,6 +383,12 @@ body:after {
     max-width: 1000px;
     margin: auto;
 }
+.container2 {
+    width: 90%;
+    max-width: 1000px;
+    margin: auto;
+    background: #2c7e55!important;
+}
 .containerheader {
      width: 100%;
     display: inline-block;
