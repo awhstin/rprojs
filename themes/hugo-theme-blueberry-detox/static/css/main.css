@@ -383,18 +383,11 @@ body:after {
     max-width: 1000px;
     margin: auto;
 }
-.container2 {
-    width: 90%;
-    max-width: 1000px;
-    margin: auto;
-    background: #2c7e55!important;
-}
 .containerheader {
      width: 100%;
     display: inline-block;
 
 }
-container-header{    background: #2c7e55!important;}
 .containerout {
      width: 14%;
      display:inline-block;   
@@ -911,3 +904,4 @@ pre code {
 .gameweek{
   clear:left;
 }
+header{background: #2c7e55!important;}
