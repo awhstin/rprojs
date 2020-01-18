@@ -382,12 +382,13 @@ body:after {
     width: 90%;
     max-width: 1000px;
     margin: auto;
-	    background: #2c7e55;
 }
 .containerheader {
      width: 100%;
     display: inline-block;
+
 }
+.container-header{    background: #2c7e55;}
 .containerout {
      width: 14%;
      display:inline-block;   
