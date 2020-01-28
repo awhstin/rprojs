@@ -839,6 +839,9 @@ a:hover {
     font-size:20px;
 	font-weight:700;
 }
+.post-exerpt{
+  display:none;
+}
 }.m-page a {
     color: #333 !important;
 }
