@@ -1,13 +1,18 @@
-
-<header id="site-header">
-	    
+    
+    <header id="site-header">
+      
       <div class='container'>
-        
+        <div class='row'>
+          <div class='column hleft'>
         <nav>
-		<a href="{{ .Site.BaseURL }}" alt="{{ .Site.Title }}"><h1 class="blog-title" style="border-style: solid;
-    border-width: 4px; border-color: #444444;"><span style="color:#444444;">AW</span></h1></a>
-		
-		<ul class='nav' id='navbar'>
+		<h1 class="blog-title" style="border-style: solid;
+    border-width: 4px; border-color: #444444;"><span style="color:#444444;"><a href="{{ .Site.BaseURL }}" style='background-color:#fff!important;' alt="{{ .Site.Title }}">AW</a></span></h1>
+		</div>
+		<div class='column hmid' style='float:left;'>    <ul><i style='background-color:#2c7e55;font-weight:500;padding:3px 5px 3px 5px;'>data</i><br>
+    <i style='background-color:#569776;font-weight:500;padding:3px 5px 3px 5px;'>visualization</i><br>
+    <i style='background-color:#80b199;font-weight:500;padding:3px 5px 3px 5px;'>nonsense</i></ul></div>
+    <div class='column hright'>
+		<ul class='nav' id='navbar'>;
 	 <li><a class="button-square button-social" data-hint="Home" title="Home" href="{{ .Site.BaseURL }}">
                                 <i class="fa fa-home fa-lg"></i>
                             </a>
@@ -59,8 +64,7 @@
 </ul>
 </nav>
 </div>
-
+</div>
+</div>
     </header>
-		    </div>
-
-<hr class='containerheader'>
+<hr class='containerheader'>   

@@ -261,7 +261,7 @@ img{
 a {
     color: #444444;
     text-decoration: none;
-    border-bottom:  3px solid #77ddaa;
+    border-bottom:  3px solid #40b77b ;
     background: transparent;
     line-height: inherit;
     -webkit-transition: color .1s ease-out;
@@ -280,7 +280,7 @@ a {
 }
 a:hover {
    color: #444444;
-    background-color: #adeacc !important;
+    background-color: #d8f0e4!important;
 }
 p a, p a:visited {
     line-height: inherit;
@@ -386,7 +386,6 @@ body:after {
 .containerheader {
      width: 100%;
     display: inline-block;
-
 }
 .containerout {
      width: 14%;
@@ -626,6 +625,9 @@ hr {
     margin: 20px 0;
     padding-bottom: 20px;
 }
+.containerheader{
+  margin:0!important;
+}
 ::-moz-selection {
     background: #666;
     color: white;
@@ -644,7 +646,7 @@ hr {
 }
 #site-header {
     min-height: 2em;
-    margin-bottom: 2em;
+    margin-bottom: 0;
     margin-top: 2em;
 }
 @media (max-width: 800px) {
@@ -659,8 +661,9 @@ hr {
 }
 }.blog-title {
     font-family:'IBM Plex Mono';
-    font-size: 50px;
+    font-size: 75px;
     float:left;
+    line-height:1;
     font-weight:700;
     display:inline-block;
     padding-left:5px;
@@ -681,7 +684,7 @@ hr {
     
 }
 .blog-title h1:hover{
-  border-color:#77ddaa !important;
+  border-color:#D4E5DD  !important;
 }
 #blog-logo img {
     margin: 0 auto 3em auto;
@@ -707,9 +710,9 @@ article.li {
 }
 .post-title {
     margin-bottom: 40px;
-    margin-top: 10px;
+    padding-top:15%;
     line-height: 1;
-    font-size:30px;
+    font-size:34px;
 	font-weight:700;
 }
 .post-time {
@@ -741,14 +744,14 @@ article.li {
 }.post-content a, #site-footer a {
     color: #444444;
      text-decoration: none;
-    border-bottom:  3px solid #77ddaa;
+    border-bottom:  3px solid #40b77b;
     background: transparent;
      line-height: inherit;
 }
 .post-content a:hover, #site-footer 
 a:hover {
     color: #444444;
-    background-color: #adeacc;
+    background-color: #d8f0e4;
 }
 .m-logo {
     display: none !important;
@@ -834,6 +837,7 @@ a:hover {
  	float:  right;
 	list-style:  none;
 	color:  #f2f2f2;
+	margin-top:2%;
 	font-family: Open Sans;
 	display:inline-box;
 }
@@ -851,7 +855,7 @@ a:hover {
 }
 #navbar li a: hover  {
  color: #444444;
-    background-color: #adeacc;
+    background-color: #d8f0e4;
  }
  
  th{
@@ -903,4 +907,44 @@ pre code {
 }
 .gameweek{
   clear:left;
+}
+
+.column {
+  float: left;
+  width: 33.33%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.column {
+  display:block;
+}
+.left{
+    width: 33%;
+    height:100%;
+    padding-right:15px;
+      border-right: thick solid #444444;
+}
+.right {
+  width:25%;
+  height:100%;
+    padding-left:15px;
+}
+.middle {
+  width: 40%;
+  height:100%;
+  padding-left:15px;
+}
+.hleft{
+  width:8%;
+}
+.hmid{
+  width:60%;
+}
+.hright{
+  width:30%;
 }
