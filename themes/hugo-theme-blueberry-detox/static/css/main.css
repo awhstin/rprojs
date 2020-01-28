@@ -702,6 +702,10 @@ article.li {
 article.li {
     margin-bottom: 2em !important;
 }
+.post-title {
+    font-size:20px;
+	font-weight:700;
+}
 }
 .post-header {
     text-align: left;
@@ -927,7 +931,7 @@ pre code {
     width: 33%;
     height:100%;
     padding-right:15px;
-      border-right: thick solid #444444;
+      border-right: solid #444444;
 }
 .right {
   width:25%;
