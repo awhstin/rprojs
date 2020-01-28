@@ -702,10 +702,6 @@ article.li {
 article.li {
     margin-bottom: 2em !important;
 }
-.post-title {
-    font-size:20px;
-	font-weight:700;
-}
 }
 .post-header {
     text-align: left;
@@ -828,6 +824,20 @@ a:hover {
 @media (max-width: 550px) {
     #comments {
     margin-top: 1em;
+}
+.right {
+  width:0%;
+  height:100%;
+    padding-left:15px;
+}
+.middle {
+  width: 65%;
+  height:100%;
+  padding-left:15px;
+}
+.post-title {
+    font-size:20px;
+	font-weight:700;
 }
 }.m-page a {
     color: #333 !important;
