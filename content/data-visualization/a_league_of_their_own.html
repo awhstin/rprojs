@@ -1,0 +1,173 @@
+---
+title: "A Premier League of their own"
+date: 2020-01-23T8:00:00-07:00
+categories: ["R",', ','data visualization',', ','soccer']
+titleimg: "prm-1"
+imgtype: "png"
+---
+
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/plotly-binding/plotly.js"></script>
+<script src="/rmarkdown-libs/typedarray/typedarray.min.js"></script>
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="/rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
+<link href="/rmarkdown-libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/plotly-main/plotly-latest.min.js"></script>
+
+
+<p>This Premier League season has been one of the most debated, scrutinized, and otherwise talked about seasons I can remember. Though the introduction of <a href="https://en.wikipedia.org/wiki/Video_assistant_referee">VAR</a> (video assistant referee) and Liverpool’s currently unprecedented pace at the top of the league have been a lot of it I also hear and read a lot about the dominance of the <a href="https://en.wikipedia.org/wiki/Premier_League">Big Six</a> and decided to take a look at whether that trend is continuing. Surely their spending has outpaced a lot of the mid-bottom tier teams in the Premier League, but has their play? Since 2013 52% of expenditures in the Premier League were done by the Big Six (see spend data I collected <a href="https://github.com/awhstin/Dataset-List/blob/master/teamspend.csv">here</a>). Let’s take a look at what that has got them.</p>
+<pre class="r"><code>library(tidyverse)
+library(engsoccerdata)
+library(ggtern)
+library(awtools)
+library(plotly)
+
+#load colors
+team_colors &lt;- read_csv(&#39;https://raw.githubusercontent.com/awhstin/Dataset-List/master/teamcolors.csv&#39;)
+bigsix &lt;- c(&#39;Arsenal&#39;,&#39;Chelsea&#39;,&#39;Liverpool&#39;,&#39;Manchester City&#39;,&#39;Manchester United&#39;,&#39;Tottenham Hotspur&#39;)
+england&lt;-read.csv(&#39;https://raw.githubusercontent.com/jalapic/engsoccerdata/master/data-raw/england.csv&#39;,stringsAsFactors = FALSE)
+
+#data for last ten years
+pl_data &lt;- england %&gt;%
+  filter(division == 1 &amp; Season %in% 2000:2018)
+
+teams &lt;- pl_data %&gt;%
+  gather(team,club,3:4) %&gt;%
+  mutate(goals=ifelse(team==&#39;home&#39;,hgoal,
+                    ifelse(team==&#39;visitor&#39;,vgoal,0)),
+         allowed=ifelse(team==&#39;home&#39;,vgoal,
+                      ifelse(team==&#39;visitor&#39;,hgoal,0)),
+         win=ifelse(team==&#39;home&#39; &amp; result == &#39;H&#39;,3,
+                    ifelse(team==&#39;visitor&#39; &amp; result == &#39;A&#39;,3,
+                           ifelse(result==&#39;D&#39;,1,0))))</code></pre>
+<p>Once we have the data loaded we can start to answer some questions. I think to start off I am curious as to how the big six have performed with goal creation over the last several years. Why look at goals? From a team form perspective goals can indicate confidence, creativity and strength of the team. From a standings point of view you need to score goals to win games so the more goals scored the more likely the team is to be high in the tables. Since we are focusing on the big six we will use a collection of <a href="https://github.com/awhstin/Dataset-List/blob/master/teamcolors.csv">team colors</a> I have assembled and highlight only the big six teams.</p>
+<pre class="r"><code>teams_year &lt;- teams %&gt;%
+  group_by(club, Season) %&gt;%
+  summarize(goals=sum(goals)) %&gt;%
+  arrange(Season, -goals) %&gt;%
+  ungroup() %&gt;%
+  group_by(Season) %&gt;%
+  mutate(id=row_number()) %&gt;%
+  left_join(.,team_colors,by=c(&#39;club&#39;=&#39;name&#39;)) %&gt;%
+  ungroup()
+
+
+#&#39;Big 6&#39; contributions
+bigsix_year &lt;-  teams_year %&gt;%
+  mutate(group = ifelse(club %in% bigsix, color, &#39;#999999&#39;),
+         rank = ifelse(club %in% bigsix,id,21))
+
+ggplot(bigsix_year,aes(Season,goals,fill = reorder(group,-rank))) +
+  geom_bar(stat=&#39;identity&#39;,position=&#39;fill&#39;,color=&#39;#888888&#39;) +
+  scale_fill_identity() +
+  scale_y_continuous(labels = scales::percent_format()) +
+  a_plex_theme()+ 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  labs(title=&#39;Goals by the Big 6 by season&#39;,
+       x=&#39;&#39;,
+       y=&#39;&#39;)</code></pre>
+<p><img src="/data-visualization/a_league_of_their_own_files/figure-html/unnamed-chunk-2-1.png" width="768" /></p>
+<p>Well since the goals don’t necessarily indicate anything maybe we need to look elsewhere. It can be the case that though the big six are scoring lots of goals doesn’t mean they would be the highest on the table so maybe we will look solely at points. Points, unline goals, are finite. There are only so many matches in a season, and only one team can take all three points from each so it might be more indicative of a trend in dominance if the big six are taking more and more of the possible points.</p>
+<pre class="r"><code>#so not goals, maybe points?
+teams_pts_year &lt;- teams %&gt;%
+  group_by(club, Season) %&gt;%
+  summarize(pts=sum(win)) %&gt;%
+  arrange(Season, -pts) %&gt;%
+  ungroup() %&gt;%
+  group_by(Season) %&gt;%
+  mutate(id=row_number()) %&gt;%
+  left_join(.,team_colors,by=c(&#39;club&#39;=&#39;name&#39;)) %&gt;%
+  ungroup()
+  
+#maybe big six?
+b6_pts &lt;- teams_pts_year %&gt;%
+  mutate(group = ifelse(club %in% bigsix, color, &#39;#999999&#39;),
+         rank = ifelse(club %in% bigsix,id,21))
+
+ggplot(b6_pts,aes(Season,pts,fill = reorder(group,-rank))) +
+  geom_bar(stat=&#39;identity&#39;,position=&#39;fill&#39;,color=&#39;#888888&#39;) +
+  scale_fill_identity() +
+  scale_y_continuous(labels = scales::percent_format()) +
+  a_plex_theme() + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  labs(title=&#39;Percent of points won by the Big 6&#39;,
+       x=&#39;&#39;,
+       y=&#39;&#39;)</code></pre>
+<p><img src="/data-visualization/a_league_of_their_own_files/figure-html/unnamed-chunk-3-1.png" width="768" /></p>
+<p>That is interesting. It does look like there is a slight upward trend of total points by year for the big six but I am not convinced as I am looking to find a way to isolate the big six from the rest of the pack. These last two plots are just showing how well they are doing against the other teams but possibly if we add a third piece that can get more at how the other teams fair againest these big six sides. Let’s add in <em>goals allowed</em>. I have always wanted to use ternary plots but haven’t really found a place that they would fit in so I thought why not try them here and luckily the <code>ggtern</code> package exists. So we can prep the data.</p>
+<pre class="r"><code>#What teams are most like the big 6 then?
+tern_data &lt;- teams %&gt;%
+ filter(Season &gt;= 2010) %&gt;%
+  group_by(club, Season) %&gt;%
+  summarize(pts=sum(win),
+            goals = sum(goals),
+            allowed = sum(allowed)) %&gt;%
+  ungroup() %&gt;%
+  left_join(.,team_colors,by=c(&#39;club&#39;=&#39;name&#39;)) %&gt;%
+  mutate(group = ifelse(club %in% bigsix, color, &#39;#999999&#39;))
+
+tern_summary &lt;- tern_data %&gt;%
+  group_by(club,group) %&gt;%
+  summarize(pts=mean(pts),
+            goals=mean(goals),
+            allowed=mean(allowed)) %&gt;%
+  ungroup() %&gt;%
+  mutate(size=((pts+goals)/allowed)*5,
+         text=paste0(club,&#39;&lt;br&gt;Avg. Points: %{a}&lt;br&gt;Avg. Goals: %{b}&lt;br&gt;Avg. Allowed: %{c}&lt;br&gt;&#39;))
+
+b6_tern&lt;- tern_summary %&gt;%
+  filter(club %in% bigsix)</code></pre>
+<p>Now let’s plot using <code>plotly</code> to help make it interactive.</p>
+<pre class="r"><code>#plotly setup
+axis &lt;- function(title) {
+  list(
+    title = title,
+    titlefont = list(
+      size = 15
+    ),
+    tickfont = list(
+      size = 0
+    ),
+    tickcolor = &#39;rgba(0,0,0,0)&#39;,
+    ticklen = 5
+  )
+}
+
+
+tern_summary %&gt;% 
+  plot_ly() %&gt;%
+  add_trace(
+    type = &#39;scatterternary&#39;,
+    mode = &#39;markers&#39;,
+    name=&#39;&#39;,
+    a = ~pts,
+    b = ~goals,
+    c = ~allowed,
+    hovertemplate = ~text,
+    marker = list( 
+      symbol = &#39;circle-closed&#39;,
+      size = ~size,
+      color = ~group,
+      line = list(color=&#39;white&#39;)
+    )
+  )%&gt;% 
+  layout(
+    ternary = list(
+      sum = 100,
+      aaxis = axis(&#39;Points&#39;),
+      baxis = axis(&#39;Goals&#39;),
+      caxis = axis(&#39;Allowed&#39;)
+    )
+  )</code></pre>
+<div class="clearfix">
+<h3 id="big-6-maybe-more-like-big-9">Big 6… maybe more like Big 9</h3>
+<p style="font-weight: bold;font-size:14px;">
+A look at the average goals, points and goals allowed teams in the Premier League.
+</p>
+<div style="float:right;position: relative; top: -120px;">
+<div id="htmlwidget-1" style="width:400px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"visdat":{"267c51676d55":["function () ","plotlyVisDat"]},"cur_data":"267c51676d55","attrs":{"267c51676d55":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatterternary","mode":"markers","name":"","a":{},"b":{},"c":{},"hovertemplate":{},"marker":{"symbol":"circle-closed","size":{},"color":{},"line":{"color":"white"}},"inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"ternary":{"sum":100,"aaxis":{"title":"P","titlefont":{"size":15},"tickfont":{"size":0},"tickcolor":"rgba(0,0,0,0)","ticklen":5},"baxis":{"title":"G","titlefont":{"size":15},"tickfont":{"size":0},"tickcolor":"rgba(0,0,0,0)","ticklen":5},"caxis":{"title":"A","titlefont":{"size":15},"tickfont":{"size":0},"tickcolor":"rgba(0,0,0,0)","ticklen":5}},"hovermode":"closest","showlegend":false},"source":"A","config":{"showSendToCloud":false},"data":[{"type":"scatterternary","mode":"markers","name":"","a":[44.25,71.5555555555556,36.6666666666667,39,37,39,41,38,41.75,32,73.7777777777778,44.8333333333333,55.8888888888889,40.4,26.5,35.3333333333333,53,69.4444444444444,82.7777777777778,74.8888888888889,28,45.75,39.5,30.6666666666667,28,48.7142857142857,45.625,38.5714285714286,44.5714285714286,71.1111111111111,44,42.75,45.875,40.3333333333333,40.6666666666667],"b":[50.25,71.7777777777778,38.1666666666667,37,47,55,49,34.5,37,33,69.1111111111111,44.1666666666667,53.7777777777778,44.2,25,36,53.8,71.5555555555556,84,68.3333333333333,27,45.625,40,38.3333333333333,43,48.4285714285714,40.75,40,43.7142857142857,66.2222222222222,44,42.875,48,43,44.3333333333333],"c":[66.25,43.1111111111111,62.5,58,68.5,78,66.5,57,53.75,71.5,37.7777777777778,53.5,46.3333333333333,64,67,61.3333333333333,52.4,41.8888888888889,33.4444444444444,37.6666666666667,53,57.25,63.25,66.3333333333333,73,49.8571428571429,52.75,57.1428571428571,54.7142857142857,41.4444444444444,60.25,55.625,57.375,65.3333333333333,64.6666666666667],"hovertemplate":["AFC Bournemouth<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Arsenal<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Aston Villa<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Birmingham City<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Blackburn Rovers<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Blackpool<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Bolton Wanderers<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Brighton & Hove Albion<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Burnley<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Cardiff City<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Chelsea<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Crystal Palace<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Everton<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Fulham<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Huddersfield Town<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Hull City<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Leicester City<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Liverpool<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Manchester City<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Manchester United<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Middlesbrough<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Newcastle United<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Norwich City<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Queens Park Rangers<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Reading<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Southampton<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Stoke City<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Sunderland<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Swansea City<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Tottenham Hotspur<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Watford<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","West Bromwich Albion<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","West Ham United<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Wigan Athletic<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>","Wolverhampton Wanderers<br>Avg. Points: %{a}<br>Avg. Goals: %{b}<br>Avg. Allowed: %{c}<br>"],"marker":{"color":["#999999","#ff2400","#999999","#999999","#999999","#999999","#999999","#999999","#999999","#999999","#132257","#999999","#999999","#999999","#999999","#999999","#999999","#c31315","#6caddf","#ef0107","#999999","#999999","#999999","#999999","#999999","#999999","#999999","#999999","#999999","#034694","#999999","#999999","#999999","#999999","#999999"],"symbol":"circle-closed","size":[7.13207547169811,16.6237113402062,5.98666666666667,6.55172413793103,6.13138686131387,6.02564102564103,6.76691729323308,6.35964912280702,7.32558139534884,4.54545454545454,18.9117647058824,8.31775700934579,11.8345323741007,6.609375,3.84328358208955,5.81521739130435,10.1908396946565,16.8302387267905,24.9335548172757,19.0117994100295,5.18867924528302,7.98034934497817,6.28458498023715,5.20100502512563,4.86301369863014,9.74212034383954,8.18720379146919,6.875,8.06788511749347,16.5683646112601,7.30290456431535,7.69662921348315,8.18082788671024,6.37755102040816,6.57216494845361],"line":{"color":"white"}},"line":{"color":"rgba(31,119,180,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<p>An important thing to note is that there is something special going on with how Everton, Southampton and Leicester have performed. This ternary plot is adding a third dimension to help separate the Big 6 out from the rest of the pack and what we see is that the other three have (historically) performed at around the same level in regards to these parameters. In Southampton’s case often at a far lower cost as well. The Big Six have been performing at a higher level than the rest of the field, maybe this historical Liverpool performance along with Manchester City’s record setting performance in the 2017 season is a sign they are pulling further away?</p>
+</div>
