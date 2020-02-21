@@ -886,6 +886,24 @@ a:hover {
     padding:10px 20px 10px 20px;
     height:250px;
 }
+.floater td {
+    padding: 2px;
+    border: 1px solid #dedede;
+}
+.floatert {
+    float: left;
+    padding-left:20px;
+}
+.floatert td {
+    padding: 2px;
+    border: 0px;
+}
+.floatert th {
+  border-bottom: 3px solid #eaeaea;
+}
+.floatert tr{
+  border-bottom: 1px solid #eaeaea;
+}
 .floaterrs {
     float: left;
     font-size:1em;
@@ -960,8 +978,8 @@ pre code {
   width:8%;
 }
 .hmid{
-  width:60%;
+  width:55%;
 }
 .hright{
-  width:30%;
+  width:35%;
 }
