@@ -1,0 +1,99 @@
+---
+title: "What Should I Watch?"
+date: 2020-05-01T8:00:00-07:00
+categories: ["R",', ','tutorials',', ','movies']
+titleimg: "mov-1"
+imgtype: "png"
+---
+
+
+
+<p>Another entry in the series intended to help both you and me spend our time I put together this ‘app’ where it randomly selects a movie from the list of movies on Wikipedia that have won Academy Awards.</p>
+<p><br></p>
+<iframe src="https://austinsprojects.shinyapps.io/whatshouldiwatch/" frameborder="0" style="top:0;left:0;width:100%;height:500px;">
+<p>###How To:</p>
+<pre class="r"><code>library(shiny)
+library(shinyWidgets)
+library(tidyverse)
+library(rvest)
+library(extrafont)
+
+#Data saved locally but can be acquired from the Wikipedia site
+wiki&lt;-readRDS(&#39;wiki.rds&#39;)
+
+#UI with Styling
+ui &lt;- fluidPage(
+    tags$head(
+        tags$style(HTML(&quot;
+      @import url(&#39;//fonts.googleapis.com/css?family=Inconsolata|Merriweather&#39;);
+                        
+                         h1 {
+        font-family: &#39;Merriweather&#39;, cursive;
+        font-weight: 700;
+        line-height: 1.1;
+                         }
+      h3 {
+        font-family: &#39;Inconsolata&#39;, cursive;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      h5 {
+        font-family: &#39;Inconsolata&#39;, cursive;
+        font-weight: 400;
+        line-height: 1.1;
+      }
+      h6 {
+        font-family:&#39;Merriweather&#39;;
+        font-weight:400;
+        font-color:#d3d3d3;
+        text-align:right;
+      }
+      
+      #go {
+      background-color:#fff;
+      font-family:&#39;Inconsolata&#39;;
+      font-weight:400;
+      font-size:20px;
+      border-color:#222222;}&quot;))),
+    
+    fluidRow(column(width = 1),
+    column(width=10,align=&#39;center&#39;,br(),actionButton(&quot;go&quot;, &quot;What Should I Watch?&quot;)),
+    column(width=1)),
+    fluidRow(column(width = 1),
+             column(width=10,fluidRow(align=&#39;center&#39;,br(), 
+                                      h1(textOutput(&#39;film&#39;)),
+                                      h3(textOutput(&#39;year&#39;)), 
+                                      h5(textOutput(&#39;caption&#39;)),
+                                      br(),
+                                      h6(&#39;Data: Wikipedia&#39;),
+                                      h6(HTML(&#39;&lt;a href=&quot;https://en.wikipedia.org/wiki/List_of_Academy_Award-winning_films&quot;&gt;List of Academy Award-winning films&lt;/a&gt;&#39;)))),
+             column(width=1))
+   
+   
+)
+
+
+# Server Logic
+server &lt;- function(input, output, session) {
+    observeEvent(input$go,{
+        selected &lt;- wiki %&gt;%
+            mutate(inputs=input$go) %&gt;%
+            filter(row.names(.) == sample(1:nrow(wiki),1)) %&gt;%
+            mutate(Film=Film)
+
+    output$film &lt;- renderText({
+        selected$Film
+    })
+    output$year &lt;- renderText({
+        selected$Year
+    })
+    output$caption &lt;- renderText({
+        paste(selected$Film,&#39;won&#39;,selected$Awards,&#39;academy awards &amp; was nominated&#39;,selected$Nominations,&#39;times.&#39;)
+    })
+    })
+
+}
+
+
+# Run the application 
+shinyApp(ui = ui, server = server)</code></pre>
