@@ -9,9 +9,11 @@ imgtype: "png"
 
 
 <p>Another entry in the series intended to help both you and me spend our time I put together this ‘app’ where it randomly selects a movie from the list of movies on Wikipedia that have won Academy Awards.</p>
-<p><br></p>
-<iframe src="https://austinsprojects.shinyapps.io/whatshouldiwatch/" frameborder="0" style="top:0;left:0;width:100%;height:500px;">
-<p>###How To:</p>
+<iframe src="https://austinsprojects.shinyapps.io/whatshouldiwatch/" frameborder="0" style="top:0;left:0;width:100%;height:300px;">
+</iframe>
+<hr>
+<div id="how-to" class="section level3">
+<h3>How To:</h3>
 <pre class="r"><code>library(shiny)
 library(shinyWidgets)
 library(tidyverse)
@@ -97,3 +99,4 @@ server &lt;- function(input, output, session) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)</code></pre>
+</div>
