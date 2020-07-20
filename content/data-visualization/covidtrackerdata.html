@@ -1,0 +1,134 @@
+---
+title: "By the numbers: Visualizing Covid 19 Global Behavior"
+date: 2020-07-17T8:00:00-07:00
+categories: ["R",', ','data visualization',', ','Covid-19 survey']
+titleimg: "tracker-1"
+imgtype: "png"
+---
+
+
+
+<p>In this time of the pandemic I feel completely overwhelmed by the information available via the news, on the internet or thrown at me in lots of different conversations. Trying to take in every single piece of data and contextualize it quickly became impossible especially that when you couple it with work. Originally I felt compelled to try my hand at mapping spreads, infection rates and various other pieces but immediately felt out of my depth in subject matter and took to spreading the high quality information from those that were experts.</p>
+<p>Quite a few months in now and I find myself wanting, as I usually do, to use data to understand. The issue was still finding data that I felt answered questions I had. Enter YouGov which is a global data and survey company that has supplied loads of different data I have used in the past. Recently YouGov partnered with the Institute of Global Health Innovation (IGHI) at Imperial College London to gather global insights on people’s behaviours in response to COVID-19.</p>
+<blockquote>
+<p><em>It is designed to provide behavioural analysis on how different populations are responding to the pandemic, helping public health bodies in their efforts to limit the impact of the disease. Anonymised respondent level data will be available for all public health and academic institutions globally. The questions in the survey, led by IGHI, cover data on testing, symptoms, self-isolating in response to symptoms and the ability and willingness to self-isolate if needed. It also looks at behaviours, including going outdoors, working outside the home, contact with others, hand washing and the extent of compliance with 20 common preventative measures.</em> -IGHI Data Tracker website</p>
+</blockquote>
+<p>This data is super rich and I have only just scratched the surface. The data seemed to have the answers to some of the questions I was asking myself:</p>
+<ul>
+<li>Are people wearing masks?</li>
+<li>Are people using public transit?</li>
+<li>Are people avoiding small gatherings?</li>
+</ul>
+<p>These questions to me are interesting on their own but it is my hope that this data will help me explore the intersection of this data. But I don’t want to get ahead of myself, so this post is mostly to provide a jumping off point for how to interact with this data and visualize the responses.</p>
+<div id="data-information" class="section level3">
+<h3>Data &amp; Information</h3>
+<p><a href="https://github.com/YouGov-Data/covid-19-tracker">Imperial College London YouGov Covid 19 Behaviour Tracker Data Hub</a><br>
+The IGHI has built a publicly available <a href="https://public.tableau.com/profile/ighi#!/vizhome/ICLYouGovCovid-19Tracker_V0_3/1Specificpreventativebehaviourbycountry">dashboard</a> to visualise the data if you are interested also.</p>
+</div>
+<div id="code" class="section level3">
+<h3>code</h3>
+<p>First you should download a copy of the data folder from the repository above and set your working directory to that file location.</p>
+<pre class="r"><code>library(tidyverse)
+library(awtools) #just for plot aesthetics, not necessary
+library(viridis)
+
+temp &lt;- list.files(pattern=&quot;*.csv&quot;)
+tempfilenames &lt;- temp %&gt;% as.list()
+templist &lt;- lapply(temp, read.csv)</code></pre>
+<p>After loading the packages we create a list of the CSV files in the location, create a list of the names to use later and load in the data. Within the repository on Github there is a ‘codebook’ file that provides details on the fields included, I found the fields that pertain to the questions I was interested in and grabbed those. I then select only those fields and add the filename to the lists to identify the country the results are from. The rest is massaging the data into a cleaner form.</p>
+<pre class="r"><code>#cols
+ivars &lt;- c(&#39;i12_health_1&#39;,&#39;i12_health_8&#39;,&#39;i12_health_12&#39;) #wore a mask, avoided public transport, avoided small gatherings, government Response
+tempvars &lt;- lapply(templist, function(x) x[(names(x) %in% ivars)])
+tempvars &lt;- mapply(c, tempvars, tempfilenames, SIMPLIFY = FALSE)
+
+#dataframe
+tracker_files &lt;- data.frame(do.call(rbind, tempvars),stringsAsFactors = FALSE)
+tracker_data &lt;- tracker_files %&gt;% unnest(cols = c(i12_health_1, i12_health_8, i12_health_12, V4))
+
+#Massage data
+raw_data &lt;- tracker_data %&gt;%
+  transmute(mask=`i12_health_1`,
+            transport=`i12_health_8`,
+            gathering=`i12_health_12`,
+            country=V4) %&gt;%
+  mutate(country=str_to_title(str_extract(country, &#39;^[^.]+&#39;)))</code></pre>
+<p>Once that is done I create (in a very stream of consciousness way) a summary dataframe and a dataframe of data for ordering on the ‘Always’ response and join it all together to get ready to plot.</p>
+<pre class="r"><code>covid_data &lt;- raw_data %&gt;%
+  group_by(country) %&gt;%
+  gather(&#39;variable&#39;,&#39;Response&#39;,1:3) %&gt;%
+  ungroup() %&gt;%
+  group_by(country, variable, Response) %&gt;%
+  tally() %&gt;%
+  ungroup()
+
+ord_data &lt;- covid_data %&gt;%
+  group_by(country,variable) %&gt;%
+  mutate(total=sum(n)) %&gt;%
+  filter(Response==&#39;Always&#39;) %&gt;%
+  mutate(order=n/total) %&gt;%
+  select(-c(3:4))
+
+covid_data &lt;- covid_data %&gt;% left_join(.,ord_data)</code></pre>
+<p>With survey data I usually like to see the data as a percent stacked bar chart so we will create three of those, one for each of the questions.</p>
+<pre class="r"><code>covid_data %&gt;%
+  filter(variable == &#39;mask&#39;,
+         Response != &#39; &#39;) %&gt;%
+ggplot(., aes(x = reorder(country,order), y = n, fill = Response)) + 
+  geom_bar(position = &quot;fill&quot;, stat = &quot;identity&quot;) +
+  coord_flip() +
+  scale_fill_viridis(discrete = TRUE) +
+  a_plex_theme(grid = FALSE) +
+  theme(legend.position = &#39;top&#39;,
+        axis.text.x = element_blank(),
+        plot.title = element_text(hjust=0.5),
+        axis.text.y = element_text(margin = margin(t=0,r=-25,b=0,l=0)),
+        plot.caption = element_text(hjust = 0.5,size = 7)) +
+  labs(title=&#39;Worn a face mask outside your home?&#39;,
+       subtitle=&#39;Chart represents the total percent of answers that correspond to that response&#39;,
+       x=NULL,
+       y=NULL,
+       caption=&#39;Jones, Sarah P., Imperial College London Big Data Analytical Unit and YouGov Plc. 2020, Imperial College London\nYouGov Covid Data Hub, v1.0, YouGov Plc, April 2020&#39;)</code></pre>
+<p><img src="/data-visualization/covidtrackerdata_files/figure-html/unnamed-chunk-5-1.png" width="768" /></p>
+<pre class="r"><code>#trasnport
+covid_data %&gt;%
+  filter(variable == &#39;transport&#39;,
+         Response != &#39; &#39;) %&gt;%
+  ggplot(., aes(x = reorder(country,order), y = n, fill = Response)) + 
+  geom_bar(position = &quot;fill&quot;, stat = &quot;identity&quot;) +
+  coord_flip() +
+  scale_fill_viridis(discrete = TRUE, option = &#39;C&#39;) +
+  a_plex_theme(grid = FALSE) +
+  theme(legend.position = &#39;top&#39;,
+        axis.text.x = element_blank(),
+        plot.title = element_text(hjust=0.5),
+        axis.text.y = element_text(margin = margin(t=0,r=-25,b=0,l=0)),
+        plot.caption = element_text(hjust = 0.5,size = 7)) +
+  labs(title=&#39;Avoid taking public transport?&#39;,
+       subtitle=&#39;Chart represents the total percent of answers that correspond to that response&#39;,
+       x=NULL,
+       y=NULL,
+       caption=&#39;Jones, Sarah P., Imperial College London Big Data Analytical Unit and YouGov Plc. 2020, Imperial College London\nYouGov Covid Data Hub, v1.0, YouGov Plc, April 2020&#39;)</code></pre>
+<p><img src="/data-visualization/covidtrackerdata_files/figure-html/unnamed-chunk-5-2.png" width="768" /></p>
+<pre class="r"><code>#gathering
+covid_data %&gt;%
+  filter(variable == &#39;gathering&#39;,
+         Response != &#39; &#39;) %&gt;%
+  ggplot(., aes(x = reorder(country,order), y = n, fill = Response)) + 
+  geom_bar(position = &quot;fill&quot;, stat = &quot;identity&quot;) +
+  coord_flip() +
+  scale_fill_viridis(discrete = TRUE,option = &#39;B&#39;) +
+  a_plex_theme(grid=FALSE) +
+  theme(legend.position = &#39;top&#39;,
+        axis.text.x = element_blank(),
+        plot.title = element_text(hjust=0.5),
+        plot.subtitle = element_text(hjust=0.5),
+        axis.text.y = element_text(margin = margin(t=0,r=-25,b=0,l=0)),
+        plot.caption = element_text(hjust = 0.5,size = 7)) +
+  labs(title=&#39;Avoid small social gatherings?&#39;,
+       subtitle=&#39;No more than two individuals\nChart represents the total percent of answers that correspond to that response&#39;,
+       x=NULL,
+       y=NULL,
+       caption=&#39;Jones, Sarah P., Imperial College London Big Data Analytical Unit and YouGov Plc. 2020, Imperial College London\nYouGov Covid Data Hub, v1.0, YouGov Plc, April 2020&#39;)</code></pre>
+<p><img src="/data-visualization/covidtrackerdata_files/figure-html/unnamed-chunk-5-3.png" width="768" /></p>
+<p>Some initial thoughts are on some specific countries that seem to vary in responses. The United Kingdom jumps out as ranking highly in ‘Always’ responses for avoiding public transit and small social gatherings but low for wearing face masks. I do not know enough about the laws around Covid 19 in the UK but these sorts of patterns are what I hope to investigate.</p>
+</div>
