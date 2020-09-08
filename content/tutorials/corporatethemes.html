@@ -1,0 +1,71 @@
+---
+title: "Creating quick corporate plot themes with ggplot2"
+date: 2020-09-08T8:00:00-07:00
+categories: ["R",', ','data visualization',', ','ggplot2 theme']
+titleimg: "corptheme-1"
+imgtype: "png"
+---
+
+
+
+<p>There are so many helpful guides out there that detail creating your our <code>ggplot2</code> theme but from my experience there is a disconnect between the very useful (and detailed) getting started type tutorials and the one-off very specific (but no less detailed) extending tutorials. I work at an intersection with quite a few folks who have to create or maintain visualizations for lots of different and ever changing clients so I thought it would be interesting to detail a way I believe one could easily get up and running with custom themes.</p>
+<p>The <code>ggplot2</code> package already comes with some great out-of-the-box themes set up so this tutorial will be made using one of those as the sort of structure to add your customizations onto.</p>
+<p>Here are some examples:
+<img src="/tutorials/corporatethemes_files/figure-html/unnamed-chunk-1-1.png" width="960" style="display: block; margin: auto auto auto 0;" /></p>
+<p>I am partial to <em>theme_minimal</em> so I think we will start there and we only need a couple packages to get started.</p>
+<pre class="r"><code>library(tidyverse) #ggplot2 et al
+library(gcookbook) #just for sample plot data
+library(RColorBrewer) </code></pre>
+<div id="company-colors-come-first" class="section level3">
+<h3>Company colors come first</h3>
+<p>A lot companies may already have a corporate color palette but some who don’t already have made some decisions around color that is present in their logo or on their website. Since this tutorial is for</p>
+<p>If you are starting from scratch here are a couple tools I have used before:
+<a href="https://coolors.co/">Coolors</a>
+<a href="https://paletton.com/#uid=1000u0kllllaFw0g0qFqFg0w0aF">Paletton</a>
+<a href="https://color.adobe.com/create/color-wheel">Adobe Color Wheel</a></p>
+<p>Using Paletton I just grabbed the first five colors I though were intriguing.</p>
+<pre class="r"><code>corporate_colors &lt;- c(&#39;#39916C&#39;,
+                      &#39;#3B6788&#39;,
+                      &#39;#D49D54&#39;,
+                      &#39;#c45a31&#39;,
+                      &#39;#9f9f9f&#39;)</code></pre>
+</div>
+<div id="starting-the-plot-theme" class="section level3">
+<h3>Starting the plot theme</h3>
+<p>If there are not already detailed visualization aesthetics rules the world is sort of your oyster. There are already some fantastic themes included within <code>ggplot2</code> that I detailed earlier or built by users. Since this is a quick guide I won’t go into building a complete theme from scratch but will more focus on using themes within the package (specifically <code>theme_minimal</code>) as the framework to customize your plots.</p>
+<p>Using the default theme to start we can add specific individual elements we would like to also change. Some common things to adjust would be the grid lines or the plot title color but there are so many more things to adjust. As you start to play with the themes more you will probably start to want to change more of these so <a href="https://ggplot2.tidyverse.org/reference/theme.html">Here</a> is a list of a lot of the <em>ggplot</em> elements.</p>
+<pre class="r"><code>corp_theme &lt;- function(
+  base_family=&quot;Roboto&quot;, 
+  base_size =9,
+  plot_title_family=&#39;Merriweather Black&#39;,
+  plot_title_size = 20,
+  plot_title_color = corporate_colors[1], #maybe use your first corporate color?
+  grid_col=&#39;#dadada&#39;)
+{ #use those variables
+  aplot &lt;- ggplot2::theme_minimal(base_family=base_family, base_size=base_size) #piggyback on theme_minimal 
+  aplot &lt;- aplot + theme(panel.grid=element_line(color=grid_col))
+  aplot &lt;- aplot + theme(plot.title=element_text(size=plot_title_size, 
+                                                 family=plot_title_family, 
+                                                 color=plot_title_color))
+  aplot
+}</code></pre>
+</div>
+<div id="bringing-the-theme-together" class="section level3">
+<h3>Bringing the theme together</h3>
+<p>We now have the colors and theme built so now we can see our brand new corporate visualization using data from the <code>gcookbook</code> package.</p>
+<pre class="r"><code>heightweight.5&lt;-filter(heightweight,ageYear&lt;=16)
+
+ggplot(heightweight.5,aes(heightIn,ageYear, color = factor(round(ageYear)))) + 
+  geom_point(alpha=.6) +
+  geom_smooth(se=FALSE) +
+  scale_color_manual(values=corporate_colors) +
+  corp_theme() +
+  labs(title=&#39;Corporate Chair Coalition ltd.&#39;,
+    subtitle=&#39;Business is booming&#39;,
+    color=&#39;Age&#39;,
+    x=&#39;Height (in)&#39;,
+    y=&#39;Age&#39;,
+    caption=&#39;Data: R Graphics Cookbook&#39;) </code></pre>
+<p><img src="/tutorials/corporatethemes_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>There we are! A simple recipe to build your own custom plot theme which can be easily replicated more multiple clients, projects or whatever the need may be. To some of you this might be a little too much work for you and want one theme you can rely on and would like a suggestion of an out of the box theme ready to use. For that I would suggest looking into <code>theme_ipsum</code> from the <code>hrbrthemes</code> <a href="https://github.com/hrbrmstr/hrbrthemes">package</a> by <a href="https://twitter.com/hrbrmstr">Bob Rudis</a>. This is a well maintained and very thoughtful look into creating a theme that looks great but has a myriad of functions for you to use.</p>
+</div>
