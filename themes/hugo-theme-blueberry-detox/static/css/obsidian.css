@@ -8,8 +8,8 @@
   overflow-x: auto;
   padding: 1em;
   background-color: #565656;
-  font-family: Inconsolata;
-  font-size:13px!important;
+  font-family: Fira Code!important;
+  font-size:12px!important;
 }
 .hljs-string a{
   color: #9090ee!important;
