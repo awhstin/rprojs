@@ -1,0 +1,86 @@
+---
+title: "The making of that title race chart"
+date: 2020-12-29T8:00:00-07:00
+categories: ["R",', ','data visualization']
+titleimg: "titleviz-1"
+imgtype: "png"
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>One of the most common questions I get in the comments here or on Twitter is about the making of the Title Race visual I use on my English Premier League (EPL) page here on the website. Normally I like to show all of my work in every boring detail when it comes to R but there were a few reasons that I had not put something together detailing my steps. The first was that I have not been convinced it is in its final form since I still struggle with the layout occasionally and the aesthetics are also something I go back and forth on. The second reason goes hand-in-hand with the first because since my waffling on pieces of it I have never really sat down to clean up the process of making it.</p>
+<p>So here we are. I am using this small how-to piece to do the cleaning up I have neglected for awhile.</p>
+<p>The key data for this, and most of my EPL related pieces, is the <code>engsoccerdata</code> which can be found <a href="https://github.com/jalapic/engsoccerdata">here</a>.</p>
+<pre class="r"><code>library(tidyverse) 
+library(awtools) #just for aesthetics
+#devtools::install_github(&#39;jalapic/engsoccerdata&#39;)
+library(engsoccerdata)
+library(ggrepel)</code></pre>
+<p>Once we have all those loaded things are pretty straightforward. The idea first came to me when Manchester City was having their incredible season 2017-18 where they hit 100 points. I wanted a way to visualize the consistency of their play, along with emphasizing the gap they had over second place and the rest of the field. I have never really been one for animated (think racing bar chart etc) visualizations so I thought a simple dot and line plot might be a good starting place. To do that though I needed a weekly breakdown of the points amassed by team.</p>
+<p>I will use the previous season data for this which will fetch all the games for the 2019 season. Once we have those I copy and paste a bit of code I have been using for awhile to create an equally handy dataframe of the team’s points by week. When that is created you could start building the chart but you would start really at the first result but in reality all teams start from 0. So before we assemble I want to create a dummy week so all the teams start from the same spot then it is as simple as assembling the pieces grouping by club and running a cumulative sum for the points.</p>
+<pre class="r"><code>#build points
+current &lt;- england %&gt;%
+  filter(Season == 2019 &amp; division == 1) %&gt;%
+  gather(team, club, 3:4) %&gt;%
+  mutate(win = ifelse(team == &#39;home&#39; &amp; result == &#39;H&#39;, 3,
+                    ifelse(team == &#39;visitor&#39; &amp; result == &#39;A&#39;, 3,
+                           ifelse(result == &#39;D&#39;, 1, 0)))) %&gt;%
+  filter(division == 1) %&gt;%
+  mutate(week = lubridate::week(Date)) %&gt;%
+  select(12:14)
+
+initial &lt;- data.frame(
+  club = unique(current$club),
+  win = 0,
+  week = 36
+)
+
+current_pts &lt;- initial %&gt;%
+  bind_rows(., current) %&gt;%
+  group_by(club) %&gt;%
+  mutate(pts = cumsum(win),
+         id = row_number())</code></pre>
+<p>The final pieces to the puzzle are things I found I needed after the fact. I originally plotted the <code>current_pts</code> dataframe and it was okay but creating these next few little pieces helped clean things up. I realized I wanted team colors for the labels and once those colors were in I realized the ordering was a lot less straightforward because of points and goal differential etc so I brought in the table data as well to make sure things were in the right order.</p>
+<pre class="r"><code>colors &lt;- read.csv(&#39;https://raw.githubusercontent.com/awhstin/Dataset-List/master/teamcolors.csv&#39;, stringsAsFactors = FALSE) %&gt;% 
+  rename(club = full) 
+
+x_limit &lt;- max(current_pts$id)
+
+table &lt;- maketable_eng(df = england, Season = 2019, tier = 1) %&gt;%
+  rename(club=team)
+
+#Assemble!
+maxes &lt;- current_pts %&gt;% 
+  filter(id == max(id)) %&gt;%
+  left_join(.,colors) %&gt;% #for the team colors
+  left_join(.,table) %&gt;% #for the special ordering 
+  mutate(Pos=as.numeric(Pos)) %&gt;%
+  arrange(-pts, Pos) </code></pre>
+<div id="bringing-the-pieces-together" class="section level3">
+<h3>Bringing the pieces together</h3>
+<p>Finally. I build the base of the chart off of the <code>current_pts</code> data we assembled to show the path to the eventual place. Then expanding the x axis via the limit variable we just created to make room for the labels which using some trickery from <code>ggrepel</code> namely the <code>hjust</code> parameter the labels stack to the right. The color is added to the label and there it is.</p>
+<pre class="r"><code>ggplot(current_pts,aes(id, pts, group = club)) +
+  geom_line(color = &#39;#dedede&#39;) +
+  geom_point(color = &#39;#c7c7c7&#39;) +
+  geom_point(data = maxes, aes(id, pts),show.legend = FALSE, size = 2) +
+  geom_label_repel(data = maxes, aes(x = id, y = pts, label = club),
+                            show.legend = FALSE, 
+                            size = 2, 
+                            fill = &#39;white&#39;, 
+                            color= maxes$color,
+                            family = &#39;IBM Plex Mono&#39;,
+                            nudge_x = 6,
+                            direction = &quot;y&quot;,
+                            hjust = 1,
+                            segment.size = .25,
+                            segment.alpha = .5) +
+  xlim(0,(x_limit+5)) +
+  a_plex_theme(emphasis = &#39;y&#39;) +
+  theme(axis.text.x = element_blank(),
+        panel.grid.major.x = element_blank()) +
+  labs(x = &#39;&#39;,y = &#39;Points&#39;)</code></pre>
+<p><img src="/data-visualization/makingoftitlerace_files/figure-html/plots-1.png" width="960" /></p>
+<p>There we are! Hopefully this brief but somehow wordy walk through was helpful. Please feel free to drop me a line here or on Twitter if you have any questions or comments or if you have a different way of visualizing the title race. Thanks.</p>
+</div>
