@@ -1,0 +1,121 @@
+---
+title: "Reintroducing myself to football analytics via understatr"
+date: 2021-02-15T8:00:00-07:00
+categories: ["R",', ','data visualization']
+titleimg: "xg-1"
+imgtype: "png"
+---
+
+
+
+<p>If you are exposed to any media or news coverage around this season of the Premier League you will undoubtedly hear the term ‘xG’ or expected goals. Pundits use it, some announcers laugh at it and it is everywhere on Twitter or Reddit when it comes to discussing the outcome of games so what is it? Many people who are more eloquent than me have written about it so I will let you do the research on that and here are a couple links to help!</p>
+<ul>
+<li>Goal.com: <a href="https://www.goal.com/en-us/news/what-is-xg-football-how-statistic-calculated/h42z0iiv8mdg1ub10iisg1dju">What is xG?</a></li>
+<li>Wikipedia: <a href="https://en.wikipedia.org/wiki/Expected_goals">Expected Goals</a></li>
+</ul>
+<p>So why xG? Why now? Well I have felt as though my website has fallen by the wayside recently and I wanted to pick up a small easy project to remind myself of the joy looking into different data brings me and hopefully get back into some semi-regular posting. That is where the <a href="https://github.com/ewenme/understatr">understatr</a> package comes in. I have had my eye on this for a little while and finally told myself I would open it up and give it a whirl.</p>
+<pre class="r"><code>library(tidyverse)
+library(awtools)
+library(understatr)
+library(engsoccerdata)
+library(ggforce)
+library(ggrepel)</code></pre>
+<p>Once these packages are loaded we can use <em>understatr</em> to get game data by team for the current Premier League season and since I play fantasy football I can’t help but think of the data in terms of game weeks so I create a week variable as well.</p>
+<pre class="r"><code>#build points
+leagues &lt;- get_leagues_meta() %&gt;% 
+  filter(league_name == &#39;EPL&#39;)
+
+team_data &lt;- map_dfr(unique(leagues$league_name), get_league_teams_stats, year=2021)
+
+team_data &lt;- team_data %&gt;%
+  arrange(date) %&gt;%
+  group_by(team_name) %&gt;%
+  mutate(week=row_number())</code></pre>
+<p>Now that we have this data let’s take a look at Arsenal’s data so far this season for context. We can just do a simple bar chart looking at their expected goals (xG) by week and result.</p>
+<pre class="r"><code>team_data %&gt;%
+  filter(team_name == &#39;Arsenal&#39;) %&gt;%
+ggplot(aes(x=factor(week),
+           y=xG,
+           fill=result))+
+  geom_bar(stat=&#39;identity&#39;, alpha=.95) +
+  a_secondary_fill() +
+  a_plex_theme(grid = FALSE,
+               base_family = &#39;Fira Sans&#39;,
+               base_size = 11) +
+  labs(title=&#39;Arsenal xG for 2020/2021&#39;,
+       x=&#39;Game Week&#39;,
+       y=&#39;xG&#39;,
+       caption=&#39;xG data from Understat via\nthe understatr package.&#39;)</code></pre>
+<p><img src="/tutorials/xgforeveryone_files/figure-html/unnamed-chunk-4-1.png" width="768" /></p>
+<p>This data is interesting but my intent with this exercise is to give me some more context to how teams overall are playing this year not necessarily by week. Luckily we now have not only xG for each team but also the xG of the opposition as well which will be interesting to examine together for the teams thus far this season. To start we just need to group by team and then get the mean xG for and against the team for the season.</p>
+<pre class="r"><code>#team averages plot
+team_summary &lt;- team_data %&gt;%
+  group_by(team_name) %&gt;%
+  summarize(avg_xg = mean(xG),
+            avg_xga = mean(xGA)) %&gt;%
+  ungroup()
+
+#plot with image
+ggplot(team_summary,aes(x=avg_xga, y=avg_xg)) +
+  geom_point(color=&#39;#777777&#39;,
+             size =1.5) +
+  geom_text_repel(aes(label=team_name),
+                   fill=NA,
+                   family=&#39;Fira Sans&#39;,
+                  color=&#39;#777777&#39;) +
+  a_plex_theme(base_family = &#39;Fira Sans&#39;,
+               base_size = 11) +
+  labs(title=&#39;Average xG For &amp; Against&#39;,
+       x=&#39;xG Against&#39;,
+       y=&#39;xG For&#39;,
+       caption=&#39;xG data from Understat via\nthe understatr package.&#39;)</code></pre>
+<p><img src="/tutorials/xgforeveryone_files/figure-html/unnamed-chunk-5-1.png" width="960" /></p>
+<p>This plot is fairly plain. We can see some outliers like Leeds but there has to be other information we could inject to help interpret what these results mean. I think what would be interesting with this information to see the context of where they are in the league currently and for that I will use the trusty <a href="https://github.com/jalapic/engsoccerdata">engsoccerdata</a> which finds its way into all my football related adventures.</p>
+<p>Using the <strong>maketable</strong> function with the provided <strong>england_current</strong> function we can grab the current premier league table to get the team positions. To bring the two together we need to do a little massaging to a couple shortened team names but luckily the <strong>case_when</strong> function helps us there. Then finally I think instead of distinct position we can group the teams by a further groups made up of champions league places, relegation and top and bottom halves.</p>
+<pre class="r"><code>current &lt;- maketable(df=england_current(), 
+                     Season = 2020, 
+                     tier = 1, 
+                     pts = 3) %&gt;%
+  mutate(team_name = case_when(team == &#39;Leicester City&#39; ~ &#39;Leicester&#39;,
+                               team == &#39;Leeds United&#39; ~ &#39;Leeds&#39;,
+                               team == &#39;Brighton &amp; Hove Albion&#39; ~ &#39;Brighton&#39;,
+                               team == &#39;Tottenham Hotspur&#39; ~ &#39;Tottenham&#39;,
+                               team == &#39;West Ham United&#39; ~ &#39;West Ham&#39;,
+                               TRUE ~ team),
+         Pos=as.numeric(Pos))
+
+team_summary_tbl &lt;- team_summary %&gt;%
+  left_join(.,current) %&gt;%
+  mutate(grp = case_when(Pos %in% 1:4 ~ &#39;Top 4&#39;,
+                         Pos %in% 4:10 ~ &#39;Top Half&#39;,
+                         Pos %in% 11:17 ~ &#39;Botton Half&#39;,
+                         Pos %in% 18:20 ~ &#39;Relegation&#39;))</code></pre>
+<div id="bringing-the-pieces-together" class="section level3">
+<h3>Bringing the pieces together</h3>
+<p>Finally we are ready to plot. As you might have noticed at the beginning we called two packages I haven’t mentioned yet which are <em>ggrepel</em> and <em>ggforce</em> which will help us create the final chart. Now that we have the groups made I think we can take the original plot that was fairly plain and add some zest. Using <strong>geom_text_repel</strong> and <strong>geom_mark_ellipse</strong> we can show the general area the teams occupy to see what teams see to be operating inside or (more importantly) outside their current position in the table. Let’s give it a try.</p>
+<pre class="r"><code>ggplot(team_summary_tbl,aes(x=avg_xga, y=avg_xg)) +
+  geom_point(aes(color=grp),
+             size = 2) +
+  geom_mark_ellipse(aes(fill = grp), 
+                    alpha=.1,
+                    color=NA,
+                    show.legend = FALSE) +
+  geom_text_repel(aes(label=team_name),
+                  family=&#39;Fira Sans&#39;,
+                  color=&#39;#888888&#39;) +
+  a_flat_color() +
+  a_flat_fill() +
+  a_plex_theme(grid = FALSE,
+               base_family = &#39;Fira Sans&#39;,
+               base_size = 11) +
+  theme(legend.position = &#39;top&#39;) +
+  labs(title=&#39;Average xG For &amp; Against&#39;,
+       subtitle= &#39;A look at average xG by game for the 2020-2021 season.&#39;,
+       x=&#39;xG Against&#39;,
+       y=&#39;xG For&#39;,
+       caption=&#39;xG data from Understat via\nthe understatr package.&#39;,
+       color=&#39;\n&#39;)</code></pre>
+<p><img src="/tutorials/xgforeveryone_files/figure-html/plots-1.png" width="960" /></p>
+<p>I originally wanted to call this plot (and maybe this whole post) the average Joses in reference to Tottenham but the real interesting point might lie in Brighton’s xG stats. Their results have landed them in the bottom half and actually 15th at the time of posting which is just 8 points above relegation but their xG position has them up towards teams who are in the top half or even the top 4.</p>
+<p>Though fairly straightforward this was exactly what I was hoping to achieve and as far as exercises go this was a lot of fun and hopefully will snowball into some more projects as more free time comes around. Thanks for taking a look!</p>
+</div>
