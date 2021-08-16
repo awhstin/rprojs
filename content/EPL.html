@@ -1,1128 +1,27 @@
 ---
-title: "Premier League 2020-2021"
+title: "Premier League 2021-2022"
 author: "@awhstin"
-date: 2020-10-20
+date: 2021-08-16T8:00:00-07:00
 titleimg: "preds-1"
 categories: ['R',', ','soccer',', ','EPL']
 imgtype: "png"
 ---
 
-<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
-<script src="/rmarkdown-libs/echarts4r/echarts-en.min.js"></script>
-<script src="/rmarkdown-libs/echarts4r/ecStat.min.js"></script>
-<script src="/rmarkdown-libs/echarts4r/dataTool.min.js"></script>
-<script src="/rmarkdown-libs/echarts4r-binding/echarts4r.js"></script>
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
 <p>This is a page dedicated to weekly standings for the English Premier League. I am a fan of the Premier League and I am a long time Gooner though try as I might no sort of predictions I do can make them better. The first year was the 2017-18 season for which I did weekly predictions and ended up with 61% accuracy at the end of the year. The second year I got more ambitious and extended the model to include Transfer Market data, and ultimately only made it through 31 weeks. For the 2020-21 year I am taking a break from weekly predictions to use this page as a testing ground for visualizations and other ideas around the league.</p>
 <p>Though this will appear on my blog feed it can be found in later weeks on the navigation bar via the <i class="fa fa-futbol-o"></i> button. Constantly under construction.</p>
-<hr>
-<center>
-<h4>
-Premier League Standings
-</h4>
-<div style="width:60%;color:#bcbcbc;">
-Below are the standings of the Premier League 20-21 season. <strong>Pts</strong> are the current points earned in the league. <strong>MP - A</strong> are summary statistics. The results boxes are read left to right, with the right most being the most recent game.
-</div>
-<table class="table table-condensed">
-<thead>
-<tr>
-<th style="text-align:center;">
-
-</th>
-<th style="text-align:left;">
-Team
-</th>
-<th style="text-align:center;">
-Pts
-</th>
-<th style="text-align:center;">
-MP
-</th>
-<th style="text-align:center;">
-W
-</th>
-<th style="text-align:center;">
-D
-</th>
-<th style="text-align:center;">
-L
-</th>
-<th style="text-align:center;">
-F
-</th>
-<th style="text-align:center;">
-A
-</th>
-<th style="text-align:center;">
-Goal.Diff
-</th>
-<th style="text-align:left;">
-
-</th>
-<th style="text-align:center;">
-
-</th>
-<th style="text-align:center;">
-
-</th>
-<th style="text-align:center;">
-
-</th>
-<th style="text-align:center;">
-
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/mci.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Manchester City
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: #2a2a2a; color: white; font-weight: bold; border-radius: 5px">
-77
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">24</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">5</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">4</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">69</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">24</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #2c7e55">45</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/mun.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Manchester United
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: #2a2a2a; color: white; font-weight: bold; border-radius: 5px">
-67
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">19</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">10</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">4</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">64</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">35</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #467250">29</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/lei.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Leicester City
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: #2a2a2a; color: white; font-weight: bold; border-radius: 5px">
-62
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">19</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">5</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">9</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">60</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">38</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #526c4f">22</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/che.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Chelsea
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: #2a2a2a; color: white; font-weight: bold; border-radius: 5px">
-58
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">16</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">10</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">7</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">51</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">31</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #556b4e">20</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/whu.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-West Ham United
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: #7f7f7f; color: white; font-weight: bold; border-radius: 5px">
-55
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">16</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">7</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">10</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">53</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">43</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #66634c">10</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/liv.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Liverpool
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: #7f7f7f; color: white; font-weight: bold; border-radius: 5px">
-54
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">15</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">9</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">9</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">55</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">39</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #5c684d">16</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/tot.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Tottenham Hotspur
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: dark gray; color: black; font-weight: bold; border-radius: 5px">
-53
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">15</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">8</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">10</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">56</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">38</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #59694e">18</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/eve.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Everton
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: dark gray; color: black; font-weight: bold; border-radius: 5px">
-52
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">32</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">15</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">7</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">10</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">44</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">40</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #705f4a">4</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/lee.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Leeds United
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: dark gray; color: black; font-weight: bold; border-radius: 5px">
-47
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">14</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">5</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">14</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">50</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">50</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #775c49">0</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/ars.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Arsenal
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: dark gray; color: black; font-weight: bold; border-radius: 5px">
-46
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">13</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">7</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">13</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">44</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">37</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #6b614b">7</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/ast.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Aston Villa
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: dark gray; color: black; font-weight: bold; border-radius: 5px">
-45
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">32</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">13</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">6</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">13</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">46</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">37</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #68634b">9</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/wlv.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Wolverhampton Wanderers
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: dark gray; color: black; font-weight: bold; border-radius: 5px">
-41
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">11</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">8</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">14</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">32</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">45</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #8d5246">-13</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/cry.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Crystal Palace
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: dark gray; color: black; font-weight: bold; border-radius: 5px">
-38
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">32</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">10</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">8</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">14</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">34</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">54</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #984d44">-20</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/bur.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Burnley
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: dark gray; color: black; font-weight: bold; border-radius: 5px">
-36
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">9</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">9</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">15</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">30</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">45</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #905145">-15</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/new.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Newcastle United
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: dark gray; color: black; font-weight: bold; border-radius: 5px">
-36
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">9</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">9</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">15</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">36</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">54</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #954e45">-18</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/sou.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Southampton
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: dark gray; color: black; font-weight: bold; border-radius: 5px">
-36
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">32</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">10</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">6</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">16</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">40</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">58</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #954e45">-18</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/bha.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Brighton &amp; Hove Albion
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: dark gray; color: black; font-weight: bold; border-radius: 5px">
-34
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">7</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">13</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">13</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">39</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #815748">-6</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/ful.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Fulham
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: #bfbfbf; color: black; font-weight: bold; border-radius: 5px">
-27
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">5</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">12</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">16</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">25</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">43</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #954e45">-18</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/wba.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-West Bromwich Albion
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: #bfbfbf; color: black; font-weight: bold; border-radius: 5px">
-25
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">5</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">10</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">18</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">30</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">64</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #b04241">-34</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #ffc966">D</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-<img src="https://github.com/awhstin/Dataset-List/raw/master/img/she.png" height="30" width="30" style="display: inline; padding: 2px"/>
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Sheffield United
-</div>
-</td>
-<td style="text-align:center;">
-<div style="background-color: #bfbfbf; color: black; font-weight: bold; border-radius: 5px">
-17
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">33</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">5</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">2</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">26</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">18</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">56</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #b74040">-38</span>
-</td>
-<td style="text-align:left;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #B74040">L</span>
-</td>
-<td style="text-align:center;">
-<span style="display: float; color: white; font-weight: light; font-size: 10px; font-family: IBM Plex Mono; padding: 7px 10px 7px 10px; background-color: #2c7e55">W</span>
-</td>
-</tr>
-</tbody>
-</table>
-</center>
-<br>
-<br>
-<hr>
 <div style="align:left;width:30%;display:float;">
 <p>
 </p>
 </div>
-<div class="gameweek clearfix" style="align:right">
 <h4>
 The Title Race
 </h4>
 <p>One interesting aspect of the league over the last few years has been the points spread from the top few to the rest of the table. This next visualization helps look at the table in the context of points week over week. This sort of visualization can show a team’s trend, as well as just how far apart the leaders are from the rest of the pack.
 <br></p>
-<p><img src="/EPL_files/figure-html/title-1.png" width="960" /></p>
-</div>
-<hr>
-<h4>
-Other Premier League Stats
-</h4>
-<div style="width:60%;color:#bcbcbc;">
-This section is reserved for other charts and tables investigating the Premier League stats. Not necessarily pertaining to the current premier league but also comparing the current season trends against previous years. Any ideas are welcome!
-</div>
-<p><br></p>
-<div id="htmlwidget-1" style="width:100%;height:500px;" class="echarts4r html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"theme":"custom","tl":false,"draw":true,"renderer":"canvas","events":[{"data":{"type":"highlight","seriesName":["2020"]}}],"buttons":[],"opts":{"yAxis":[{"show":true}],"xAxis":[{"type":"value"}],"legend":{"data":["2015","2016","2017","2018","2019","2020"],"show":true,"type":"plain","right":0},"series":[{"data":[{"value":[1,22]},{"value":[2,56]},{"value":[3,84]},{"value":[4,114]},{"value":[5,133]},{"value":[6,155]},{"value":[7,189]},{"value":[8,236]},{"value":[9,263]},{"value":[10,274]},{"value":[11,297]},{"value":[12,326]},{"value":[13,356]},{"value":[14,396]},{"value":[15,421]},{"value":[16,452]},{"value":[17,497]},{"value":[18,532]},{"value":[19,562]},{"value":[20,586]},{"value":[21,609]},{"value":[22,631]},{"value":[23,655]},{"value":[24,678]},{"value":[25,719]},{"value":[26,751]},{"value":[27,783]},{"value":[28,807]},{"value":[29,838]},{"value":[30,854]},{"value":[31,884]},{"value":[32,914]},{"value":[33,934]},{"value":[34,956]},{"value":[35,984]},{"value":[36,1026]}],"yAxisIndex":0,"xAxisIndex":0,"name":"2015","type":"line","coordinateSystem":"cartesian2d","smooth":true},{"data":[{"value":[1,36]},{"value":[2,59]},{"value":[3,87]},{"value":[4,95]},{"value":[5,142]},{"value":[6,163]},{"value":[7,169]},{"value":[8,183]},{"value":[9,217]},{"value":[10,238]},{"value":[11,260]},{"value":[12,269]},{"value":[13,284]},{"value":[14,336]},{"value":[15,372]},{"value":[16,386]},{"value":[17,404]},{"value":[18,436]},{"value":[19,461]},{"value":[20,492]},{"value":[21,529]},{"value":[22,557]},{"value":[23,579]},{"value":[24,601]},{"value":[25,635]},{"value":[26,671]},{"value":[27,705]},{"value":[28,725]},{"value":[29,752]},{"value":[30,771]},{"value":[31,799]},{"value":[32,835]},{"value":[33,859]},{"value":[34,890]},{"value":[35,927]},{"value":[36,984]},{"value":[37,1007]},{"value":[38,1038]},{"value":[39,1064]}],"yAxisIndex":0,"xAxisIndex":0,"name":"2016","type":"line","coordinateSystem":"cartesian2d","smooth":true},{"data":[{"value":[1,31]},{"value":[2,59]},{"value":[3,86]},{"value":[4,87]},{"value":[5,141]},{"value":[6,170]},{"value":[7,173]},{"value":[8,199]},{"value":[9,221]},{"value":[10,253]},{"value":[11,268]},{"value":[12,297]},{"value":[13,326]},{"value":[14,353]},{"value":[15,378]},{"value":[16,399]},{"value":[17,420]},{"value":[18,463]},{"value":[19,488]},{"value":[20,510]},{"value":[21,526]},{"value":[22,536]},{"value":[23,560]},{"value":[24,581]},{"value":[25,611]},{"value":[26,631]},{"value":[27,636]},{"value":[28,656]},{"value":[29,687]},{"value":[30,717]},{"value":[31,735]},{"value":[32,746]},{"value":[33,772]},{"value":[34,791]},{"value":[35,854]},{"value":[36,879]},{"value":[37,925]},{"value":[38,967]},{"value":[39,1016]},{"value":[40,1018]}],"yAxisIndex":0,"xAxisIndex":0,"name":"2017","type":"line","coordinateSystem":"cartesian2d","smooth":true},{"data":[{"value":[1,29]},{"value":[2,49]},{"value":[3,82]},{"value":[4,136]},{"value":[5,169]},{"value":[6,193]},{"value":[7,245]},{"value":[8,278]},{"value":[9,297]},{"value":[10,319]},{"value":[11,351]},{"value":[12,379]},{"value":[13,409]},{"value":[14,442]},{"value":[15,467]},{"value":[16,503]},{"value":[17,528]},{"value":[18,561]},{"value":[19,589]},{"value":[20,619]},{"value":[21,648]},{"value":[22,677]},{"value":[23,699]},{"value":[24,728]},{"value":[25,750]},{"value":[26,779]},{"value":[27,813]},{"value":[28,833]},{"value":[29,857]},{"value":[30,890]},{"value":[31,947]},{"value":[32,979]},{"value":[33,1013]},{"value":[34,1072]}],"yAxisIndex":0,"xAxisIndex":0,"name":"2018","type":"line","coordinateSystem":"cartesian2d","smooth":true},{"data":[{"value":[1,25]},{"value":[2,52]},{"value":[3,92]},{"value":[4,105]},{"value":[5,132]},{"value":[6,141]},{"value":[7,156]},{"value":[8,186]},{"value":[9,206]},{"value":[10,225]},{"value":[11,255]},{"value":[12,281]},{"value":[13,342]},{"value":[14,393]},{"value":[15,432]},{"value":[16,475]},{"value":[17,502]},{"value":[18,527]},{"value":[19,557]},{"value":[20,588]},{"value":[21,620]},{"value":[22,651]},{"value":[23,680]},{"value":[24,705]},{"value":[25,723]},{"value":[26,761]},{"value":[27,787]},{"value":[28,815]},{"value":[29,848]},{"value":[30,879]},{"value":[31,944]},{"value":[32,963]},{"value":[33,981]},{"value":[34,1034]}],"yAxisIndex":0,"xAxisIndex":0,"name":"2019","type":"line","coordinateSystem":"cartesian2d","smooth":true},{"data":[{"value":[1,27]},{"value":[2,35]},{"value":[3,67]},{"value":[4,100]},{"value":[5,151]},{"value":[6,177]},{"value":[7,211]},{"value":[8,234]},{"value":[9,260]},{"value":[10,289]},{"value":[11,311]},{"value":[12,325]},{"value":[13,363]},{"value":[14,393]},{"value":[15,417]},{"value":[16,436]},{"value":[17,459]},{"value":[18,503]},{"value":[19,539]},{"value":[20,580]},{"value":[21,608]},{"value":[22,627]},{"value":[23,657]},{"value":[24,681]},{"value":[25,701]},{"value":[26,726]},{"value":[27,756]},{"value":[28,780]},{"value":[29,835]},{"value":[30,870]},{"value":[31,870]}],"yAxisIndex":0,"xAxisIndex":0,"name":"2020","type":"line","coordinateSystem":"cartesian2d","smooth":true,"markPoint":{"data":[{"name":"Max","type":"max"}]}}],"title":[{"text":"Goals by Week of the Premier League"}],"tooltip":{"trigger":"axis"},"dataZoom":[[]],"toolbox":{"feature":{"dataZoom":[]}},"textStyle":{"fontFamily":"IBM Plex Mono"}},"dispose":true,"theme2":true,"customTheme":"{\"color\":[\"#f7dc05\",\n            \"#3d98d3\",\n            \"#ec0b88\",\n            \"#5e35b1\",\n            \"#f9791e\",\n            \"#3dd378\",\n            \"#787464\",\n            \"#c6c6c6\",\n            \"#baa9d0\",\n            \"#009688\"]}","theme_name":"custom"},"evals":[],"jsHooks":[]}</script>
+<p><img src="/EPL_files/figure-html/unnamed-chunk-2-1.png" width="960" /></p>
 <hr>
 <h4>
 Fantasy Corner
@@ -1136,7 +35,7 @@ I have admitted a few times <a href="https://austinwehrwein.com/post/fpl/">befor
 <thead>
 <tr>
 <th style="text-align:left;">
-
+logo
 </th>
 <th style="text-align:left;">
 Player
@@ -1155,135 +54,36 @@ Pts
 <tbody>
 <tr>
 <td style="text-align:left;">
-LEE
+CHE
 </td>
 <td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Stuart Dallas
-</div>
+Marcos Alonso
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">DEF</span>
+DEF
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 700; color: #327b54">6.5</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #61664c">15.0</span>
 </td>
 <td style="text-align:center;">
-<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #27704c">148</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #1e573a">15</span>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-WHU
+CHE
 </td>
 <td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Aaron Cresswell
-</div>
+Trevoh Chalobah
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">DEF</span>
+DEF
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 700; color: #b74040">0.2</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #6c614b">14.0</span>
 </td>
 <td style="text-align:center;">
-<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #2a7951">136</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-MCI
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Rúben Santos Dias
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">DEF</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #825747">2.7</span>
-</td>
-<td style="text-align:center;">
-<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #2a7952">135</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-MUN
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Aaron Wan-Bissaka
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">DEF</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #715f4a">3.5</span>
-</td>
-<td style="text-align:center;">
-<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #2a7a52">134</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-LIV
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Andrew Robertson
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">DEF</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #66634c">4.0</span>
-</td>
-<td style="text-align:center;">
-<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #2c7e55">129</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-TOT
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Harry Kane
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">FWD</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #2c7e55">6.8</span>
-</td>
-<td style="text-align:center;">
-<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #16412b">218</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-LEE
-</td>
-<td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Patrick Bamford
-</div>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">FWD</span>
-</td>
-<td style="text-align:center;">
-<span style="font-weight: 700; color: #8c5246">2.2</span>
-</td>
-<td style="text-align:center;">
-<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #236544">165</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #205c3d">14</span>
 </td>
 </tr>
 <tr>
@@ -1291,75 +91,67 @@ Patrick Bamford
 LEI
 </td>
 <td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Jamie Vardy
-</div>
+Ricardo Domingos Pereira
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">FWD</span>
+DEF
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 700; color: #66634c">4.0</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #815748">12.0</span>
 </td>
 <td style="text-align:center;">
-<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #236645">163</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #236544">12</span>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-AVL
+BRE
 </td>
 <td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Emiliano Martínez
-</div>
+Ethan Pinnock
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">GKP</span>
+DEF
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 700; color: #805848">2.8</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #8c5346">11.0</span>
 </td>
 <td style="text-align:center;">
-<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #236644">164</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #256a47">11</span>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-LEE
+CHE
 </td>
 <td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Illan Meslier
-</div>
+Andreas Christensen
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">GKP</span>
+DEF
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 700; color: #5c684d">4.5</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #b74040">7.0 </span>
 </td>
 <td style="text-align:center;">
-<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #28744e">143</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #2c7e55">7</span>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-MUN
+LEI
 </td>
 <td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Bruno Miguel Fernandes
-</div>
+Luke Thomas
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">MID</span>
+DEF
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 700; color: #7c5a48">3.0</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #b74040">7.0 </span>
 </td>
 <td style="text-align:center;">
-<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #163f2a">221</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #2c7e55">7</span>
 </td>
 </tr>
 <tr>
@@ -1367,18 +159,16 @@ Bruno Miguel Fernandes
 LIV
 </td>
 <td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Mohamed Salah
-</div>
+Virgil van Dijk
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">MID</span>
+DEF
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 700; color: #387853">6.2</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #b74040">7.0 </span>
 </td>
 <td style="text-align:center;">
-<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #1b4e34">199</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #2c7e55">7</span>
 </td>
 </tr>
 <tr>
@@ -1386,18 +176,135 @@ Mohamed Salah
 TOT
 </td>
 <td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Heung-Min Son
-</div>
+Eric Dier
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">MID</span>
+DEF
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 700; color: #516d4f">5.0</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #b74040">7.0 </span>
 </td>
 <td style="text-align:center;">
-<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #1b4e34">199</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #2c7e55">7</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TOT
+</td>
+<td style="text-align:left;">
+Sergio Reguilón
+</td>
+<td style="text-align:center;">
+DEF
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #b74040">7.0 </span>
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #2c7e55">7</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WHU
+</td>
+<td style="text-align:left;">
+Aaron Cresswell
+</td>
+<td style="text-align:center;">
+DEF
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #b74040">7.0 </span>
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #2c7e55">7</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WHU
+</td>
+<td style="text-align:left;">
+Michail Antonio
+</td>
+<td style="text-align:center;">
+FWD
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #765c49">13.0</span>
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #216041">13</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WAT
+</td>
+<td style="text-align:left;">
+Emmanuel Dennis
+</td>
+<td style="text-align:center;">
+FWD
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #815748">12.0</span>
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #236544">12</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EVE
+</td>
+<td style="text-align:left;">
+Richarlison Richarlison
+</td>
+<td style="text-align:center;">
+FWD
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #8c5346">11.0</span>
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #256a47">11</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TOT
+</td>
+<td style="text-align:left;">
+Hugo Lloris
+</td>
+<td style="text-align:center;">
+GKP
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #964e44">10.0</span>
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #266f4b">10</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LEI
+</td>
+<td style="text-align:left;">
+Kasper Schmeichel
+</td>
+<td style="text-align:center;">
+GKP
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #a14943">9.0 </span>
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #28744e">9</span>
 </td>
 </tr>
 <tr>
@@ -1405,37 +312,84 @@ Heung-Min Son
 MUN
 </td>
 <td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Marcus Rashford
-</div>
+Bruno Miguel Fernandes
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">MID</span>
+MID
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 700; color: #516d4f">5.0</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #2c7e55">20.0</span>
 </td>
 <td style="text-align:center;">
-<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #246846">160</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #163f2a">20</span>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-MCI
+LIV
 </td>
 <td style="text-align:left;">
-<div style="font-family: IBM Plex Mono; font-size: 16px; font-weight: 700">
-Ilkay Gündogan
-</div>
+Mohamed Salah
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 200; color: #6a6a6a; padding: 3px 8px 3px 8px">MID</span>
+MID
 </td>
 <td style="text-align:center;">
-<span style="font-weight: 700; color: #ac4441">0.7</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #4c6f50">17.0</span>
 </td>
 <td style="text-align:center;">
-<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #28734d">144</span>
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #1b4d33">17</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MUN
+</td>
+<td style="text-align:left;">
+Paul Pogba
+</td>
+<td style="text-align:center;">
+MID
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #566a4e">16.0</span>
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #1c5237">16</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WHU
+</td>
+<td style="text-align:left;">
+Saïd Benrahma
+</td>
+<td style="text-align:center;">
+MID
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #815748">12.0</span>
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #236544">12</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BRE
+</td>
+<td style="text-align:left;">
+Sergi Canós
+</td>
+<td style="text-align:center;">
+MID
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #8c5346">11.0</span>
+</td>
+<td style="text-align:center;">
+<span style="display: block; padding: 0 4px; border-radius: 2px; color: white; background-color: #256a47">11</span>
 </td>
 </tr>
 </tbody>
