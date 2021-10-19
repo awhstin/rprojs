@@ -426,6 +426,8 @@ img {
     -ms-interpolation-mode: bicubic;
     vertical-align: left;
     font-style: italic;
+    transform: translateZ(0);
+    image-rendering: -webkit-optimize-contrast;
 }
 a img {
     border: 0;
