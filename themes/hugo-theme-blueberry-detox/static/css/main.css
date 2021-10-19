@@ -82,6 +82,7 @@ img {
     padding-bottom:15px;
 	padding-right:15px;
 	  transform: translateZ(0);
+	 image-rendering: -webkit-optimize-contrast;
 }
 svg:not(:root) {
     overflow: hidden;
