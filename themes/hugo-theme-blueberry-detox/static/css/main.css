@@ -623,7 +623,7 @@ hr {
     border: 0;
     border-top: 1px dashed #ccc;
     margin: 20px 0;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
 }
 .containerheader{
   margin:0!important;
@@ -705,12 +705,11 @@ article.li {
 }
 .post-header {
     text-align: left;
-    margin-top: 1em;
     width: 75%;
 }
 .post-title {
-    margin-bottom: 40px;
-    padding-top:15%;
+    margin-bottom: 30px;
+    padding-top: 2%;
     line-height: 1;
     font-size:34px;
 	font-weight:700;
