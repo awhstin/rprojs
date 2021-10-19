@@ -81,6 +81,7 @@ img {
     max-width: 100%;
     padding-bottom:15px;
 	padding-right:15px;
+	image-rendering: -webkit-optimize-contrast;
 }
 svg:not(:root) {
     overflow: hidden;
