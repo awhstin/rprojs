@@ -29,4 +29,4 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
     dateFormat = "Mon, Jan 2, 2006"
     disqusShortname = "austinwehrwein"
     google_analytics = "UA-75498340-2"
-    paginate = 15
+    paginate = 1
