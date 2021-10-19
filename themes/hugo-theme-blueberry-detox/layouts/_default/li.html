@@ -6,14 +6,14 @@
         <h3 class="post-title"><a href="{{ .Permalink }}">{{ .Title }}</a></h3>
         <p class="post-time"><time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" | safeHTML }}">{{ .Date.Format "January 2, 2006" }}</time></p>
         </div>
-        <div class="column middle">
+        <div class="column left">
             
-                                <section class="post-excerpt" style='line-height:1.5;padding-top:10%;'>
+                                <section class="post-excerpt" style='line-height:1.5;'>
         <p>{{ .Summary }}</p>
     </section>
     </div>
     <div class='column right'>
-                <img  class ="titleimg" style="object-fit;float:right ;cover;padding-top:20%;" src="{{ index .Params "titleimg" }}.{{ index .Params "imgtype" }}" />
+                <img  class ="titleimg" style="object-fit;float:right;height:100%;display:inline-block;" src="{{ index .Params "titleimg" }}.{{ index .Params "imgtype" }}" />
     </div>
     </div>
     <footer class="post-footer">

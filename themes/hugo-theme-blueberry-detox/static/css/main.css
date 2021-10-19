@@ -959,12 +959,12 @@ pre code {
   display:block;
 }
 .left{
-    width: 33%;
+    width: 66%;
     height:100%;
     padding-right:15px;
-      border-right: solid #444444;
 }
 .right {
+    float: right;
   width:25%;
   height:100%;
     padding-left:15px;
