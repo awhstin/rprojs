@@ -81,7 +81,6 @@ img {
     max-width: 100%;
     padding-bottom:15px;
 	padding-right:15px;
-	image-rendering: -webkit-optimize-contrast;
 	  transform: translateZ(0);
 }
 svg:not(:root) {
@@ -428,7 +427,6 @@ img {
     vertical-align: left;
     font-style: italic;
     transform: translateZ(0);
-    image-rendering: -webkit-optimize-contrast;
 }
 a img {
     border: 0;
