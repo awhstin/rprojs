@@ -2,7 +2,7 @@ theme = "hugo-theme-blueberry-detox"
 title='aw.stats'
 baseurl = "https://austinwehrwein.com/"
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
-
+ignoreErrors = ["error-remote-getjson"]
     # Loading min files for exampleSite
     customCSS            = ["/css/main.css"]
     customCSSP            = ["/css/prism.css"]
