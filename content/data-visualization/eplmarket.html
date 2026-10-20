@@ -8,16 +8,16 @@ imgtype: "svg"
 
 
 
-<p>During the World Cup I did a <a href="&#39;https://austinwehrwein.com/data-visualization/world-cup/&#39;">write-up</a> of FiveThirtyEight SPI rankings and estimated team market value to see where each team fell. The idea was identifying those teams who seem to be performing higher than their team value would suggest. I decided that for a quick little post I would explore that same concept but now since club season has started I can look at the English Premier League.</p>
+<p>During the World Cup I did a <a href="https://austinwehrwein.com/data-visualization/world-cup/">write-up</a> of FiveThirtyEight SPI rankings and estimated team market value to see where each team fell. The idea was identifying those teams who seem to be performing higher than their team value would suggest. I decided that for a quick little post I would explore that same concept but now since club season has started I can look at the English Premier League.</p>
 <div id="getting-the-data" class="section level3">
 <h3>Getting the data</h3>
-<p>We will need data from a couple different places so let us start with that. We can scrape the league table from this very website. Then we will use the SPI ranking from FiveThirtyEight which you can read more about <a href="&#39;https://fivethirtyeight.com/methodology/how-our-club-soccer-predictions-work/">here</a> and finally we can use the Transfer Markt estimated team market value that was used in the previous World Cup post.</p>
+<p>We will need data from a couple different places so let us start with that. We can scrape the league table from this very website. Then we will use the SPI ranking from FiveThirtyEight which you can read more about <a href="https://web.archive.org/web/20230607152514/https://fivethirtyeight.com/methodology/how-our-club-soccer-predictions-work/">here (archived)</a> (or see <a href="https://www.football-charts.com/rankings">Football Charts</a> for active daily club attack/defense ratings and projections) and finally we can use the Transfer Markt estimated team market value that was used in the previous World Cup post.</p>
 <pre class="r"><code>library(tidyverse)
 library(rvest)
 library(waffle)
 library(awtools) #optional: just for the graph aesthetics
 #devtools::install_github(&#39;awhstin/awtools&#39;)</code></pre>
-<p>Once we have those loaded we can gather the data from the two sites and combine to get what we are interested in. If you want a very nice primer on working with the <code>rvest</code> package check out this <a href="&#39;http://blog.rstudio.com/2014/11/24/rvest-easy-web-scraping-with-r/&#39;">tutorial</a> over on the RStudio blog. All we need now is the CSS selector for the tables we need and then can import the data.</p>
+<p>Once we have those loaded we can gather the data from the two sites and combine to get what we are interested in. If you want a very nice primer on working with the <code>rvest</code> package check out this <a href="https://posit.co/blog/rvest-easy-web-scraping-with-r/">tutorial</a> over on the RStudio blog. All we need now is the CSS selector for the tables we need and then can import the data.</p>
 <p>Now that we have those disparate datasets we can do a little work and bring them together.</p>
 <pre class="r"><code>#join data
 squads &lt;- squads %&gt;%
